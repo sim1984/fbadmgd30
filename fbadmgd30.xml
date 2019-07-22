@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.oasis-open.org/docbook/xml/5.0/rng/docbookxi.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<book xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0" xml:id="devref" xml:lang="ru">
+    <info>
+        <title>Руководство администратора Firebird 3.0</title>
+        <edition>0.1 Alpha</edition>
+
+        <authorgroup>
+            <author>
+                <personname><firstname>Денис</firstname>
+                    <surname>Симонов</surname></personname>
+            </author>
+            <author>
+                <personname><firstname>Дмитрий</firstname>
+                    <surname>Еманов</surname></personname>
+            </author>
+            <author>
+                <personname><firstname>Дмитрий</firstname>
+                    <surname>Кузьменко</surname></personname>
+            </author>
+            <author>
+                <personname><firstname>Алексей</firstname>
+                    <surname>Ковязин</surname></personname>
+            </author>
+        </authorgroup>
+        <editor>
+            <personname><firstname>Денис</firstname>
+                <surname>Симонов</surname></personname>
+        </editor>
+    </info>
+
+    <xi:include href="intro.xml" xpointer="element(/1)"/>
+    <xi:include href="install.xml" xpointer="element(/1)"/>
+    <xi:include href="server-files.xml" xpointer="element(/1)"/>
+    <xi:include href="config.xml" xpointer="element(/1)"/>
+    <xi:include href="hardware.xml" xpointer="element(/1)"/>
+
+    <index>
+        <info>
+            <title>Алфавитный указатель</title>
+        </info>
+    </index>
+</book>

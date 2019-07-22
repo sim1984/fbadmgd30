@@ -7,4 +7,9 @@ Admin Guide for Firebird 3.0
 -   PDF —
     <https://github.com/sim1984/fbadmgd30/releases/download/3.0/fbadmgd30.pdf>
 	
+### Внимание
+
+В настоящий момент руководство находится на начальной стадии написания и может
+содержать множество ошибок.	
+	
 	

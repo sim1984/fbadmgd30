@@ -42,6 +42,10 @@
     <section>
         <title>Инструменты администрирования и сервисы</title>
 
+        <para>В Windows исполняемые файлы имеют расширение <filename>.exe</filename>, в других
+            операционных системах могут использоваться другие расширения или вовсе не
+            использоваться.</para>
+
         <simplesect>
             <title>fb_lock_print</title>
             <para>Эта утилита формирует статистические данные файла блокировок, который
@@ -185,6 +189,13 @@
                 qli может одновременно соединяться более чем с одной базой данных и может
                 симулировать обращение к нескольким базам данных в одном запросе.</para>
         </simplesect>
+    </section>
+    
+    <section>
+        <title>Динамические библиотеки</title>
+        
+        <para>В Windows динамические библиотеки имеют расширение <filename>.dll</filename>,
+            в Linux — <filename>.so</filename>, в Mac OS — <filename>.dylib</filename>.</para>
     </section>
 
     <section>

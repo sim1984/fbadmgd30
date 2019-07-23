@@ -388,6 +388,11 @@ MYBIGDB = opt/databases/mybigdb.fdb
         <section xml:id="config-param-DatabaseAccess">
             <title>DatabaseAccess</title>
 
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>DatabaseAccess</secondary>
+            </indexterm>
+
             <formalpara>
                 <title>Область действия:</title>
 
@@ -444,6 +449,11 @@ DatabaseAccess = Full
 
         <section xml:id="config-param-RemoteAccess">
             <title>RemoteAccess</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>RemoteAccess</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -480,6 +490,11 @@ RemoteAccess = true
 
         <section xml:id="config-param-ExternalFileAccess">
             <title>ExternalFileAccess</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>ExternalFileAccess</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -529,6 +544,11 @@ ExternalFileAccess = Full
 
         <section xml:id="config-param-UdfAccess">
             <title>UdfAccess</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>UdfAccess</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -574,6 +594,11 @@ UdfAccess = Restrict UDF
 
         <section xml:id="config-param-TempDirectories">
             <title>TempDirectories</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>TempDirectories</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -620,6 +645,11 @@ TempDirectories = c:\temp;d:\temp
 
         <section xml:id="config-param-AuditTraceConfigFile">
             <title>AuditTraceConfigFile</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>AuditTraceConfigFile</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -654,6 +684,11 @@ AuditTraceConfigFile = fbtrace.conf
 
         <section xml:id="config-param-MaxUserTraceLogSize">
             <title>MaxUserTraceLogSize</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>MaxUserTraceLogSize</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -687,6 +722,11 @@ MaxUserTraceLogSize = 10
 
         <section xml:id="config-param-DefaultDbCachePages">
             <title>DefaultDbCachePages</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>DefaultDbCachePages</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -811,6 +851,11 @@ testdb = d:\fb\fb30\data\testdb.fdb
 
         <section xml:id="config-param-DatabaseGrowthIncrement">
             <title>DatabaseGrowthIncrement</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>DatabaseGrowthIncrement</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -852,6 +897,11 @@ DatabaseGrowthIncrement = 128M
         </section>
         <section xml:id="config-param-FileSystemCacheThreshold">
             <title>FileSystemCacheThreshold</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>FileSystemCacheThreshold</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -906,6 +956,11 @@ FileSystemCacheThreshold = 128K
         </section>
         <section xml:id="config-param-FileSystemCacheSize">
             <title>FileSystemCacheSize</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>FileSystemCacheSize</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -957,6 +1012,11 @@ FileSystemCacheSize = 25
 
         <section xml:id="config-param-RemoteFileOpenAbility">
             <title>RemoteFileOpenAbility</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>RemoteFileOpenAbility</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -1017,6 +1077,11 @@ RemoteFileOpenAbility = 0
 
         <section xml:id="config-param-TempBlockSize">
             <title>TempBlockSize</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>TempBlockSize</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -1061,6 +1126,11 @@ TempBlockSize = 2M
 
         <section xml:id="config-param-TempCacheLimit">
             <title>TempCacheLimit</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>TempCacheLimit</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -1108,6 +1178,16 @@ TempCacheLimit = 256M
 
         <section xml:id="config-param-AuthServer">
             <title>AuthServer и AuthClient</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>AuthServer</secondary>
+            </indexterm>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>AuthClient</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -1201,6 +1281,11 @@ AuthClient = Srp256, Srp, Legacy_Auth            # для не Windows клие�
 
         <section xml:id="config-param-UserManager">
             <title>UserManager</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>UserManager</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -1254,6 +1339,11 @@ UserManager = Srp
 
         <section xml:id="config-param-TracePlugin">
             <title>TracePlugin</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>TracePlugin</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -1283,6 +1373,11 @@ TracePlugin = fbtrace
 
         <section xml:id="config-param-WireCryptPlugin">
             <title>WireCryptPlugin</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>WireCryptPlugin</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -1323,6 +1418,11 @@ WireCryptPlugin = Arc4
 
         <section xml:id="config-param-KeyHolderPlugin">
             <title>KeyHolderPlugin</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>KeyHolderPlugin</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -1346,6 +1446,11 @@ WireCryptPlugin = Arc4
 
         <section xml:id="config-param-Providers">
             <title>Providers</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>Providers</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -1478,6 +1583,11 @@ Providers = Remote,Engine12,Loopback
 
         <section xml:id="config-param-DeadlockTimeout">
             <title>DeadlockTimeout</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>DeadlockTimeout</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -1519,6 +1629,11 @@ DeadlockTimeout = 10
 
         <section xml:id="config-param-MaxUnflushedWrites">
             <title>MaxUnflushedWrites</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>MaxUnflushedWrites</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -1569,6 +1684,11 @@ MaxUnflushedWrites = 100
 
         <section xml:id="config-param-MaxUnflushedWriteTime">
             <title>MaxUnflushedWriteTime</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>MaxUnflushedWriteTime</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -1620,6 +1740,11 @@ MaxUnflushedWriteTime = 5
 
         <section xml:id="config-param-BugcheckAbort">
             <title>BugcheckAbort</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>BugcheckAbort</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -1660,6 +1785,12 @@ BugcheckAbort = 0
         </section>
         <section xml:id="config-param-RelaxedAliasChecking">
             <title>RelaxedAliasChecking</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>RelaxedAliasChecking</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-server.</para>
@@ -1705,6 +1836,11 @@ RelaxedAliasChecking = 0
 
         <section xml:id="config-param-ConnectionTimeout">
             <title>ConnectionTimeout</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>ConnectionTimeout</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -1739,6 +1875,11 @@ ConnectionTimeout = 180
 
         <section xml:id="config-param-WireCrypt">
             <title>WireCrypt</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>WireCrypt</secondary>
+            </indexterm>
 
             <formalpara>
                 <title>Область действия:</title>
@@ -1839,6 +1980,12 @@ WireCrypt = Required # для сервера
 
         <section xml:id="config-param-WireCompression">
             <title>WireCompression</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>WireCompression</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-connection.</para>
@@ -1889,6 +2036,12 @@ isc_sbp_config <replaceable>&lt;string-length&gt;</replaceable> "WireCompression
 
         <section xml:id="config-param-DummyPacketInterval">
             <title>DummyPacketInterval</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>DummyPacketInterval</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-connection.</para>
@@ -1931,6 +2084,17 @@ isc_sbp_config <replaceable>&lt;string-length&gt;</replaceable> "WireCompression
 
         <section xml:id="config-param-RemoteServicePort">
             <title>RemoteServicePort или RemoteServiceName</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>RemoteServicePort</secondary>
+            </indexterm>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>RemoteServiceName</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-connection.</para>
@@ -1982,6 +2146,12 @@ RemoteServicePort = 3050
         </section>
         <section xml:id="config-param-RemoteAuxPort">
             <title>RemoteAuxPort</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>RemoteAuxPort</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-connection.</para>
@@ -2007,6 +2177,12 @@ RemoteAuxPort = 0
         </section>
         <section xml:id="config-param-TcpRemoteBufferSize">
             <title>TcpRemoteBufferSize</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>TcpRemoteBufferSize</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-connection.</para>
@@ -2034,6 +2210,12 @@ TcpRemoteBufferSize = 8192
         </section>
         <section xml:id="config-param-TcpNoNagle">
             <title>TcpNoNagle</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>TcpNoNagle</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-connection.</para>
@@ -2062,6 +2244,12 @@ TcpNoNagle = 1
         </section>
         <section xml:id="config-param-IPv6V6Only">
             <title>IPv6V6Only</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>IPv6V6Only</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-server.</para>
@@ -2123,6 +2311,12 @@ connect '[2014:1234::5]/3049:/srv/firebird/test.fdb';
 
         <section xml:id="config-param-RemoteBindAddress">
             <title>RemoteBindAddress</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>RemoteBindAddress</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-server.</para>
@@ -2152,6 +2346,12 @@ RemoteBindAddress =
 
         <section xml:id="config-param-LockMemSize">
             <title>LockMemSize</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>LockMemSize</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-database.</para>
@@ -2200,6 +2400,12 @@ LockMemSize = 1M
 
         <section xml:id="config-param-LockAcquireSpins">
             <title>LockAcquireSpins</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>LockAcquireSpins</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-database.</para>
@@ -2237,6 +2443,12 @@ LockMemSize = 1M
 
         <section xml:id="config-param-LockHashSlots">
             <title>LockHashSlots</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>LockHashSlots</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-database.</para>
@@ -2291,6 +2503,12 @@ fb_lock_print -d <replaceable>&lt;database&gt;</replaceable> | <replaceable>&lt;
         </section>
         <section xml:id="config-param-EventMemSize">
             <title>EventMemSize</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>EventMemSize</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-database.</para>
@@ -2321,6 +2539,12 @@ EventMemSize = 64K
 
         <section xml:id="config-param-CpuAffinityMask">
             <title>CpuAffinityMask</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>CpuAffinityMask</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-server.</para>
@@ -2358,6 +2582,12 @@ CpuAffinityMask = 64K
 
         <section xml:id="config-param-GCPolicy">
             <title>GCPolicy</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>GCPolicy</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-database.</para>
@@ -2403,6 +2633,12 @@ GCPolicy = combined
 
         <section xml:id="config-param-SecurityDatabase">
             <title>SecurityDatabase</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>SecurityDatabase</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-database.</para>
@@ -2432,6 +2668,12 @@ SecurityDatabase = $(dir_secDb)/security3.fdb
 
         <section xml:id="config-param-GuardianOption">
             <title>GuardianOption</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>GuardianOption</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-server.</para>
@@ -2472,6 +2714,12 @@ GuardianOption = 1
 
         <section xml:id="config-param-ProcessPriorityLevel">
             <title>ProcessPriorityLevel</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>ProcessPriorityLevel</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-server.</para>
@@ -2512,6 +2760,12 @@ ProcessPriorityLevel = 0
 
         <section xml:id="config-param-IpcName">
             <title>IpcName</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>IpcName</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-connection.</para>
@@ -2549,6 +2803,12 @@ IpcName = FIREBIRD
 
         <section xml:id="config-param-RemotePipeName">
             <title>RemotePipeName</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>RemotePipeName</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-connection.</para>
@@ -2581,6 +2841,12 @@ RemotePipeName = interbas
 
         <section xml:id="config-param-Redirection">
             <title>Redirection</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>Redirection</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-server.</para>
@@ -2637,6 +2903,12 @@ Redirection = 0
 
         <section xml:id="config-param-ServerMode">
             <title>ServerMode</title>
+            
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>ServerMode</secondary>
+            </indexterm>
+            
             <formalpara>
                 <title>Область действия:</title>
                 <para>Per-server.</para>

@@ -1,17 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet 
-    xmlns:d="http://docbook.org/ns/docbook"
-    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-	xmlns:fo="http://www.w3.org/1999/XSL/Format"
-    xmlns:xslthl="http://xslthl.sf.net" 
-    exclude-result-prefixes="xslthl d"
-	version="1.0">
+<xsl:stylesheet xmlns:d="http://docbook.org/ns/docbook"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format"
+    xmlns:xslthl="http://xslthl.sf.net" exclude-result-prefixes="xslthl d" version="1.0">
 
     <!--Язык-->
     <xsl:param name="l10n.gentext.language" select="'ru'"/>
 
     <xsl:param name="hyphenate" select="false"/>
-    
+
     <xsl:param name="fop1.extensions" select="1"/>
 
     <xsl:param name="draft.watermark.image" select="''"/>
@@ -59,7 +55,7 @@
     <xsl:param name="make.index.markup" select="0"/>
 
     <xsl:param name="shade.verbatim" select="1"/>
-    
+
     <xsl:param name="chapter.autolabel" select="1"/>
 
 
@@ -70,32 +66,32 @@
     <!-- формат нумерации страниц -->
     <xsl:template name="initial.page.number">auto</xsl:template>
     <xsl:template name="page.number.format">1</xsl:template>
-	
-	<!-- Местоположение подписей к элементам -->
-	<xsl:param name="formal.title.placement"> figure after table before example before </xsl:param>	
-	
+
+    <!-- Местоположение подписей к элементам -->
+    <xsl:param name="formal.title.placement"> figure after table before example before </xsl:param>
+
     <!--подпись к рисункам и ссылкам к рисункам, url-ссылкам-->
- <xsl:param name="local.l10n.xml" select="document('')"/>
- <l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0">
-   <l:l10n language="ru">
-     <l:context name="title">
-       <l:template name="figure" text="Рис. %n. %t"/>
-     </l:context>   
-     
-     <l:context name="xref-number-and-title">
-       <l:template name="figure" text="«Рис. %n. »"/>
-     </l:context> 
-     
-     <l:context name="xref-number-and-title">
-       <l:template name="ulink" text="%t"/>
-     </l:context>
-  </l:l10n>
- </l:i18n> 	
+    <xsl:param name="local.l10n.xml" select="document('')"/>
+    <l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0">
+        <l:l10n language="ru">
+            <l:context name="title">
+                <l:template name="figure" text="Рис. %n. %t"/>
+            </l:context>
+
+            <l:context name="xref-number-and-title">
+                <l:template name="figure" text="«Рис. %n. »"/>
+            </l:context>
+
+            <l:context name="xref-number-and-title">
+                <l:template name="ulink" text="%t"/>
+            </l:context>
+        </l:l10n>
+    </l:i18n>
 
     <!-- В оглавлении печатаем 4 уровня -->
     <xsl:param name="toc.section.depth" select="4"/>
     <!-- Структура оглавления -->
-    <xsl:param name="generate.toc"> 
+    <xsl:param name="generate.toc">
         /appendix toc,title 
         article/appendix nop 
         /article toc,title 
@@ -175,16 +171,16 @@
     <xsl:param name="filename-hyph.not-between" select="'./\'"/>
     <xsl:param name="filename-hyph.min-before" select="$special-hyph.min-before"/>
     <xsl:param name="filename-hyph.min-after" select="$special-hyph.min-after"/>
-    
+
     <!-- ATTRIBUTE SETS: -->
-    
+
     <xsl:attribute-set name="monospace.properties">
         <xsl:attribute name="font-family">
             <xsl:value-of select="$monospace.font.family"/>
         </xsl:attribute>
         <xsl:attribute name="font-size">0.97em</xsl:attribute>
     </xsl:attribute-set>
-    
+
     <xsl:attribute-set name="verbatim.properties">
         <xsl:attribute name="space-before.minimum">0.8em</xsl:attribute>
         <xsl:attribute name="space-before.optimum">1em</xsl:attribute>
@@ -194,30 +190,30 @@
         <xsl:attribute name="space-after.optimum">0em</xsl:attribute>
         <xsl:attribute name="space-after.maximum">0.2em</xsl:attribute>
     </xsl:attribute-set>
-    
+
     <xsl:attribute-set name="monospace.verbatim.properties">
         <!-- in default: uses verbatim.properties and monospace.properties, text-align=start -->
         <xsl:attribute name="font-size">0.9em</xsl:attribute>
     </xsl:attribute-set>
-    
+
     <xsl:attribute-set name="shade.verbatim.style">
         <xsl:attribute name="padding">2pt</xsl:attribute>
         <xsl:attribute name="background-color">#FFFFEC</xsl:attribute>
     </xsl:attribute-set>
-    
+
     <!-- shade.blah.styles are not *instead of*, but *on top of*
        shade.verbatim.style, adding and/or overriding attributes: -->
-    
+
     <xsl:attribute-set name="shade.screen.style">
         <xsl:attribute name="background-color">#D8F8F0</xsl:attribute>
     </xsl:attribute-set>
-    
+
     <xsl:attribute-set name="shade.literallayout.style">
         <xsl:attribute name="padding">0pt</xsl:attribute>
         <xsl:attribute name="background-color">#FFFFFF</xsl:attribute>
     </xsl:attribute-set>
-    
-    
+
+
     <xsl:attribute-set name="table.cell.padding">
         <xsl:attribute name="padding-left">4pt</xsl:attribute>
         <xsl:attribute name="padding-right">4pt</xsl:attribute>
@@ -227,29 +223,32 @@
 
 
     <!-- CHAPTER TITLE PROPERTIES - attribute sets created by us -->
-    
+
     <!-- The label is the line just before the title, e.g. "Chapter 9".
        Anything not overidden in the next three sets (ch.label, ch.title,
        and ch.subtitle) will default to the settings in titlepage.templates.xml,
        template <t:titlepage t:element="chapter".../>
        Default color for all three is $midlevel.title.color (see above)
   -->
-    
-    <xsl:attribute-set name="chapter.label-plus-title.properties"> <!-- label plus title -->
+
+    <xsl:attribute-set name="chapter.label-plus-title.properties">
+        <!-- label plus title -->
         <xsl:attribute name="background-color">#D0D0D0</xsl:attribute>
         <xsl:attribute name="padding">2pt</xsl:attribute>
     </xsl:attribute-set>
-    
+
     <xsl:attribute-set name="chapter.label.properties">
         <xsl:attribute name="keep-with-next.within-column">always</xsl:attribute>
         <xsl:attribute name="text-align">start</xsl:attribute>
-        <xsl:attribute name="color"><xsl:value-of select="$midlevel.title.color"/></xsl:attribute>
+        <xsl:attribute name="color">
+            <xsl:value-of select="$midlevel.title.color"/>
+        </xsl:attribute>
         <xsl:attribute name="font-size">
             <xsl:value-of select="$body.font.master * 1.2"/>
             <xsl:text>pt</xsl:text>
         </xsl:attribute>
     </xsl:attribute-set>
-    
+
     <xsl:attribute-set name="chapter.title.properties">
         <!-- space between label and title: -->
         <xsl:attribute name="space-before.minimum">0.48em</xsl:attribute>
@@ -257,13 +256,15 @@
         <xsl:attribute name="space-before.maximum">0.72em</xsl:attribute>
         <xsl:attribute name="keep-with-next.within-column">always</xsl:attribute>
         <xsl:attribute name="text-align">center</xsl:attribute>
-        <xsl:attribute name="color"><xsl:value-of select="$midlevel.title.color"/></xsl:attribute>
+        <xsl:attribute name="color">
+            <xsl:value-of select="$midlevel.title.color"/>
+        </xsl:attribute>
         <xsl:attribute name="font-size">
             <xsl:value-of select="$body.font.master * 3.0"/>
             <xsl:text>pt</xsl:text>
         </xsl:attribute>
     </xsl:attribute-set>
-    
+
     <xsl:attribute-set name="chapter.subtitle.properties">
         <xsl:attribute name="keep-with-next.within-column">always</xsl:attribute>
         <xsl:attribute name="text-align">center</xsl:attribute>
@@ -272,18 +273,20 @@
             <xsl:text>pt</xsl:text>
         </xsl:attribute>
     </xsl:attribute-set>
-    
+
     <!-- SECTION TITLE PROPERTIES -->
-    
+
     <!-- first set is for all sections, following sets are per level -->
-    
+
     <xsl:attribute-set name="section.title.properties">
-        <xsl:attribute name="color"><xsl:value-of select="$lowlevel.title.color"/></xsl:attribute>
+        <xsl:attribute name="color">
+            <xsl:value-of select="$lowlevel.title.color"/>
+        </xsl:attribute>
         <xsl:attribute name="keep-with-next.within-column">always</xsl:attribute>
         <xsl:attribute name="hyphenate">false</xsl:attribute>
         <xsl:attribute name="text-align">start</xsl:attribute>
     </xsl:attribute-set>
-    
+
     <xsl:attribute-set name="section.title.level1.properties">
         <xsl:attribute name="font-size">
             <xsl:value-of select="$body.font.master * 1.837"/>
@@ -296,46 +299,49 @@
         <xsl:attribute name="background-color">#E8E8E8</xsl:attribute>
         <xsl:attribute name="padding">2pt</xsl:attribute>
     </xsl:attribute-set>
-    
+
     <xsl:attribute-set name="section.title.level2.properties">
         <xsl:attribute name="font-size">
             <xsl:value-of select="$body.font.master * 1.5"/>
             <xsl:text>pt</xsl:text>
         </xsl:attribute>
         <xsl:attribute name="font-style">italic</xsl:attribute>
-        <xsl:attribute name="space-before.minimum">0.96em</xsl:attribute>   <!-- 1.04, 1.30, 1.56 -->
+        <xsl:attribute name="space-before.minimum">0.96em</xsl:attribute>
+        <!-- 1.04, 1.30, 1.56 -->
         <xsl:attribute name="space-before.optimum">1.20em</xsl:attribute>
         <xsl:attribute name="space-before.maximum">1.44em</xsl:attribute>
     </xsl:attribute-set>
-    
+
     <xsl:attribute-set name="section.title.level3.properties">
         <xsl:attribute name="font-size">
             <xsl:value-of select="$body.font.master * 1.225"/>
             <xsl:text>pt</xsl:text>
         </xsl:attribute>
-        <xsl:attribute name="space-before.minimum">0.91em</xsl:attribute>   <!-- 0.96, 1.20, 1.44 -->
+        <xsl:attribute name="space-before.minimum">0.91em</xsl:attribute>
+        <!-- 0.96, 1.20, 1.44 -->
         <xsl:attribute name="space-before.optimum">1.14em</xsl:attribute>
         <xsl:attribute name="space-before.maximum">1.37em</xsl:attribute>
     </xsl:attribute-set>
-    
+
     <xsl:attribute-set name="section.title.level4.properties">
         <xsl:attribute name="font-size">
             <xsl:value-of select="$body.font.master * 1.0"/>
             <xsl:text>pt</xsl:text>
         </xsl:attribute>
         <xsl:attribute name="font-style">italic</xsl:attribute>
-        <xsl:attribute name="space-before.minimum">0.86em</xsl:attribute>   <!-- 0.88, 1.10, 1.32 -->
+        <xsl:attribute name="space-before.minimum">0.86em</xsl:attribute>
+        <!-- 0.88, 1.10, 1.32 -->
         <xsl:attribute name="space-before.optimum">1.08em</xsl:attribute>
         <xsl:attribute name="space-before.maximum">1.30em</xsl:attribute>
     </xsl:attribute-set>
-    
+
     <xsl:attribute-set name="section.title.level5.properties">
         <xsl:attribute name="font-size">
             <xsl:value-of select="$body.font.master * 0.95"/>
             <xsl:text>pt</xsl:text>
         </xsl:attribute>
     </xsl:attribute-set>
-    
+
     <xsl:attribute-set name="section.title.level6.properties">
         <xsl:attribute name="font-size">
             <xsl:value-of select="$body.font.master * 0.95"/>
@@ -358,7 +364,7 @@
         <xsl:attribute name="space-after.optimum">0.6em</xsl:attribute>
         <xsl:attribute name="space-after.maximum">0.8em</xsl:attribute>
     </xsl:attribute-set>
-    
+
     <!--
     Brought space-after back to zero for lists and blockquotes.
     This *could* pose a problem if the list is followed by a node
@@ -369,7 +375,7 @@
     Also see the various listitem/step overrides further below
     (paulvink)
   -->
-    
+
     <xsl:attribute-set name="blockquote.properties">
         <xsl:attribute name="space-after.minimum">0em</xsl:attribute>
         <xsl:attribute name="space-after.optimum">0em</xsl:attribute>
@@ -378,8 +384,8 @@
     <!-- Overriding the above leaves only start-indent and end-indent
        from the default set. However, these are currently overridden
        in the blockquote template itself... -->
-    
-    
+
+
     <!-- override of list.block.spacing in param.xsl: -->
     <xsl:attribute-set name="list.block.spacing">
         <xsl:attribute name="space-before.optimum">1em</xsl:attribute>
@@ -389,34 +395,38 @@
         <xsl:attribute name="space-after.minimum">0em</xsl:attribute>
         <xsl:attribute name="space-after.maximum">0.2em</xsl:attribute>
     </xsl:attribute-set>
-    
-    
+
+
     <!-- Admonitions' titles in normal font size: -->
-    
+
     <xsl:attribute-set name="admonition.title.properties">
         <xsl:attribute name="font-size">
             <xsl:value-of select="$body.font.master"/>
             <xsl:text>pt</xsl:text>
         </xsl:attribute>
     </xsl:attribute-set>
-    
+
     <!-- Admonitions' text in small font: -->
-    
+
     <xsl:attribute-set name="admonition.properties">
         <xsl:attribute name="font-size">
-            <xsl:value-of select="0.9*$body.font.master"/>
+            <xsl:value-of select="0.9 * $body.font.master"/>
             <xsl:text>pt</xsl:text>
         </xsl:attribute>
     </xsl:attribute-set>
-    
+
     <xsl:attribute-set name="xref.properties">
-        <xsl:attribute name="color"><xsl:value-of select="$link.color"/></xsl:attribute>
+        <xsl:attribute name="color">
+            <xsl:value-of select="$link.color"/>
+        </xsl:attribute>
     </xsl:attribute-set>
-    
+
     <xsl:attribute-set name="index.page.number.properties">
-        <xsl:attribute name="color"><xsl:value-of select="$link.color"/></xsl:attribute>
+        <xsl:attribute name="color">
+            <xsl:value-of select="$link.color"/>
+        </xsl:attribute>
         <!--    <xsl:attribute name="font-style">italic</xsl:attribute> -->
     </xsl:attribute-set>
-    
-    
+
+
 </xsl:stylesheet>

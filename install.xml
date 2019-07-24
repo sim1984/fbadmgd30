@@ -88,7 +88,7 @@
                 </figure>
             </para>
 
-            <simplesect>
+            <simplesect xml:id="install-windows-exe-servermode">
                 <title>Выбор архитектуры сервера</title>
 
                 <para>Далее будет предложено выбрать архитектуру сервера и некоторые дополнительные
@@ -268,7 +268,374 @@ firebird -a
         </section>
         <section xml:id="install-windows-zip">
             <title>Установка из ZIP архива</title>
-            <para></para>
+
+            <para>Скачайте архив соответствующей разрядности и распакуйте его в директорию, в
+                которой будет размещён сервер Firebird.</para>
+
+            <section xml:id="install-windows-init-sysdba">
+                <title>Инициализация SYSDBA</title>
+
+                <para>Начиная с Firebird 3.0 пользователь SYSDBA не инициализирован по умолчанию
+                    (для плагина управления пользователями SRP), поэтому необходимо явно создать
+                    пользователя и указать ему пароль. Это можно сделать двумя способами: с
+                    использованием консольного инструмента для выполнения интерактивных запросов
+                        <application>isql.exe</application> и консольного инструмента для управления
+                    базой данных безопасности <application>gsec.exe</application>.</para>
+
+                <note>
+                    <para>В зависимости от размещения Firebird эти утилиты могут потребовать запуска
+                        с привилегиями администратора.</para>
+                </note>
+
+                <section xml:id="install-windows-isql">
+                    <title>Инициализация SYSDBA с помощью ISQL</title>
+
+                    <para>Запустите инструмент для выполнения интерактивных запросов
+                            <application>isql.exe</application>. Соединитесь с базой данных
+                        безопасности в режиме встроенного сервера, указав при этом пользователя
+                        SYSDBA без пароля.</para>
+                    <note>
+                        <para>Пользователя SYSDBA ещё не существует в базе данных безопасности, но в
+                            embedded режиме пользователь и его пароль не проверяется, и Firebird
+                            доверяет любому указанному имени пользователя.</para>
+                    </note>
+
+                    <para>Выполите SQL запрос для создания пользователя SYSDBA:
+                        <programlisting>
+CREATE USER SYSDBA PASSWORD '<replaceable>&lt;password&gt;</replaceable>';                 
+                </programlisting>
+                    </para>
+
+                    <para>Пользователь SYSDBA инициализирован, можно выходить из интерактивного
+                        режима.</para>
+
+                    <example>
+                        <title>Инициализация SYSDBA через isql</title>
+                        <para>
+                            <programlisting>
+<![CDATA[
+c:\Firebird\3.0>isql
+Use CONNECT or CREATE DATABASE to specify a database
+SQL> connect security.db user SYSDBA;
+Database: security.db, User: SYSDBA
+SQL> CREATE USER SYSDBA PASSWORD 'm8ku234pp';
+SQL> exit;
+
+c:\Firebird\3.0>
+]]>                            
+                        </programlisting>
+                        </para>
+                    </example>
+                </section>
+
+                <section xml:id="install-windows-gsec">
+                    <title>Инициализация SYSDBA с помощью GSEC</title>
+
+                    <para>Запустите <application>gsec.exe</application> указав пользователя SYSDBA и
+                        базу данных <filename>security.db</filename>.</para>
+
+                    <para>Выполите команду для добавления пользователя SYSDBA:
+                        <programlisting>
+add SYSDBA -pw <replaceable>&lt;password&gt;</replaceable>                 
+                </programlisting>
+                    </para>
+
+                    <example>
+                        <title>Инициализация SYSDBA через GSEC</title>
+                        <para>
+                            <programlisting>
+<![CDATA[
+c:\Firebird\3.0>gsec -user SYSDBA -database security.db
+*** gsec is deprecated, will be removed soon ***
+
+GSEC> add SYSDBA -pw m8ku234pp
+GSEC> quit
+
+c:\Firebird\3.0>
+]]>                            
+                        </programlisting>
+                        </para>
+                    </example>
+                    <note>
+                        <para>Инструмент <application>gsec.exe</application> является устаревшим,
+                            многие возможности доступные через SQL не доступны в нём.</para>
+                    </note>
+                </section>
+            </section>
+            <section xml:id="install-windows-config">
+                <title>Конфигурация</title>
+
+                <section xml:id="install-windows-config-mode">
+                    <title>Режим сервера</title>
+
+                    <para>По-умолчанию Firebird будет стартовать в режиме SuperServer. Если вы
+                        хотите чтобы сервер запускался в другой архитектуре, то необходимо изменить
+                        значение параметра <parameter>ServerMode</parameter> в
+                            <filename>firebird.conf</filename>. Разкомментируйте его (удалите
+                        решётку) и установите нужный режим: Super, SuperClassic или Classic.
+                        <programlisting>
+ServerMode = Classic                       
+                        </programlisting>
+                    </para>
+                    <para>Подробнее о режимах севера и параметре <parameter>ServerMode</parameter>
+                        читайте в <link xmlns:xlink="http://www.w3.org/1999/xlink"
+                            linkend="install-windows-exe-servermode">Выбор архитектуры
+                            сервера</link> и <link xmlns:xlink="http://www.w3.org/1999/xlink"
+                            linkend="config-param-ServerMode">ServerMode</link>.</para>
+                </section>
+                <section xml:id="install-windows-config-auth">
+                    <title>Авторизация с предыдущих версий клиента Firebird</title>
+
+                    <para>В Firebird 3.0 по умолчанию используется безопасная парольная
+                        аутентификация (SRP). Клиенты Firebird 2.5 и более ранние версии
+                        использовали традиционную аутентификацию (Legacy_Auth), которая отключена в
+                        Firebird 3.0 по-умолчанию, поскольку не является безопасной.</para>
+
+                    <para>Для поддержки традиционной аутентификации необходимо изменить следующие
+                        параметры <link xmlns:xlink="http://www.w3.org/1999/xlink"
+                            linkend="config-param-AuthServer">AuthServer</link>, <link
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            linkend="config-param-UserManager">UserManager</link> и <link
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            linkend="config-param-WireCrypt">WireCrypt</link>.</para>
+
+                    <example>
+                        <title>Включение авторизации с предыдущих версий клиента Firebird</title>
+
+                        <para>
+                            <programlisting>
+AuthServer = Srp256, Srp, Legacy_Auth
+UserManager = Srp, Legacy_UserManager
+WireCrypt = Enabled
+                            </programlisting>
+                        </para>
+                    </example>
+
+                    <note>
+                        <para>Если вам не нужна поддержка безопасной парольной аутентификации (SRP),
+                            удалите из <parameter>AuthServer</parameter> плагины Srp256 и Srp; из
+                                <parameter>AuthServer</parameter> — Legacy_UserManager, а
+                                <parameter>WireCrypt</parameter> можете изменить на Disabled.</para>
+                    </note>
+
+                    <para>После вышеперечисленных манипуляций у нас будет активно два менеджера
+                        пользователей, по умолчанию активный тот что первый в списке
+                        UserManager.</para>
+
+                    <important>
+                        <para>Одноименные пользователи в разных менеджерах пользователей — это
+                            разные пользователи.</para>
+                    </important>
+
+                    <para>Ранее мы уже создали SYSDBA в менеджере пользователей SRP. В
+                        Legacy_UserManager SYSDBA уже существует, причём со стандартным паролем
+                        masterkey, который необходимо изменить. Сделаем это c использованием
+                        инструмента isql. В операторе <code>ALTER USER</code> необходимо обязательно
+                        указать менеджер пользователей Legacy_UserManager. <programlisting>
+            <![CDATA[
+c:\Firebird\3.0>isql
+Use CONNECT or CREATE DATABASE to specify a database
+SQL> connect security.db user sysdba;
+Database: security.db, User: SYSDBA
+SQL> ALTER USER SYSDBA SET PASSWORD 'er34gfde' USING PLUGIN Legacy_UserManager;
+SQL> exit;
+
+c:\Firebird\3.0>
+            ]]>            
+                    </programlisting>
+                    </para>
+                </section>
+
+                <section xml:id="install-windows-config-with_other">
+                    <title>Одновременный запуск нескольких Firebird</title>
+
+                    <para>Для одновременного запуск нескольких Firebird, необходимо развести их по
+                        разным портам tcp (если конечно слушатель запущен в режиме прослушивания
+                        TCP/IP). Для этого необходимо изменить в <filename>firebird.conf</filename>
+                        параметр <parameter>RemoteServicePort</parameter>. Например, если у вас уже
+                        есть один сервер который слушает порт 3050, то необходимо установить любой
+                        другой свободный порт, например 3051. В этом случае в строке подключения
+                        необходимо будет указывать новый порт.
+                        <programlisting>
+RemoteServicePort = 3051                            
+                        </programlisting>
+                    </para>
+
+                    <para>Если необходимо обеспечить также одновременную работоспособность по
+                        локальному протоколу XNET и через именованные каналы WNET, то необходимо так
+                        же изменить параметры <parameter>IpcName</parameter> и
+                            <parameter>RemotePipeName</parameter>. Однако стоит учесть, что эти
+                        параметры придётся изменять и на стороне клиента через DPB.</para>
+
+                    <important>
+                        <para>Если вы хотите запускать несколько экземпляров Firebird, то не
+                            используйте утилиту <application>instreg.exe</application>, которая
+                            записывает путь к серверу в реестр Windows.</para>
+                    </important>
+                </section>
+            </section>
+            <section xml:id="install-windows-instreg">
+                <title>Запись в реестре</title>
+
+                <para>Утилита утилита <application>instreg.exe</application> позволяет прописывать в
+                    реестр Windows путь к корневому каталогу сервера. Для этого необходимо запустить
+                    команду
+                    <programlisting>
+instreg install -z             
+                </programlisting>
+                </para>
+
+                <para>Для удаления записи из реестра необходимо запустит следующую команду
+                    <programlisting>
+instreg remove -z                    
+                </programlisting>
+                </para>
+
+                <important>
+                    <para>Если вы хотите запускать несколько экземпляров Firebird, то не используйте
+                        утилиту <application>instreg.exe</application>.</para>
+                </important>
+
+                <note>
+                    <para>Переключатель -z не является обязательным, он позволяет вывести
+                        установленную или удаленную версию Firebird.</para>
+                </note>
+            </section>
+            <section xml:id="install-windows-instsvc">
+                <title>Установка и запуск Firebird как службы</title>
+
+                <para>Утилита <application>instsvc.exe</application> записывает, удаляет или меняет
+                    информацию о запуске сервера в базе сервисов операционной системы. Кроме того,
+                    она позволяет управлять запуском и остановкой сервиса. Если запустить её без
+                    параметров, то будет выведена справка по командам и параметрам. <programlisting>                   
+instsvc
+</programlisting>
+                    <screen>
+Usage:
+  instsvc i[nstall]
+                    [ -a[uto]* | -d[emand] ]
+                    [ -g[uardian] ]
+                    [ -l[ogin] username [password] ]
+                    [ -n[ame] instance ]
+                    [ -i[nteractive] ]
+
+          sta[rt]   [ -b[oostpriority] ]
+                    [ -n[ame] instance ]
+          sto[p]    [ -n[ame] instance ]
+          q[uery]
+          r[emove]  [ -n[ame] instance ]
+
+
+  '*' denotes the default values
+  '-z' can be used with any other option, prints version
+  'username' refers by default to a local account on this machine.
+  Use the format 'domain\username' or 'server\username' if appropriate.               
+                </screen>
+                </para>
+
+                <para>Для установки сервиса необходимо ввести команду
+                    <programlisting>
+instsvc install    
+</programlisting>
+                </para>
+                <para>В этом случае Firebird будет установлен в качестве службы с именем
+                        <quote>Firebird Server – DefaultInstance</quote>. Эта служба будет
+                    запускаться автоматически при старте ОС, под учётной записью LocalSystem,
+                    предназначенной для служб.</para>
+                <para>Если необходимо чтобы было установлено несколько экземпляров Firebird
+                    работающих как службы, то необходимо задать им разные имена с помощью
+                    переключателя <code>-n</code>
+                    <programlisting>
+instsvc install -n fb30    
+</programlisting>
+                </para>
+
+                <para>Для запуска службы воспользуйтесь командой
+                    <programlisting>
+instsvc start                    
+                </programlisting>
+                </para>
+                <para>Если службы была установлена с именем отличным от умолчательного, то
+                    необходимо воспользоваться переключателем <code>-n</code>
+                    <programlisting>
+instsvc start -n fb30                    
+                </programlisting>
+                </para>
+                <para>Для остановки службы воспользуйтесь командой
+                    <programlisting>
+instsvc stop                    
+                </programlisting>
+                </para>
+                <para>Если службы была установлена с именем отличным от умолчательного, то
+                    необходимо воспользоваться переключателем <code>-n</code>
+                    <programlisting>
+instsvc stop -n fb30                    
+                </programlisting>
+                </para>
+                <para>Для удаления сервиса необходимо ввести команду
+                    <programlisting>
+instsvc remove    
+</programlisting>
+                </para>
+                <para>Если службы была установлена с именем отличным от умолчательного, то
+                    необходимо воспользоваться переключателем <code>-n</code>
+                    <programlisting>
+instsvc remove -n fb30                    
+                </programlisting>
+                </para>
+                <para>Для просмотра всех служб Firebird установленных в системе воспользуйтесь
+                    командой <programlisting>
+instsvc query
+</programlisting>
+                    <screen>
+Firebird Server - fb30 IS installed.
+  Status  : running
+  Path    : C:\Firebird\3.0\firebird.exe -s fb30
+  Startup : automatic
+  Run as  : LocalSystem
+
+Firebird Server - fb40 IS installed.
+  Status  : running
+  Path    : C:\Firebird\4.0\firebird.exe -s fb40
+  Startup : automatic
+  Run as  : LocalSystem                    
+                </screen>
+                </para>
+            </section>
+            <section xml:id="install-windows-bat">
+                <title>Использование install_service.bat и uninstall_service.bat</title>
+
+                <para>Для упрощения процедуру установки и удаления служб в ZIP архиве в комплекте с
+                    Firebird поставляются два BAT файла: <filename>install_service.bat</filename> и
+                        <filename>uninstall_service.bat</filename>.</para>
+
+                <para>В этом случае процедура установки Firebird в качестве сервиса выглядит
+                    следующим образом
+                    <programlisting>
+install_service.bat                        
+                    </programlisting>
+                </para>
+                <para>Если необходимо задать службе имя отличное от умолчательного, то указываем это
+                    имя в качестве аргумента 
+                    <programlisting>
+install_service.bat fb30                       
+                    </programlisting>                    
+                </para>
+                
+                
+                <para>В этом случае процедура удаления службы Firebird выглядит
+                    следующим образом
+                    <programlisting>
+uninstall_service.bat                        
+                    </programlisting>
+                </para>
+                <para>Если службы была установлена с именем отличным от умолчательного, то указываем это
+                    имя в качестве аргумента 
+                    <programlisting>
+uninstall_service.bat fb30                       
+                    </programlisting>                    
+                </para>
+            </section>
         </section>
     </section>
 </chapter>

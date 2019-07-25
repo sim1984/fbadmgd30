@@ -616,25 +616,243 @@ install_service.bat
                     </programlisting>
                 </para>
                 <para>Если необходимо задать службе имя отличное от умолчательного, то указываем это
-                    имя в качестве аргумента 
+                    имя в качестве аргумента
                     <programlisting>
 install_service.bat fb30                       
-                    </programlisting>                    
+                    </programlisting>
                 </para>
-                
-                
-                <para>В этом случае процедура удаления службы Firebird выглядит
-                    следующим образом
+
+
+                <para>В этом случае процедура удаления службы Firebird выглядит следующим образом
                     <programlisting>
 uninstall_service.bat                        
                     </programlisting>
                 </para>
-                <para>Если службы была установлена с именем отличным от умолчательного, то указываем это
-                    имя в качестве аргумента 
+                <para>Если службы была установлена с именем отличным от умолчательного, то указываем
+                    это имя в качестве аргумента
                     <programlisting>
 uninstall_service.bat fb30                       
-                    </programlisting>                    
+                    </programlisting>
                 </para>
+            </section>
+            <section xml:id="install-windows-app">
+                <title>Запуск Firebird как приложения</title>
+
+                <para>Для запуска Firebird в качестве приложения достаточно выполнить команду
+                    <programlisting>
+firebird -a                       
+                    </programlisting>
+                </para>
+
+                <tip>
+                    <para>Запуск Firebird как приложения удобен на компьютере разработчика. Это
+                        особенно полезно во время отладки UDF, UDR и различных плагинов
+                        Firebird.</para>
+                </tip>
+            </section>
+            <section xml:id="install-windows-client">
+                <title>Установка клиента</title>
+
+                <para>Если речь идёт об установке только о клиентской части, то обязательно
+                    требуется файл <filename>fbclient.dll</filename>. Клиент Firebird 3.0
+                    обязательно требует наличие установленного Microsoft Runtime C++ 2010
+                    соответствующей разрядности. Если данная библиотека не установлено, то можно
+                    скопировать дополнительные библиотеки, которые поставляются в ZIP архиве под
+                    Windows <filename>msvcp100.dll</filename> и
+                    <filename>msvcr100.dll</filename>.</para>
+
+                <para>Желательно, чтобы рядом с <filename>fbclient.dll</filename> был расположен
+                    файл сообщений <filename>firebird.msg</filename>. Большинство сообщений об
+                    ошибках уже содержатся в <filename>fbclient.dll</filename>, однако если вы
+                    собираетесь пользоваться консольными утилитами файл
+                        <filename>firebird.msg</filename> обязательно должен присутствовать.</para>
+
+                <para>Если требуется сжатие трафика при работе по TCP/IP, то потребуется так же
+                    библиотека <filename>zlib1.dll</filename>.</para>
+
+                <para>Для того чтобы клиентское приложение могло загрузить библиотеку
+                        <filename>fbclient.dll</filename> она должна располагаться либо рядом с
+                    приложением, либо в одной из директорий в которой производится поиск, например
+                    добавленной в <filename>PATH</filename> или системной директории для размещения
+                    общедоступных библиотек (<filename>system32</filename> или
+                        <filename>SysWOW64</filename>).</para>
+
+                <important>
+                    <para>Размещение клиентской библиотеки в <filename>PATH</filename> может
+                        помешать другим приложениям, которым требуется клиентская библиотека другой
+                        версии или другого сервера. Поэтому, если предполагается, что приложение
+                        должно работать независимо от других приложений с конкретной версией
+                        клиента, то файлы клиента требуется разместить в папке приложения, и не
+                        прописывать этот путь в <filename>PATH</filename>.</para>
+                </important>
+
+                <para>Если у вас ещё нет (и не планируется) установок сервера Firebird или его
+                    клиента, то вы можете зарегистрировать путь к корню Firebird в реестре.
+                    <programlisting>
+instreg install                       
+                    </programlisting>
+                </para>
+
+                <section xml:id="install-windows-client-instclient">
+                    <title>Утилита instclient</title>
+
+                    <para>Утилита <application>instclient.exe</application> позволяет:<itemizedlist>
+                            <listitem>
+                                <para>установить клиентскую часть одной командой;</para>
+                            </listitem>
+                            <listitem>
+                                <para>установить клиентскую часть как
+                                        <filename>fbclient.dll</filename> и/или
+                                        <filename>gds32.dll</filename>;</para>
+                            </listitem>
+                            <listitem>
+                                <para>проверить наличие установленной библиотеки
+                                        <filename>fbclient.dll</filename> и/или
+                                        <filename>gds32.dll</filename>;</para>
+                            </listitem>
+                            <listitem>
+                                <para>удалить ранее установленные <filename>fbclient.dll</filename>
+                                    и/или <filename>gds32.dll</filename>.</para>
+                            </listitem>
+                        </itemizedlist></para>
+
+                    <note>
+                        <para>Утилита <application>instclient.exe</application> должна быть запущена
+                            с правами администратора.</para>
+                    </note>
+
+                    <para>Если запустить <application>instclient.exe</application> без параметров,
+                        то будет выведена краткая справка: <programlisting>
+instclient                        
+                    </programlisting>
+                        <screen>
+Usage:
+  instclient i[nstall] [ -f[orce] ] library
+             q[uery] library
+             r[emove] library
+
+  where library is:  f[bclient] | g[ds32]                          
+                        </screen>
+                    </para>
+
+                    <para>Для развёртывания клиентской библиотеки Firebird в системном каталоге
+                        Windows воспользуйтесь командой <programlisting>
+instclient install fbclient    
+</programlisting>
+                        <screen>
+FBCLIENT.DLL has been installed to the System directory.                            
+                        </screen>
+                    </para>
+                    <para>При развёртывании библиотеки проверяется версия и инкрементируется счётчик
+                        общих библиотек. Для отмены проверки версии вы можете воспользоваться
+                        переключателем <code>-force</code>.</para>
+
+                    <para>Некоторые старые приложения требуют для работы клиентскую библиотеку
+                            <filename>gds32.dll</filename> (наследие Interbase). Кроме того, многие
+                        приложения требуют для работы не просто <filename>gds32.dll</filename>, но и
+                        проверяют версию этой библиотеки. Именно поэтому простое переименовывание
+                            <filename>fbclient.dll</filename> в <filename>gds32.dll</filename> для
+                        таких программ работать не будет — версия библиотеки окажется ниже 6.0 (т.к.
+                        соответствует версии Firebird, у которого нумерация версий идет с 1.0).
+                        Утилита <application>instclient.exe</application> позволяет не просто
+                        установить <filename>gds32.dll</filename>, но и изменить её версию на
+                        корректную. <programlisting>
+instclient install gds32  
+</programlisting>
+                        <screen>
+GDS32.DLL has been installed to the System directory.                           
+                        </screen>
+                    </para>
+
+                    <para>Утилита <application>instclient.exe</application> позволяет также
+                        проверить наличие установленной клиентской библиотеки с помощью команды <programlisting>
+instclient q fbclient 
+</programlisting>
+                        <screen>
+Installed FBCLIENT.DLL version : 3.0.4.33054 (shared DLL count 1)                          
+                        </screen>
+                        <programlisting>
+instclient q gds32
+</programlisting>
+                        <screen>
+Installed GDS32.DLL version : 6.3.4.33054 (shared DLL count 2)                        
+                        </screen>
+                    </para>
+
+                    <para>Для удаления воспользуйтесь командой <programlisting>
+instclient remove fbclient 
+</programlisting>
+                        <screen>
+The FBCLIENT.DLL has been removed from the System directory.                          
+                        </screen>
+                        <programlisting>
+instclient remove gds32
+</programlisting>
+                        <screen>
+The GDS32.DLL has been removed from the System directory.                     
+                        </screen>
+                    </para>
+                </section>
+            </section>
+            <section xml:id="install-windows-update">
+                <title>Обновление</title>
+
+                <para>В данном случае речь об обновлении в рамках пойнт-релизов (третья цифра в
+                    версии сервера) или так называемых сервис-паков. Обновление мажорной или
+                    минорной версии обычно требует гораздо больше действий, описанных в Release
+                    Note, и называется <quote>Миграцией</quote>. </para>
+                <note>
+                    <para>Обычно обновление в рамках пойнт-релизов не требует процедуры резервного
+                        копирования и восстановления базы данных средством
+                            <application>gbak</application>, но бывают исключения. Такие исключения
+                        обязательно описаны в Release Note, поэтому обязательно ознакомьтесь с ним
+                        перед обновлением.</para>
+                </note>
+                <para>Примерно те же действия требуются при обновлении на текущий снапшот. Снапшоты
+                    — это ежедневные сборки сервера Firebird, которые включают самые последние
+                    изменения текущей версии сервера. Это позволяет иметь самую свежую версию
+                    сервера с исправленными ошибками и улучшениями. Однако учтите, что снапшоты не
+                    проходят полный цикл тестирования и могут содержать новые ошибки или регрессии.
+                    Поэтому не обновляйтесь до снапшота без явной необходимости (исправленные в нём
+                    ошибки касаются вас непосредственно).</para>
+                <para>Алгоритм обновления поверх существующего сервера Firebird следующий:<orderedlist>
+                        <listitem>
+                            <para>Убедится что все пользователи отключены от всех баз данных
+                                обслуживаемых обновляемым сервером Firebird. С помощью команды <programlisting>
+<![CDATA[
+gfix -shut -force <n>
+]]>                                
+                            </programlisting> можно закрыть все
+                                подключения и запретить последующие. </para>
+                        </listitem>
+                        <listitem>
+                            <para>Остановить сервер</para>
+                        </listitem>
+                        <listitem>
+                            <para>Сделать резервную копию корневого каталога сервера</para>
+                        </listitem>
+                        <listitem>
+                            <para>Распаковать из ZIP архива с пойнт-релизом или снапшотом файлы в
+                                корневую директорию сервера</para>
+                        </listitem>
+                        <listitem>
+                            <para>Заменить новые файлы конфигурации
+                                    (<filename>firebird.conf</filename>,
+                                    <filename>databases.conf</filename> и другие), а также файл
+                                    <filename>security3.fdb</filename> на прежние</para>
+                        </listitem>
+                        <listitem>
+                            <para>Запустить обновленный сервер</para>
+                        </listitem>
+                        <listitem>
+                            <para>Перевести базы данных в онлайн режим <programlisting>
+                            <![CDATA[
+gfix -online
+]]>                         
+</programlisting>
+                            </para>
+                        </listitem>
+                    </orderedlist></para>
             </section>
         </section>
     </section>

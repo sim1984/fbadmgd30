@@ -37,6 +37,19 @@
                 конфигурация для плагина, то для него будут действовать настройки по
                 умолчанию.</para>
         </simplesect>
+
+        <simplesect>
+            <title>udr_engine.conf</title>
+            <para>Файл используется для настройки плагина UDR Engine — движок для подключения
+                внешних процедур, функций и триггеров. Файл располагается в директории
+                    <filename>plugins</filename>.</para>
+        </simplesect>
+
+        <simplesect>
+            <title>fbintl.conf</title>
+            <para>Файл конфигурации для библиотеки интернационализации. Файл располагается в
+                директории <filename>intl</filename>.</para>
+        </simplesect>
     </section>
 
     <section>
@@ -157,7 +170,7 @@
         <simplesect>
             <title>instreg</title>
             <para>Эта утилита прописывает необходимую информацию в реестр Windows, указывая
-                умолчательное расположение остальных файлов сервера.</para>
+                умолчательное расположение файлов сервера.</para>
         </simplesect>
 
         <simplesect>
@@ -190,12 +203,164 @@
                 симулировать обращение к нескольким базам данных в одном запросе.</para>
         </simplesect>
     </section>
-    
+
     <section>
         <title>Динамические библиотеки</title>
-        
-        <para>В Windows динамические библиотеки имеют расширение <filename>.dll</filename>,
-            в Linux — <filename>.so</filename>, в Mac OS — <filename>.dylib</filename>.</para>
+
+        <para>В Windows динамические библиотеки имеют расширение <filename>.dll</filename>, в Linux
+            — <filename>.so</filename>, в Mac OS — <filename>.dylib</filename>.</para>
+
+        <simplesect>
+            <title>fbclient</title>
+
+            <para>Клиентская библиотека. Предоставляет интерфейс прикладного программирования (API)
+                с функциями для подключения к сервисам, работы с базами данных и их созданию.
+                Библиотека также выполняет роль y-valve для подключения и сопряжения различных
+                плагинов.</para>
+            <para>В Windows имеет имя <filename>fbclient.dll</filename>, в Unix —
+                    <filename>libfbclient.so</filename>.</para>
+        </simplesect>
+
+        <simplesect>
+            <title>ib_util</title>
+
+            <para>Библиотека утилиты памяти.</para>
+
+            <para>В Windows имеет имя <filename>ib_util.dll</filename>, в Unix —
+                    <filename>libib_util.so</filename>.</para>
+        </simplesect>
+
+        <simplesect>
+            <title>ICU</title>
+
+            <para>ICU — International Components for Unicode — библиотеки поддержки юникода.</para>
+
+            <para>В Windows используется библиотека поставляемая в комплекте Firebird, в Unix —
+                используется системная библиотека. В Windows в комплекте с Firebird поставляются
+                следующие файлы: <filename>icudt52l.dat</filename>,
+                <filename>icudt52.dll</filename>, <filename>icuin52.dll</filename>,
+                    <filename>icuuc52.dll</filename>.</para>
+        </simplesect>
+
+        <simplesect>
+            <title>Microsoft VC++ Runtime</title>
+
+            <para>Microsoft VC++ Runtime 2010 требуется только в Windows. Поставляется в комплекте с
+                Firebird на случай, если библиотека соответствующей версии не установлена в системе.
+                В комплекте Firebird под Windows входят файлы: <filename>msvcp100.dll</filename>,
+                    <filename>msvcr100.dll</filename>.</para>
+
+        </simplesect>
+
+        <simplesect>
+            <title>zlib1.dll</title>
+
+            <para>Библиотека <filename>zlib1.dll</filename> используется для сжатия сетевого трафика
+                в Windows, в UNIX используется системная библиотека.</para>
+
+        </simplesect>
+
+        <simplesect>
+            <title>fbintl</title>
+
+            <para>Библиотека для поддержки интернационализации, кодировок и порядка сортировок.
+                Располагается в директории <filename>intl</filename> относительно корневой
+                директории сервера.</para>
+
+            <para>В Windows имеет имя <filename>fbintl.dll</filename>, в Unix —
+                    <filename>fbintl</filename>.</para>
+
+        </simplesect>
+    </section>
+
+    <section>
+        <title>Плагины</title>
+
+        <para>Модули плагинов размещаются в динамических библиотеках. В Firebird для модулей
+            плагинов выделена папка <filename>plugins</filename>, которая находится в корневой
+            директории сервера.</para>
+
+        <simplesect>
+            <title>Engine12</title>
+
+            <para>Поставщик (ядро) для работы с ODS 12.</para>
+
+            <para>В Windows имеет имя <filename>engine12.dll</filename>, в Unix —
+                    <filename>libEngine12.so</filename>, в MacOS —
+                    <filename>libEngine12.dylib</filename>.</para>
+        </simplesect>
+
+        <simplesect>
+            <title>fbtrace</title>
+
+            <para>Плагин трассировки.</para>
+
+            <para>В Windows имеет имя <filename>fbtrace.dll</filename>, в Unix —
+                    <filename>libfbtrace.so</filename>, в MacOS —
+                    <filename>libfbtrace.dylib</filename>.</para>
+        </simplesect>
+
+        <simplesect>
+            <title>legacy_auth</title>
+
+            <para>Плагин для поддержки традиционной аутентификации (использовалась в Firebird 2.5 и
+                в более ранних версиях).</para>
+
+            <para>В Windows имеет имя <filename>legacy_auth.dll</filename>, в Unix —
+                    <filename>libLegacy_Auth.so</filename>, в MacOS —
+                    <filename>libLegacy_Auth.dylib</filename>.</para>
+        </simplesect>
+
+        <simplesect>
+            <title>legacy_usermanager</title>
+
+            <para>Менеджер пользователей, который используется в традиционной аутентификации.</para>
+
+            <para>В Windows имеет имя <filename>legacy_usermanager.dll</filename>, в Unix —
+                    <filename>libLegacy_UserManager.so</filename>, в MacOS —
+                    <filename>libLegacy_UserManager.dylib</filename>.</para>
+        </simplesect>
+
+        <simplesect>
+            <title>srp</title>
+
+            <para>Плагин аутентификации методом SRP — Secure remote Password.</para>
+
+            <para>В Windows имеет имя <filename>srp.dll</filename>, в Unix —
+                    <filename>libSrp.so</filename>, в MacOS —
+                <filename>libSrp.dylib</filename>.</para>
+        </simplesect>
+
+        <simplesect>
+            <title>udr_engine</title>
+
+            <para>Внешний движок для подключения UDR написанных на компилируемых языках C, C++,
+                Pascal.</para>
+
+            <para>В Windows имеет имя <filename>udr_engine.dll</filename>, в Unix —
+                    <filename>libudr_engine.so</filename>, в MacOS —
+                    <filename>libudr_engine.dylib</filename>.</para>
+        </simplesect>
+    </section>
+
+    <section>
+        <title>Включаемые файлы</title>
+
+        <para>В директории <filename>include</filename> расположены заголовочные C файлы с
+            функциями, константами, структурами и интерфейсами API Firebird.</para>
+    </section>
+
+    <section>
+        <title>Примеры</title>
+
+        <para>В директории <filename>examples</filename> расположены примеры работы с Firebird API,
+            написания плагинов, UDF и UDR.</para>
+    </section>
+
+    <section>
+        <title>Документации</title>
+
+        <para>В директории <filename>doc</filename> расположены файлы документации.</para>
     </section>
 
     <section>

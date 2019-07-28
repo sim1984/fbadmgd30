@@ -74,7 +74,7 @@
                 </figure>
             </para>
 
-            <para>В процессе инсталяции вам будет предложено выбрать папку для установки, а также
+            <para>В процессе инсталляции вам будет предложено выбрать папку для установки, а также
                 выбрать устанавливаемые компоненты. <figure>
                     <title>Выбор компонентов для установки</title>
                     <mediaobject>
@@ -112,7 +112,7 @@
                                     </listitem>
                                     <listitem>
                                         <para> поддержка мультипроцессорности: в многопроцессорных
-                                            системах ОС автоматическираспределяет процессы по
+                                            системах ОС автоматически распределяет процессы по
                                             процессорам/ядрам </para>
                                     </listitem>
                                 </itemizedlist></para>
@@ -853,6 +853,71 @@ gfix -online
                             </para>
                         </listitem>
                     </orderedlist></para>
+            </section>
+            <section xml:id="install-windows-embedded">
+                <title>Встроенный сервер</title>
+
+                <para>Начиная с Firebird 3.0 встроенная (embedded) версия не распространяется
+                    отдельно. Всё что необходимо для развертывания Firebird Embedded находится в том
+                    же самом ZIP архиве, что и обычная версия.</para>
+
+                <para>Для функционирования Firebird Embedded необходимы следующие файлы: <itemizedlist>
+                        <listitem>
+                            <para>клиентская библиотека (<filename>fbclient.dll</filename> или
+                                    <filename>libfbclient.so</filename>);</para>
+                        </listitem>
+                        <listitem>
+                            <para>движок для работы с ODS 12.0 (<filename>engine12.dll</filename>
+                                или <filename>libEngine12.so</filename>) из папки
+                                    <filename>plugins</filename>;</para>
+                        </listitem>
+                        <listitem>
+                            <para>библиотека интернационализации, которая находится в каталоге
+                                    <filename>intl</filename>; </para>
+                        </listitem>
+                        <listitem>
+                            <para>файл сообщений <filename>firebird.msg</filename>;</para>
+                        </listitem>
+                        <listitem>
+                            <para>для изменения некоторых параметров могут потребоваться
+                                    <filename>firebird.conf</filename> и/или
+                                    <filename>databases.conf</filename>;</para>
+                        </listitem>
+                        <listitem>
+                            <para>в Windows обязательно необходимы файлы ICU библиотеки;</para>
+                        </listitem>
+                        <listitem>
+                            <para>если в Windows не установлен MS VC++ Runtime 2010, то необходимы
+                                также файлы (<filename>msvcp100.dll</filename> и
+                                    <filename>msvcr100.dll</filename>);</para>
+                        </listitem>
+                        <listitem>
+                            <para>если вам необходимы консольные инструменты администрирования, то
+                                скопируйте также <filename>gbak</filename>,
+                                    <filename>gfix</filename>, <filename>gstat</filename>,
+                                    <filename>isql</filename>, <filename>nbackup</filename>.</para>
+                        </listitem>
+                    </itemizedlist></para>
+
+                <section xml:id="install-windows-embedded-config">
+                    <title>Конфигурация</title>
+
+                    <para>По умолчанию Firebird работает в режиме Super сервера в том числе и в
+                        embedded варианте. Это не очень удобно, поскольку Super открывает файл базы
+                        данных в монопольном режиме, что обозначает что только один процесс может
+                        работать с базой данных. Для изменения режима запуска необходимо
+                        отредактировать (возможно раскомментировать) значение параметра
+                            <parameter>ServerMode</parameter> на Classic или SuperClassic в файле
+                            <filename>firebird.conf</filename>.</para>
+
+                    <para>Поскольку в embedded варианте сетевой доступ не используется вы можете
+                        отредактировать также провайдеры <parameter>Providers</parameter>, удалив от
+                        туда лишние провайдеры Remote и Loopback.
+                        <programlisting>
+Providers = Engine12                        
+                    </programlisting>
+                    </para>
+                </section>
             </section>
         </section>
     </section>

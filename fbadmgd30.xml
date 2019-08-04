@@ -34,6 +34,7 @@
     <xi:include href="install.xml" xpointer="element(/1)"/>
     <xi:include href="server-files.xml" xpointer="element(/1)"/>
     <xi:include href="config.xml" xpointer="element(/1)"/>
+    <xi:include href="isql.xml" xpointer="element(/1)"/>
     <xi:include href="hardware.xml" xpointer="element(/1)"/>
 
     <index>

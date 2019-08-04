@@ -1,0 +1,257 @@
+<!DOCTYPE chapter>
+<chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="isql" xml:lang="ru">
+    <info>
+        <title>Интерактивные запросы</title>
+    </info>
+
+    <para>В этой главе содержится описание консольной утилиты Firebird Interactive SQL Utility
+            (<application>isql</application>) и инструкции по его использованию для выполнения задач
+        в базе данных.</para>
+
+    <para>Утилита ISQL расположена в корневом каталоге установки Firebird. Она предоставляет
+        интерфейс командной строки для интерактивного доступа к базе данных Firebird. ISQL принимает
+        операторы DSQL вместе с группой команд SET и SHOW для запросов и взаимодействия с базой
+        данных Firebird. Некоторые команды SET могут быть включены в сценарии DDL для выполнения
+        пакетных операций в isql. Она также обрабатывает команды DDL, DML и консоли.</para>
+
+    <para>Утилита isql может использоваться в трех режимах: в качестве интерактивного сеанса; прямо
+        из командной строки; и как неинтерактивный сеанс, используя сценарий оболочки или пакетный
+        файл. В каждом из режимов могут выполняться разные задачи, как показано ниже: <itemizedlist>
+            <listitem>
+                <para>В интерактивном режиме пользователь последовательно вводит команды для работы
+                    с базами данных и тут же получает результат их выполнения. При этом одна команда
+                    может быть разбита на несколько строк. После завершения обработки каждой команды
+                    и вывода всех результатов её работы пользователь получает приглашение ввести
+                    следующую команду до тех пор, пока не будет введена команда выхода из
+                    интерактивного режима QUIT или EXIT. Isql можно использовать в интерактивном
+                    режиме для:<itemizedlist>
+                        <listitem>
+                            <para>Создания, редактирования, удаления или просмотра данных и
+                                метаданных;</para>
+                        </listitem>
+                        <listitem>
+                            <para>Ввода файла сценария содержащего пакет SQL запросов;</para>
+                        </listitem>
+                        <listitem>
+                            <para>Добавлять и модифицировать данные;</para>
+                        </listitem>
+                        <listitem>
+                            <para>Предоставлять разрешение пользователю и отбирать их;</para>
+                        </listitem>
+                        <listitem>
+                            <para>Управлять учётными записями;</para>
+                        </listitem>
+                        <listitem>
+                            <para>Выполнять административные функции базы данных.</para>
+                        </listitem>
+                    </itemizedlist></para>
+            </listitem>
+            <listitem>
+                <para>Непосредственно из командной строки, с отдельными параметрами и без запуска
+                    интерактивного сеанса. Команды выполняются и по завершении возвращают управление
+                    автоматически операционной системе.</para>
+            </listitem>
+            <listitem>
+                <para>В неинтерактивном сеансе пользователь использует сценарий оболочки или
+                    пакетный файл для выполнения функций базы данных.</para>
+            </listitem>
+        </itemizedlist></para>
+
+    <note>
+        <para>Поскольку другие приложения в среде Linux, например mySQL, также используют isql в
+            качестве имени утилиты, рекомендуется запускать утилиту Firebird из ее собственного
+            каталога или указывать абсолютный путь к файлу, если у вас есть другая реляционная база
+            данных, кроме Firebird, установленная на вашей машине.</para>
+    </note>
+
+    <note>
+        <para>Некоторые из затронутых дистрибутивов, такие как Mint Linux — на основе Ubuntu —
+            переименовали Firebird в isql в isql-fb. Аналогичные изменения могут быть и в других
+            дистрибутивах.</para>
+
+        <para>Кроме того, не все дистрибутивы устанавливают Firebird в одно и то же место. Например,
+            OpenSuse устанавливает практически все в <filename>/opt/firebird/3.0</filename>, но
+            Ubuntu и его производные устанавливают его в различные места, но утилиты находятся в
+                <filename>/usr/bin</filename>.</para>
+
+        <para>Далее предполагается что утилита называется isql.</para>
+    </note>
+
+    <section xml:id="isql-invoking">
+        <title>Запуск isql</title>
+
+        <para>Перейдите в корневой каталог установки сервера Firebird и введите в командной строке
+                <filename>isql</filename> (Windows) или <filename>./isql</filename> (Linux). Если
+            каталог с isql добавлен в PATH, то нет необходимости переходить в него. </para>
+        <para>Синтаксис запуска isql следующий:
+            <programlisting>
+isql [<replaceable>&lt;options&gt;</replaceable>] [<replaceable>&lt;database&gt;</replaceable>]                
+        </programlisting>
+        </para>
+        <para>Если параметры <replaceable>&lt;options&gt;</replaceable> не указаны, isql запускает
+            интерактивный сеанс. Если база данных не указана, необходимо подключиться к существующей
+            базе данных или создать новую. Если база данных была указана, isql запускает
+            интерактивный сеанс, подключаясь к указанной базе данных.</para>
+
+        <para>Если указаны параметры, isql запускается в интерактивном или неинтерактивном режиме, в
+            зависимости от параметров. Например, чтение входного файла и запись в выходной файл
+            являются неинтерактивными задачами, поэтому параметры -input или -output не запускают
+            интерактивный сеанс. Дополнительные неинтерактивные параметры включают -a, -database,
+            -extract и -x, которые используются при извлечении операторов DDL.</para>
+
+        <para>Когда вы запускаете интерактивный сеанс isql, появляется следующее приглашение:
+            <screen>
+SQL>            
+        </screen>
+        </para>
+
+        <para>Вы должны завершить каждую команду символом-терминатором. Терминатором по умолчанию
+            является точка с запятой (;). Вы можете изменить терминатор на любой символ или группу
+            символов с помощью команды SET TERMINATOR или с помощью параметра командной строки
+            -terminator. Если вы опустите терминатор, появится приглашение для продолжения ввода
+            (CON>).</para>
+
+        <para>Ниже приведен самый простой способ запуска isql. После перехода в интерактивный режим
+            вы должны начать с создания новой базы данных или подключения к ней. Сообщение, выданное
+            isql, является подсказкой относительно того, что вы должны делать дальше. <programlisting>
+<![CDATA[            
+c:\Firebird\3.0>isql
+
+Use CONNECT or CREATE DATABASE to specify a database
+SQL> CONNECT "inet://localhost:3053/employee"
+CON> user "SYSDBA" password 'masterkey';
+Database: "inet://localhost:3053/employee", User: SYSDBA
+SQL>    
+]]>
+        </programlisting>
+        </para>
+
+        <para>В следующем примере показано, как передать имя базы данных и учетные данные
+            пользователя в командной строке. <programlisting>
+<![CDATA[            
+c:\Firebird\3.0>isql -user sysdba -password masterkey "inet://localhost:3053/employee"
+
+Database: inet://localhost:3053/employee, User: SYSDBA
+SQL>
+]]>
+        </programlisting>
+        </para>
+
+        <para>В этом примере мы использовали псевдоним для базы данных employee. Этот пример
+            предопределен в файле <filename>databases.conf</filename>, который обычно находится в
+            каталоге, в котором установлен Firebird, но некоторые дистрибутивы Linux помещают его в
+                <filename>/etc/firebird/n.n</filename>, где n.n - версия сервера базы данных
+            Firebird. Ниже приведена дополнительная информация о подключении к базам данных с
+            использованием полных путей или псевдонимов.</para>
+    </section>
+
+    <section xml:id="isql-switches">
+        <title>Переключатели командной строки</title>
+
+        <para>Переключатели командной строки — это аргументы, которые начинаются с символа
+            минус/дефис (-). Ниже приведен пример того, что происходит, когда вы пытаетесь запустить
+            isql с недопустимым переключателем — он отображает список допустимых ключей с кратким
+            описанием каждого из них. <programlisting>
+<![CDATA[
+c:\Firebird\3.0>isql -help
+Unknown switch: -help
+usage:    isql [options] [<database>]
+        -a(ll)                  extract metadata incl. legacy non-SQL tables
+        -b(ail)                 bail on errors (set bail on)
+        -c(ache) <num>          number of cache buffers
+        -ch(arset) <charset>    connection charset (set names)
+        -d(atabase) <database>  database name to put in script creation
+        -e(cho)                 echo commands (set echo on)
+        -ex(tract)              extract metadata
+        -f(etch_password)       fetch password from file
+        -i(nput) <file>         input file (set input)
+        -m(erge)                merge standard error
+        -m2                     merge diagnostic
+        -n(oautocommit)         no autocommit DDL (set autoddl off)
+        -nod(btriggers)         do not run database triggers
+        -now(arnings)           do not show warnings
+        -o(utput) <file>        output file (set output)
+        -pag(elength) <size>    page length
+        -p(assword) <password>  connection password
+        -q(uiet)                do not show the message "Use CONNECT..."
+        -r(ole) <role>          role name
+        -r2 <role>              role (uses quoted identifier)
+        -s(qldialect) <dialect> SQL dialect (set sql dialect)
+        -t(erminator) <term>    command terminator (set term)
+        -tr(usted)              use trusted authentication
+        -u(ser) <user>          user name
+        -x                      extract metadata
+        -z                      show program and server version
+]]>                        
+        </programlisting>
+        </para>
+
+        <note>
+            <para>Требуются только начальные символы в опции. Вы можете ввести любую часть текста,
+                заключенную в скобки, включая полное имя опции. Например, указание -n, -no или
+                -noauto имеет тот же эффект.</para>
+        </note>
+
+        <para>
+            <table frame="topbot">
+                <title>Переключатели командной строки</title>
+                <tgroup cols="2">
+                    <colspec colname="c1" colnum="1" colwidth="0.5*"/>
+                    <colspec colname="c2" colnum="2" colwidth="1.4*"/>
+                    <thead>
+                        <row>
+                            <entry>Опции</entry>
+                            <entry>Описание</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>-a(ll)</entry>
+                            <entry><para>Извлечение всех метаданных, включая не-SQL объекты.
+                                    Используется совместно с командой extract</para></entry>
+                        </row>
+                        <row>
+                            <entry>-b(ail)</entry>
+                            <entry><para>Этот переключатель указывает утилите передать ошибку в ОС,
+                                    но только в пакетном режиме (SET BAIL ON). Он был добавлен,
+                                    чтобы предотвратить выполнение сценариев isql после обнаружения
+                                    ошибки. Дальнейшие операторы не будут выполняться, и isql вернет
+                                    код ошибки в ОС.</para>
+                                <para>Пользователям по-прежнему необходимо использовать
+                                    переключатель — e(cho) для вывода команд в выходной файл, чтобы
+                                    выделить точный оператор, вызвавший ошибку.</para>
+                                <para>Когда сервер предоставляет информацию о строках и столбцах,
+                                    пользователи могут найти точную строку в DML скрипте, вызвавшую
+                                    проблему. Когда сервер указывает только ошибку, то пользователи
+                                    могут увидеть только первую строку оператора, вызвавшего сбой по
+                                    отношению ко сему сценарию.</para>
+                                <para>Эта функция также поддерживается во вложенных скриптах.
+                                    Например, сценарий A включает в себя сценарий B, а сценарий B
+                                    вызывает ошибку, номер строки связан со сценарием B. Когда
+                                    сценарий B полностью прочитан, isql продолжает считать строки,
+                                    относящиеся к сценарию A, поскольку каждый файл получает
+                                    отдельный счетчик строк. Сценарий A включает сценарий B, когда
+                                    сценарий A использует команду INPUT для загрузки сценария
+                                    B.</para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>-c(ache) <replaceable>&lt;num&gt;</replaceable></entry>
+                            <entry>Задаёт количество страниц, которые будут кэшированы при
+                                соединении с БД.</entry>
+                        </row>
+                        <row>
+                            <entry>-ch(arset) <replaceable>&lt;charset&gt;</replaceable></entry>
+                            <entry>Задаёт кодировку для текущего соединения (SET NAMES).</entry>
+                        </row>
+                        <row>
+                            <entry>-d(atabase) <replaceable>&lt;database&gt;</replaceable></entry>
+                            <entry/>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+        </para>
+
+    </section>
+</chapter>

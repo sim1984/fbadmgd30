@@ -160,6 +160,7 @@
         <file name="hardware.xml"/>
         <file name="install.xml"/>
         <file name="intro.xml"/>
+        <file name="isql.xml"/>
         <file name="server-files.xml"/>
     </projectTree>
 </project>

@@ -88,16 +88,18 @@
 isql [<replaceable>&lt;options&gt;</replaceable>] [<replaceable>&lt;database&gt;</replaceable>]                
         </programlisting>
         </para>
-        <para>Если параметры <replaceable>&lt;options&gt;</replaceable> не указаны, isql запускает
-            интерактивный сеанс. Если база данных не указана, необходимо подключиться к существующей
-            базе данных или создать новую. Если база данных была указана, isql запускает
-            интерактивный сеанс, подключаясь к указанной базе данных.</para>
+        <para>Если параметры <replaceable>&lt;options&gt;</replaceable> не указаны,
+                <application>isql</application> запускает интерактивный сеанс. Если база данных не
+            указана, то необходимо подключиться к существующей базе данных или создать новую. Если
+            база данных была указана, <application>isql</application> запускает интерактивный сеанс,
+            подключаясь к указанной базе данных.</para>
 
-        <para>Если указаны параметры, isql запускается в интерактивном или неинтерактивном режиме, в
-            зависимости от параметров. Например, чтение входного файла и запись в выходной файл
-            являются неинтерактивными задачами, поэтому параметры -input или -output не запускают
-            интерактивный сеанс. Дополнительные неинтерактивные параметры включают -a, -database,
-            -extract и -x, которые используются при извлечении операторов DDL.</para>
+        <para>Если указаны параметры, <application>isql</application> запускается в интерактивном
+            или не интерактивном режиме, в зависимости от параметров. Например, чтение входного
+            файла и запись в выходной файл являются не интерактивными задачами, поэтому параметры
+            -input или -output не запускают интерактивный сеанс. Дополнительные не интерактивные
+            параметры включают -a, -database, -extract и -x, которые используются при извлечении
+            операторов DDL.</para>
 
         <para>Когда вы запускаете интерактивный сеанс isql, появляется следующее приглашение:
             <screen>
@@ -213,10 +215,10 @@ usage:    isql [options] [<database>]
                         <row>
                             <entry>-b(ail)</entry>
                             <entry><para>Этот переключатель указывает утилите передать ошибку в ОС,
-                                    но только в пакетном режиме (SET BAIL ON). Он был добавлен,
-                                    чтобы предотвратить выполнение сценариев isql после обнаружения
-                                    ошибки. Дальнейшие операторы не будут выполняться, и isql вернет
-                                    код ошибки в ОС.</para>
+                                    но только в пакетном режиме (<code>SET BAIL ON</code>). Он был
+                                    добавлен, чтобы предотвратить выполнение сценариев isql после
+                                    обнаружения ошибки. Дальнейшие операторы не будут выполняться, и
+                                    isql вернет код ошибки в ОС.</para>
                                 <para>Пользователям по-прежнему необходимо использовать
                                     переключатель — e(cho) для вывода команд в выходной файл, чтобы
                                     выделить точный оператор, вызвавший ошибку.</para>
@@ -228,11 +230,11 @@ usage:    isql [options] [<database>]
                                 <para>Эта функция также поддерживается во вложенных скриптах.
                                     Например, сценарий A включает в себя сценарий B, а сценарий B
                                     вызывает ошибку, номер строки связан со сценарием B. Когда
-                                    сценарий B полностью прочитан, isql продолжает считать строки,
-                                    относящиеся к сценарию A, поскольку каждый файл получает
-                                    отдельный счетчик строк. Сценарий A включает сценарий B, когда
-                                    сценарий A использует команду INPUT для загрузки сценария
-                                    B.</para>
+                                    сценарий B полностью прочитан, <application>isql</application>
+                                    продолжает считать строки, относящиеся к сценарию A, поскольку
+                                    каждый файл получает отдельный счетчик строк. Сценарий A
+                                    включает сценарий B, когда сценарий A использует команду
+                                        <code>INPUT</code> для загрузки сценария B.</para>
                             </entry>
                         </row>
                         <row>
@@ -242,16 +244,336 @@ usage:    isql [options] [<database>]
                         </row>
                         <row>
                             <entry>-ch(arset) <replaceable>&lt;charset&gt;</replaceable></entry>
-                            <entry>Задаёт кодировку для текущего соединения (SET NAMES).</entry>
+                            <entry>Задаёт кодировку для текущего соединения. Это же можно сделать с
+                                использовании команды <code>SET NAMES</code></entry>
                         </row>
                         <row>
                             <entry>-d(atabase) <replaceable>&lt;database&gt;</replaceable></entry>
-                            <entry/>
+                            <entry><para>Используется совместно с переключателем -x или -ex.
+                                    Изменяет оператор CREATE DATABASE, который извлекается в файл:<itemizedlist>
+                                        <listitem>
+                                            <para>Без переключателя -d оператор CREATE DATABASE
+                                                извлекается в скрипт как комментарий в стиле C, и
+                                                использует имя базы данных указанное в командной
+                                                строке isql</para>
+                                        </listitem>
+                                        <listitem>
+                                            <para>С переключателем -d оператор CREATE DATABASE
+                                                извлекается не закомментированным, и подставляет имя
+                                                базы данных указанное в переключателе</para>
+                                        </listitem>
+                                    </itemizedlist></para></entry>
+                        </row>
+                        <row>
+                            <entry>-e(cho) </entry>
+                            <entry>Включает дублирование команд на указанное устройство вывода
+                                (монитор, в файл, и т. д.) Это можно сделать и с использованием
+                                команды <code>SET ECHO ON</code></entry>
+                        </row>
+                        <row>
+                            <entry>-ex(tract)</entry>
+                            <entry>Извлечение метаданных из базы данных. Его можно использовать
+                                вместе с ключом -o(utput) для извлечения информации в указанный
+                                выходной файл.</entry>
+                        </row>
+                        <row>
+                            <entry>-f(etch_password) </entry>
+                            <entry>Извлечение пароля из файла</entry>
+                        </row>
+                        <row>
+                            <entry>-i(nput) <replaceable>&lt;file&gt;</replaceable>
+                            </entry>
+                            <entry>Задаёт файл с SQL-скриптом для выполнения. Файлы скриптов могут
+                                содержать команду <code>SET INPUT</code> для включения других
+                                файлов.</entry>
+                        </row>
+                        <row>
+                            <entry>-m(erge_stderr) </entry>
+                            <entry>Перенаправление ошибок (stderr) на поток стандартного вывода.
+                                Ключ командной строки -m(erge) может использоваться для включения
+                                сообщений об ошибках в выходные файлы.</entry>
+                        </row>
+                        <row>
+                            <entry>-m2 </entry>
+                            <entry>Отправлять информацию о статистике и планах в выходной файл,
+                                который указан в переключателе -o(utput). Ключ командной строки -m2
+                                гарантирует, что статистика и информация о плане, полученные из
+                                команд <code>SET STATS</code>, <code>SET PLAN</code> и <code>SET
+                                    PLANONLY</code>, также отправляются в выходной файл, а не просто
+                                возвращаются в консоль.</entry>
+                        </row>
+                        <row>
+                            <entry>-n(oautocommit)</entry>
+                            <entry>Отключить автоматическое подтверждение DDL-операций. По умолчанию
+                                операторы DDL фиксируются автоматически в отдельной транзакции.
+                                Может быть изменено командой <code>SET AUTODDL OFF</code></entry>
+                        </row>
+                        <row>
+                            <entry>-nod(btriggers)</entry>
+                            <entry>Не запускать триггеры базы данных.</entry>
+                        </row>
+                        <row>
+                            <entry>-now(arnings)</entry>
+                            <entry>Не показывать предупреждения.</entry>
+                        </row>
+                        <row>
+                            <entry>-o(utput) <replaceable>&lt;file&gt;</replaceable></entry>
+                            <entry>Задаёт файл для вывода результата выполнения запросов. Без
+                                аргументов перенаправляет вывод на стандартное устройство вывода
+                                (монитор). Может быть изменён так же командой <code>SET
+                                    OUTPUT</code></entry>
+                        </row>
+                        <row>
+                            <entry>-pag(elength) <replaceable>&lt;size&gt;</replaceable></entry>
+                            <entry>Размер страницы. Печатает заголовки столбцов каждые
+                                    <replaceable>&lt;size&gt;</replaceable> строк вместо значений по
+                                умолчанию 20.</entry>
+                        </row>
+                        <row>
+                            <entry>-p(assword) <replaceable>&lt;password&gt;</replaceable></entry>
+                            <entry>Пароль пользователя при подключении к базе данных.</entry>
+                        </row>
+                        <row>
+                            <entry>-q(uiet)</entry>
+                            <entry>Не показывать сообщение "Use CONNECT...".</entry>
+                        </row>
+                        <row>
+                            <entry>-r(ole) <replaceable>&lt;role&gt;</replaceable></entry>
+                            <entry>Имя роли при подключении к базе данных.</entry>
+                        </row>
+                        <row>
+                            <entry>-r2 <replaceable>&lt;role&gt;</replaceable></entry>
+                            <entry><para>Имя роли (с использованием квотированных идентификаторов).
+                                    Этот переключатель можно использовать для указания имени роли с
+                                    учетом регистра. </para>
+                                <para>По умолчанию для передачи роли используется переключатель
+                                    -r(ole). В этом случае роль, представленная в командной строке,
+                                    пишется в верхнем регистре. Если используется переключатель -r2,
+                                    то роль передаются в движок в точности так, как это указано в
+                                    командной строке.</para></entry>
+                        </row>
+                        <row>
+                            <entry>-s(qldialect) <replaceable>&lt;dialect&gt;</replaceable></entry>
+                            <entry>Устанавливает SQL диалект к котором интерпретируются последующие
+                                команды до конца сеанса или до тех пор, пока диалект не будет
+                                изменён с помощью инструкции <code>SET SQL DIALECT</code>.</entry>
+                        </row>
+                        <row>
+                            <entry>-t(erminator) <replaceable>&lt;term&gt;</replaceable></entry>
+                            <entry>Изменяет символ конца оператора (терминатора) с точки с запятой
+                                    <quote>;</quote> по умолчанию на
+                                    <replaceable>&lt;term&gt;</replaceable>, где
+                                    <replaceable>&lt;term&gt;</replaceable> — любой символ или
+                                последовательность символов. Тоже самое можно сделать использую
+                                команду <code>SET TERM</code>.</entry>
+                        </row>
+                        <row>
+                            <entry>-tr(usted)</entry>
+                            <entry>Использовать доверительную аутентификацию.</entry>
+                        </row>
+                        <row>
+                            <entry>-u(ser) <replaceable>&lt;user&gt;</replaceable></entry>
+                            <entry>Имя пользователя для подключения к базе данных.</entry>
+                        </row>
+                        <row>
+                            <entry>-x</entry>
+                            <entry>Извлечение метаданных из базы данных. Его можно использовать
+                                вместе с ключом -o(utput) для извлечения информации в указанный
+                                выходной файл.</entry>
+                        </row>
+                        <row>
+                            <entry>-z</entry>
+                            <entry>Показать версии утилиты и сервера.</entry>
                         </row>
                     </tbody>
                 </tgroup>
             </table>
         </para>
 
+        <section xml:id="isql-switches-examples">
+            <title>Примеры</title>
+
+            <para>
+                <example>
+                    <title>Выполнение скрипта создания базы данных</title>
+
+                    <para>
+                        <programlisting>
+isql -input createdb.sql                            
+                        </programlisting>
+                    </para>
+                </example>
+                <example>
+                    <title>Запуск интерактивного сеанса с подключением к удалённой базе
+                        данных</title>
+
+                    <para>В следующем примере начинается интерактивное соединение с удаленной базой
+                        данных. Удаленный сервер jupiter, принимает указанную комбинацию
+                        пользователя и пароля с привилегиями, назначенными роли STAFF:
+                        <programlisting>
+isql -user sales -password mycode -role staff 'jupiter:/usr/customer.fdb'                            
+                        </programlisting>
+                    </para>
+                </example>
+                <example>
+                    <title>Запуск интерактивного сеанса без подключения к базе данных</title>
+
+                    <para>Следующий пример запускает интерактивный сеанс, но не подключается к базе
+                        данных. Все введенные команды <application>isql</application> выводятся на
+                        печать, а результаты запроса печатают заголовки столбцов каждые 30 строк:
+                        <programlisting>
+isql -echo -page 30                            
+                        </programlisting>
+                    </para>
+                </example>
+            </para>
+        </section>
+    </section>
+    <section xml:id="isql-start_session">
+        <title>Начало сессии Isql</title>
+
+        <para>Чтобы начать сеанс <application>isql</application>, введите параметры командной строки
+            и имя базы данных в оболочке Linux/Unix или командной консоли Windows. Например:
+            <programlisting>
+isql [<replaceable>&lt;options&gt;</replaceable>] [<replaceable>&lt;database&gt;</replaceable>]                          
+                        </programlisting>
+        </para>
+
+        <note>
+            <para>При подключении к удаленной базе данных вам нужно будет включить соответствующие
+                параметры -user и -password в свои параметры, если только пользователи не объявили
+                ISC_USER и ISC_PASSWORD в качестве переменных операционной системы. Например:
+                <programlisting>
+isql -user SYSDBA -password masterkey inet4://localhost/mydatabase                            
+                        </programlisting>
+            </para>
+            <para>При подключении к локальной базе данных в embedded варианте достоачно указать
+                только имя пользователя (пароль будет проигнорирован):
+                <programlisting>
+isql -user SYSDBA employee.db                           
+                        </programlisting>
+            </para>
+            <para>В Windows вы можете использовать доверительную аутентификацию, при условии что она
+                настроена в <filename>firebird.conf</filename> или
+                    <filename>databases.conf</filename>:
+                <programlisting>
+isql -trusted inet4://localhost/mydatabase                            
+                        </programlisting>
+            </para>
+        </note>
+        <para>Если параметры <replaceable>&lt;options&gt;</replaceable> не указаны,
+                <application>isql</application> запускает интерактивный сеанс. Если база данных не
+            указана, то необходимо подключиться к существующей базе данных или создать новую. Если
+            база данных была указана, <application>isql</application> запускает интерактивный сеанс,
+            подключаясь к указанной базе данных.</para>
+
+        <para>Чтение входного файла и запись в выходной файл не считаются интерактивными задачами,
+            поэтому параметры командной строки -input или -output не инициируют интерактивный сеанс.
+            Опции, используемые для извлечения операторов DDL, такие как -a и -x, также инициируют
+            только неинтерактивный сеанс.</para>
+
+        <para>Isql может быть запущен с локального или удаленного клиента:<itemizedlist>
+                <listitem>
+                    <para>При подключении с использованием локального клиента вы можете установить
+                        переменные среды ISC_USER и ISC_PASSWORD.</para>
+                </listitem>
+                <listitem>
+                    <para>При подключении с удаленного клиента вам потребуется указать
+                        действительные имя и пароль.</para>
+                </listitem>
+            </itemizedlist></para>
+    </section>
+    <section xml:id="isql-end_session">
+        <title>Завершение сессии Isql</title>
+        <para>Существует два способа выхода из isql:<itemizedlist>
+                <listitem>
+                    <para>Если вы хотите откатить всю неподтвержденную работу и выйти из isql,
+                        введите в командной строке следующую команду:
+                        <programlisting>
+SQL> QUIT;                        
+                    </programlisting>
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>Если вы хотите зафиксировать всю свою работу перед выходом из isql,
+                        введите следующую команду:
+                        <programlisting>
+SQL> EXIT;                      
+                    </programlisting>
+                    </para>
+                </listitem>
+            </itemizedlist></para>
+    </section>
+    <section xml:id="isql-help">
+        <title>Получение справки</title>
+        <para>Isql поставляется с командой HELP. Это дает краткую информацию о большинстве доступных
+            команд. Команда HELP также позволяет перейти к более подробной информации. Чтобы
+            активировать справочную систему, просто введите HELP в командной строке, как показано
+            ниже: <programlisting>
+SQL> HELP;                      
+                    </programlisting>
+            <screen>
+<![CDATA[
+Frontend commands:
+BLOBDUMP <blobid> <file>   -- dump BLOB to a file
+BLOBVIEW <blobid>          -- view BLOB in text editor
+EDIT     [<filename>]      -- edit SQL script file and execute
+EDIT                       -- edit current command buffer and execute
+HELP                       -- display this menu
+INput    <filename>        -- take input from the named SQL file
+OUTput   [<filename>]      -- write output to named file
+OUTput                     -- return output to stdout
+SET      <option>          -- (Use HELP SET for complete list)
+SHELL    <command>         -- execute Operating System command in sub-shell
+SHOW     <object> [<name>] -- display system information
+    <object> = CHECK, COLLATION, DATABASE, DOMAIN, EXCEPTION, FILTER, FUNCTION,
+               GENERATOR, GRANT, INDEX, PACKAGE, PROCEDURE, ROLE, SQL DIALECT,
+               SYSTEM, TABLE, TRIGGER, VERSION, USERS, VIEW
+EXIT                       -- exit and commit changes
+QUIT                       -- exit and roll back changes
+
+All commands may be abbreviated to letters in CAPitals
+]]>                
+            </screen>
+        </para>
+        <para>Большинство из этих команд не имеют дальнейших уровней детализации, в то время как
+            команда SET имеет. Чтобы углубиться в эти дополнительные уровни, выполните следующие
+            действия: <programlisting>
+SQL> HELP SET;                      
+                    </programlisting>
+            <screen>
+<![CDATA[
+Set commands:
+    SET                    -- display current SET options
+    SET AUTOddl            -- toggle autocommit of DDL statements
+    SET BAIL               -- toggle bailing out on errors in non-interactive mode
+    SET BLOB [ALL|<n>]     -- display BLOBS of subtype <n> or ALL
+    SET BLOB               -- turn off BLOB display
+    SET COUNT              -- toggle count of selected rows on/off
+    SET MAXROWS [<n>]      -- limit select stmt to <n> rows, zero is no limit
+    SET ECHO               -- toggle command echo on/off
+    SET EXPLAIN            -- toggle display of query access plan in the explained form
+    SET HEADING            -- toggle display of query column titles
+    SET LIST               -- toggle column or table display format
+    SET NAMES <csname>     -- set name of runtime character set
+    SET PLAN               -- toggle display of query access plan
+    SET PLANONLY           -- toggle display of query plan without executing
+    SET SQL DIALECT <n>    -- set sql dialect to <n>
+    SET STATs              -- toggle display of performance statistics
+    SET TIME               -- toggle display of timestamp with DATE values
+    SET TERM <string>      -- change statement terminator string
+    SET WIDTH <col> [<n>]  -- set/unset print width to <n> for column <col>
+
+All commands may be abbreviated to letters in CAPitals
+]]>                
+            </screen>
+        </para>
+        <para>Если вы попытаетесь углубиться в какую-либо другую команду, эффект будет точно таким
+            же, как при выполнении только команды HELP.</para>
+        <note>
+            <para>Команда HELP SET даёт справку только по собственным командам isql. Для управляющий
+                SQL операторов, таких как SET TRANSACTION или SET ROLE подсказка не будет
+                выведена.</para>
+        </note>
     </section>
 </chapter>

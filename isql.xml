@@ -4,7 +4,7 @@
         <title>Интерактивные запросы</title>
     </info>
 
-    <para>В этой главе содержится описание консольной утилиты Firebird Interactive SQL Utility
+    <para>В этой главе содержится описапние консольной утилиты Firebird Interactive SQL Utility
             (<application>isql</application>) и инструкции по его использованию для выполнения задач
         в базе данных.</para>
 
@@ -24,7 +24,7 @@
                     и вывода всех результатов её работы пользователь получает приглашение ввести
                     следующую команду до тех пор, пока не будет введена команда выхода из
                     интерактивного режима QUIT или EXIT. Isql можно использовать в интерактивном
-                    режиме для:<itemizedlist>
+                    режиме для:<itemizedlist spacing="compact">
                         <listitem>
                             <para>Создания, редактирования, удаления или просмотра данных и
                                 метаданных;</para>
@@ -85,7 +85,16 @@
             каталог с isql добавлен в PATH, то нет необходимости переходить в него. </para>
         <para>Синтаксис запуска isql следующий:
             <programlisting>
-isql [<replaceable>&lt;options&gt;</replaceable>] [<replaceable>&lt;database&gt;</replaceable>]                
+isql [<replaceable>&lt;options&gt;</replaceable>] [<replaceable>&lt;database&gt;</replaceable>]  
+                
+<replaceable>&lt;database&gt;</replaceable> ::= [<replaceable>&lt;server spec&gt;</replaceable>] {<replaceable>&lt;db_filename&gt;</replaceable> | <replaceable>&lt;db_alias&gt;</replaceable>}  
+                
+<replaceable>&lt;server spec&gt;</replaceable> ::= 
+    <replaceable>&lt;host&gt;</replaceable>[\{<replaceable>&lt;port&gt;</replaceable> | <replaceable>&lt;service&gt;</replaceable>}]:       
+  | \\<replaceable>&lt;host&gt;</replaceable>[@{<replaceable>&lt;port&gt;</replaceable> | <replaceable>&lt;service&gt;</replaceable>}]\     
+  | <replaceable>&lt;protocol&gt;</replaceable>://[<replaceable>&lt;host&gt;</replaceable>[:{<replaceable>&lt;port&gt;</replaceable> | <replaceable>&lt;service&gt;</replaceable>}]/]  
+                
+<replaceable>&lt;protocol&gt;</replaceable> ::= inet | inet4 | inet6 | wnet | xnet                
         </programlisting>
         </para>
         <para>Если параметры <replaceable>&lt;options&gt;</replaceable> не указаны,
@@ -447,7 +456,7 @@ isql [<replaceable>&lt;options&gt;</replaceable>] [<replaceable>&lt;database&gt;
 isql -user SYSDBA -password masterkey inet4://localhost/mydatabase                            
                         </programlisting>
             </para>
-            <para>При подключении к локальной базе данных в embedded варианте достоачно указать
+            <para>При подключении к локальной базе данных в embedded варианте достаточно указать
                 только имя пользователя (пароль будет проигнорирован):
                 <programlisting>
 isql -user SYSDBA employee.db                           
@@ -575,5 +584,250 @@ All commands may be abbreviated to letters in CAPitals
                 SQL операторов, таких как SET TRANSACTION или SET ROLE подсказка не будет
                 выведена.</para>
         </note>
+    </section>
+    <section xml:id="isql-connect">
+        <title>Соединение с базой данных</title>
+
+        <para>Если при запуске isql вы не указали спецификацию для подключения к базе данных, то
+            будет выдана подсказка о том что необходимо соединиться с базой данных с помощью
+            оператора CONNECT или создать новую базу данных с помощью оператора CREATE
+            DATABASE.</para>
+        <para>Оператор CONNECT не является частью DSQL и доступен только внутри ISQL, а потому не
+            описан в <quote>Руководство по языку SQL Firebird</quote>. Рассмотрим его
+            синтаксис.</para>
+        <formalpara>
+            <title>Синтаксис:</title>
+            <para>
+                <programlisting> 
+CONNECT <replaceable>&lt;database&gt;</replaceable> 
+[USER <replaceable>&lt;username&gt;</replaceable> [PASSWORD <replaceable>&lt;password&gt;</replaceable>]]
+[CACHE <replaceable>&lt;cache size&gt;</replaceable>] 
+[ROLE <replaceable>&lt;rolename&gt;</replaceable>]                    
+                    
+<replaceable>&lt;database&gt;</replaceable> ::= [<replaceable>&lt;server spec&gt;</replaceable>] {<replaceable>&lt;db_filename&gt;</replaceable> | <replaceable>&lt;db_alias&gt;</replaceable>}  
+                
+<replaceable>&lt;server spec&gt;</replaceable> ::= 
+    <replaceable>&lt;host&gt;</replaceable>[\{<replaceable>&lt;port&gt;</replaceable> | <replaceable>&lt;service&gt;</replaceable>}]:       
+  | \\<replaceable>&lt;host&gt;</replaceable>[@{<replaceable>&lt;port&gt;</replaceable> | <replaceable>&lt;service&gt;</replaceable>}]\     
+  | <replaceable>&lt;protocol&gt;</replaceable>://[<replaceable>&lt;host&gt;</replaceable>[:{<replaceable>&lt;port&gt;</replaceable> | <replaceable>&lt;service&gt;</replaceable>}]/]  
+                
+<replaceable>&lt;protocol&gt;</replaceable> ::= inet | inet4 | inet6 | wnet | xnet                         
+                    </programlisting>
+            </para>
+        </formalpara>
+        <para>
+            <table frame="all">
+                <title>Параметры оператора CONNECT</title>
+                <?dbfo keep-together='auto'?>
+                <tgroup cols="2">
+                    <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                    <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                    <thead>
+                        <row valign="middle">
+                            <entry align="center">Параметр</entry>
+                            <entry align="center">Описание</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry><replaceable>database</replaceable></entry>
+                            <entry>Спецификация базы данных.</entry>
+                        </row>
+                        <row>
+                            <entry><replaceable>username</replaceable></entry>
+                            <entry>Имя пользователя для соединения с базой данных. Может быть
+                                заключено в одинарные или двойные кавычки. Если имя пользователя
+                                заключено в двойные кавычки, то оно чувствительно к
+                                регистру.</entry>
+                        </row>
+                        <row>
+                            <entry><replaceable>password</replaceable></entry>
+                            <entry>Пароль пользователя для соединения с базой данных. Чувствительно
+                                к регистру. Должен быть заключён в одинарный кавычки.</entry>
+                        </row>
+                        <row>
+                            <entry><replaceable>cache size</replaceable></entry>
+                            <entry>Размер страничного кеша.</entry>
+                        </row>
+                        <row>
+                            <entry><replaceable>rolename</replaceable></entry>
+                            <entry>Имя роли для соединения с базой данных. Может быть заключено в
+                                одинарные или двойные кавычки. Если имя роли заключено в двойные
+                                кавычки, то оно чувствительно к регистру.</entry>
+                        </row>
+                        <row>
+                            <entry><replaceable>server spec</replaceable></entry>
+                            <entry>Спецификация удалённого сервера. Включает в себя имя сервера и
+                                протокол.</entry>
+                        </row>
+                        <row>
+                            <entry><replaceable>db_filename</replaceable></entry>
+                            <entry>Полный путь и имя файла базы данных, включая расширение. Имя
+                                файла должно быть задано в соответствии со спецификой используемой
+                                платформы.</entry>
+                        </row>
+                        <row>
+                            <entry><replaceable>db_alias</replaceable></entry>
+                            <entry>Псевдоним (alias) базы данных, присутствующий в файле
+                                    <filename>databases.conf</filename></entry>
+                        </row>
+                        <row>
+                            <entry><replaceable>host</replaceable></entry>
+                            <entry>Имя сервера или IP адрес, на котором расположена база
+                                данных.</entry>
+                        </row>
+                        <row>
+                            <entry><replaceable>port</replaceable></entry>
+                            <entry>Номер порта, который слушает удалённый сервер (параметр
+                                    <parameter>RemoteServicePort</parameter> файла
+                                    <filename>firebird.conf</filename>).</entry>
+                        </row>
+                        <row>
+                            <entry><replaceable>service</replaceable></entry>
+                            <entry>Имя сервиса. Должно совпадать со значением параметра
+                                    <parameter>RemoteServiceName</parameter> файла
+                                    <filename>firebird.conf</filename></entry>
+                        </row>
+                        <row>
+                            <entry><replaceable>protocol</replaceable></entry>
+                            <entry>Наименование протокола.</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+        </para>
+        <para>База данных может состоять из одного или нескольких файлов. Первый, основной, файл
+            называется первичным, остальные файлы — вторичными. При подключении к базе данных
+            необходимо указывать только путь до первичного файла базы данных.</para>
+
+        <para>Спецификация первичного файла — имя файла базы данных и его расширение с указанием к
+            нему полного пути в соответствии с правилами используемой операционной системы. </para>
+        <section xml:id="isql-connect-aliasedb">
+            <title>Использование псевдонимов БД</title>
+            <para>Вместо полного пути к первичному файлу базы можно использовать псевдонимы
+                (aliases). Псевдонимы описываются в файле <filename>databases.conf</filename> в
+                формате:
+                <programlisting>  
+<replaceable>alias</replaceable> = <replaceable>filepath</replaceable>                    
+                </programlisting>
+            </para>
+            <note>
+                <para>Помимо указания псевдонимов для базы данных в этом файле можно задать
+                    параметры уровня базы данных для каждой описываемой базы данных. Эти параметры
+                    задаются в фигурных скобках сразу после объявления псевдонима. Подробнее читайте
+                    в <link xmlns:xlink="http://www.w3.org/1999/xlink" linkend="config-perdb"
+                        >Параметры уровня базы данных</link></para>
+            </note>
+        </section>
+        <section xml:id="isql-connect-remotely">
+            <title>Соединение с БД на удалённом сервере</title>
+            <para>При соединении с базой данных на удалённом сервере необходимо указать спецификацию
+                удалённого сервера. Спецификация удалённого сервера зависит от используемого
+                протокола. </para>
+            <para>Если вы при соединении с базой данных используете протокол TCP/IP, то спецификация
+                первичного файла должна выглядеть следующим образом:
+                <programlisting>  
+<replaceable>host</replaceable>[/<replaceable>port</replaceable> | <replaceable>service</replaceable>]:{<replaceable>filepath</replaceable> | <replaceable>db_alias</replaceable>}                   
+                </programlisting>
+            </para>
+            <para>Если вы при соединении с базой данных используете протокол под названием
+                именованные каналы (Name Pipes), то спецификация первичного файла должна выглядеть
+                следующим образом.
+                <programlisting>  
+\\<replaceable>host</replaceable>[@<replaceable>port</replaceable> | <replaceable>service</replaceable>]\{<replaceable>filepath</replaceable> | <replaceable>db_alias</replaceable>}                   
+                </programlisting>
+            </para>
+            <para>Существует также унифицированный URL-подобный синтаксис спецификации удалённого
+                сервера. В этом синтаксисе первым параметром указывается наименование протокола,
+                далее указывается имя сервера или IP адрес, номер порта и путь к первичному файлу
+                базы данных или псевдоним. В качестве протокола можно указать следующие значения:<itemizedlist>
+                    <listitem>
+                        <para>INET — TCP/IP (сначала пробует подключится по протоколу TCP/IP v6,
+                            если не получилось, то TCP/IP v4);</para>
+                    </listitem>
+                    <listitem>
+                        <para>INET4 — TCP/IP v4 (начиная с 3.0.1);</para>
+                    </listitem>
+                    <listitem>
+                        <para>INET6 — TCP/IP v6 (начиная с 3.0.1);</para>
+                    </listitem>
+                    <listitem>
+                        <para>WNET — NetBEUI или протокол именованных каналов;</para>
+                    </listitem>
+                    <listitem>
+                        <para>XNET — локальный протокол.</para>
+                    </listitem>
+                </itemizedlist>
+                <programlisting>  
+<replaceable>protocol</replaceable>://[<replaceable>host</replaceable>[:<replaceable>port</replaceable> | <replaceable>service</replaceable>]/]{<replaceable>filepath</replaceable> | <replaceable>db_alias</replaceable>}                   
+                </programlisting>
+            </para>
+        </section>
+        <section xml:id="isql-connect-user">
+            <title>Имя пользователя, пароль и роль</title>
+
+            <para>Необязательные предложения <database>USER</database> и
+                    <database>PASSWORD</database> задают, соответственно, имя и пароль пользователя
+                присутствующего в базе данных безопасности (<filename>security3.fdb</filename> или
+                той, что указана в параметре <parameter>SecurityDatabase</parameter>). Пользователя
+                и пароль можно не указывать, если установлены переменные окружения
+                    <envar>ISC_USER</envar> и <envar>ISC_PASSWORD</envar>. Их также можно не
+                указывать при использовании доверительной аутентификации.</para>
+
+            <para>Если подключение происходит к embedded версии сервера, то достаточно указать
+                только имя пользователя (проверка пароля не производится).</para>
+
+            <para>Необязательное предложение ROLE задаёт имя роли, права которой будут учитываться
+                при подключении базы данных. Роль должна быть назначена пользователю в
+                соответствующей базе данных безопасности. </para>
+        </section>
+        <section xml:id="isql-connect-charset">
+            <title>Набор символов</title>
+
+            <para>Команда CONNECT не позволяет указать набор символов для подключения, однако вы
+                можете это сделать с помощью команды SET NAMES, которую необходимо ввести до
+                использования CONNECT.</para>
+        </section>
+        <section xml:id="isql-connect-examples">
+            <title>Примеры</title>
+
+            <example>
+                <title>Подключение к локальной (embedded) базе данных</title>
+
+                <para>В следующем примере происходит подключение к базе данных в embedded варианте с
+                    использованием имени пользователя из переменной среды <envar>ISC_USER</envar>.
+                    <programlisting>
+SQL> CONNECT "C:\DATABASES\FIREBIRD\MY_EMPLOYEE.FDB";                    
+                </programlisting>
+                </para>
+                <para>В Linux это будет выглядеть следующим образом:
+                    <programlisting>
+SQL> CONNECT "/databases/firebird/MY_EMPLOYEE.FDB";                  
+                </programlisting>
+                </para>
+                <para>При использовании псевдонимов, настроенных в
+                        <filename>databases.conf</filename>:
+                    <programlisting>
+SQL> CONNECT MY_EMPLOYEE;                  
+                </programlisting>
+                </para>
+                <para>Если переменная окружения <envar>ISC_USER</envar> не задана, или требуется
+                    указать другого пользователя, то необходимо использовать предложение USER:
+                    <programlisting>
+SQL> CONNECT MY_EMPLOYEE USER SYSDBA;                  
+                </programlisting>                
+                </para>
+            </example>
+            <example>
+                <title>Подключение к локальной (не embedded) базе данных</title>
+                
+                <para/>
+            </example>
+            <example>
+                <title>Подключение к удалённой базе данных</title>
+                
+                <para></para>
+            </example>
+        </section>
     </section>
 </chapter>

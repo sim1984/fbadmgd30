@@ -1,10 +1,17 @@
-<!DOCTYPE chapter>
-<chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="isql" xml:lang="ru">
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.1/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.1/sch/docbook.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="5.1" xml:id="isql" xml:lang="ru">
     <info>
-        <title>Интерактивные запросы</title>
+        <title>ISQL. Интерактивные запросы</title>
     </info>
 
-    <para>В этой главе содержится описапние консольной утилиты Firebird Interactive SQL Utility
+    <indexterm>
+        <primary>ISQL</primary>
+    </indexterm>
+
+    <para>В этой главе содержится описание консольной утилиты Firebird Interactive SQL Utility
             (<application>isql</application>) и инструкции по его использованию для выполнения задач
         в базе данных.</para>
 
@@ -12,11 +19,13 @@
         интерфейс командной строки для интерактивного доступа к базе данных Firebird. ISQL принимает
         операторы DSQL вместе с группой команд SET и SHOW для запросов и взаимодействия с базой
         данных Firebird. Некоторые команды SET могут быть включены в сценарии DDL для выполнения
-        пакетных операций в isql. Она также обрабатывает команды DDL, DML и консоли.</para>
+        пакетных операций в <application>isql</application>. Она также обрабатывает команды DDL, DML
+        и консоли.</para>
 
-    <para>Утилита isql может использоваться в трех режимах: в качестве интерактивного сеанса; прямо
-        из командной строки; и как неинтерактивный сеанс, используя сценарий оболочки или пакетный
-        файл. В каждом из режимов могут выполняться разные задачи, как показано ниже: <itemizedlist>
+    <para>Утилита <application>isql</application> может использоваться в трех режимах: в качестве
+        интерактивного сеанса; прямо из командной строки; и как неинтерактивный сеанс, используя
+        сценарий оболочки или пакетный файл. В каждом из режимов могут выполняться разные задачи,
+        как показано ниже: <itemizedlist>
             <listitem>
                 <para>В интерактивном режиме пользователь последовательно вводит команды для работы
                     с базами данных и тут же получает результат их выполнения. При этом одна команда
@@ -494,6 +503,16 @@ isql -trusted inet4://localhost/mydatabase
     </section>
     <section xml:id="isql-end_session">
         <title>Завершение сессии Isql</title>
+
+        <indexterm>
+            <primary>ISQL</primary>
+            <secondary>QUIT</secondary>
+        </indexterm>
+        <indexterm>
+            <primary>ISQL</primary>
+            <secondary>EXIT</secondary>
+        </indexterm>
+
         <para>Существует два способа выхода из isql:<itemizedlist>
                 <listitem>
                     <para>Если вы хотите откатить всю неподтвержденную работу и выйти из isql,
@@ -515,6 +534,11 @@ SQL> EXIT;
     </section>
     <section xml:id="isql-help">
         <title>Получение справки</title>
+        <indexterm>
+            <primary>ISQL</primary>
+            <secondary>HELP</secondary>
+        </indexterm>
+
         <para>Isql поставляется с командой HELP. Это дает краткую информацию о большинстве доступных
             команд. Команда HELP также позволяет перейти к более подробной информации. Чтобы
             активировать справочную систему, просто введите HELP в командной строке, как показано
@@ -545,6 +569,11 @@ All commands may be abbreviated to letters in CAPitals
 ]]>                
             </screen>
         </para>
+        <indexterm>
+            <primary>ISQL</primary>
+            <secondary>HELP</secondary>
+            <tertiary>HELP SET</tertiary>
+        </indexterm>
         <para>Большинство из этих команд не имеют дальнейших уровней детализации, в то время как
             команда SET имеет. Чтобы углубиться в эти дополнительные уровни, выполните следующие
             действия: <programlisting>
@@ -587,6 +616,11 @@ All commands may be abbreviated to letters in CAPitals
     </section>
     <section xml:id="isql-connect">
         <title>Соединение с базой данных</title>
+
+        <indexterm>
+            <primary>ISQL</primary>
+            <secondary>CONNECT</secondary>
+        </indexterm>
 
         <para>Если при запуске isql вы не указали спецификацию для подключения к базе данных, то
             будет выдана подсказка о том что необходимо соединиться с базой данных с помощью
@@ -815,19 +849,488 @@ SQL> CONNECT MY_EMPLOYEE;
                     указать другого пользователя, то необходимо использовать предложение USER:
                     <programlisting>
 SQL> CONNECT MY_EMPLOYEE USER SYSDBA;                  
-                </programlisting>                
+                </programlisting>
                 </para>
             </example>
             <example>
                 <title>Подключение к локальной (не embedded) базе данных</title>
-                
-                <para/>
+
+                <para>На Windows можно использовать локальный протокол XNET
+                    <programlisting>
+SQL> CONNECT xnet://MY_EMPLOYEE USER SYSDBA PASSWORD 'masterkey';                  
+                </programlisting>
+                </para>
+
+                <para>Во всех операционных системах через TCP
+                    <programlisting>
+SQL> CONNECT inet://localhost/MY_EMPLOYEE USER SYSDBA PASSWORD 'masterkey';                  
+                </programlisting>
+                </para>
             </example>
             <example>
-                <title>Подключение к удалённой базе данных</title>
-                
-                <para></para>
+                <title>Подключение к удалённой базе данных с ролью RDB$ADMIN</title>
+
+                <para>
+                    <programlisting>
+SQL> CONNECT inet://dbserver/MY_EMPLOYEE USER BOB PASSWORD 'W45xs' ROLE RDB$ADMIN;                  
+                </programlisting>
+                </para>
+            </example>
+            <example>
+                <title>Подключение к удалённой базе данных с набором символов WIN1251</title>
+
+                <para>
+                    <programlisting>
+SQL> SET NAMES WIN1251;                        
+SQL> CONNECT inet://dbserver/MY_EMPLOYEE USER BOB PASSWORD 'W45xs';                  
+                </programlisting>
+                </para>
             </example>
         </section>
+    </section>
+    <section xml:id="isql-create_db">
+        <title>Создание базы данных</title>
+        <indexterm>
+            <primary>ISQL</primary>
+            <secondary>CREATE DATABASE</secondary>
+        </indexterm>
+
+        <para>Если при запуске isql вы не указали спецификацию для подключения к базе данных, то
+            будет выдана подсказка о том что необходимо соединиться с базой данных с помощью
+            оператора CONNECT или создать новую базу данных с помощью оператора CREATE
+            DATABASE.</para>
+        <para>Оператор CREATE DATABASE является частью DSQL и подробно описан в <quote>Руководство
+                по языку SQL Firebird</quote>, поэтому здесь будет приведён только краткий синтаксис
+            и примеры использования. </para>
+        <formalpara>
+            <title>Синтаксис:</title>
+            <para>
+                <programlisting>                     
+CREATE {DATABASE | SCHEMA} '<replaceable>&lt;filespec&gt;</replaceable>'
+  [USER <replaceable>username</replaceable> [PASSWORD '<replaceable>password</replaceable>'] [ROLE <replaceable>rolename</replaceable>]]
+  [PAGE_SIZE [=] <replaceable>size</replaceable>]
+  [LENGTH [=] <replaceable>num</replaceable> [PAGE[S]]
+  [SET NAMES '<replaceable>charset</replaceable>']
+  [DEFAULT CHARACTER SET <replaceable>default_charset</replaceable>
+  [COLLATION <replaceable>collation</replaceable>]]
+  [<replaceable>&lt;sec_file&gt;</replaceable> [<replaceable>&lt;sec_file&gt;</replaceable> ...]]
+  [DIFFERENCE FILE '<replaceable>diff_file</replaceable>'];
+
+<replaceable>&lt;filespec&gt;</replaceable> ::= [<replaceable>&lt;server_spec&gt;</replaceable>]{<replaceable>filepath</replaceable> | <replaceable>db_alias</replaceable>}
+
+<replaceable>&lt;server_spec&gt;</replaceable> ::= 
+    <replaceable>host</replaceable>[\<replaceable>port</replaceable> | <replaceable>service</replaceable>]: 
+  | \\<replaceable>host</replaceable>[@<replaceable>port</replaceable> | <replaceable>service</replaceable>]\ 
+  | <replaceable>&lt;protocol&gt;</replaceable>://[<replaceable>host</replaceable>[:<replaceable>port</replaceable> | <replaceable>service</replaceable>]/]
+
+<replaceable>&lt;protocol&gt;</replaceable> = inet | inet4 | inet6 | wnet | xnet
+
+<replaceable>&lt;sec_file&gt;</replaceable> ::= FILE '<replaceable>filepath</replaceable>'
+  [LENGTH [=] <replaceable>num</replaceable> [PAGE[S]] [STARTING [AT [PAGE]] <replaceable>pagenum</replaceable>]              
+                  
+</programlisting>
+            </para>
+        </formalpara>
+        <para>В следующем примере будет создана база данных <filename>monkey.fdb</filename> и
+            сохранена в директории <filename>test</filename> на диске <filename>С</filename>.
+            <programlisting>
+SQL>CREATE DATABASE 'C:\test\monkey.fdb' page_size 8192
+CON>user 'SYSDBA' password 'masterkey';            
+        </programlisting>
+        </para>
+
+        <note>
+            <para>Путь к базе данных и пароль обязательно должны быть заключены в одинарные или
+                двойные кавычки. Для имени пользователя, пароля и набора символов кавычки
+                необязательны. При использовании двойных кавычек буду использованы правила
+                3-диалекта, т.е. имя пользователя, роли и набора символов будут чувствительны к
+                регистру символов.</para>
+            <para>Поскольку база данных создаётся в режиме embedded сервера, то файл базы данных
+                будет создан с именем входа в систему в качестве владельца. Это может вызвать
+                проблемы с доступом к файлу базы данных для других пользователей, особенно в Linux,
+                которые могут захотеть подключится позднее. Если база данных создаётся с
+                использованием сетевого или локального (Windows) протокола, то файл базы данных
+                будет создан от имени пользователя службы (в Linux это пользователь
+                firebird).</para>
+        </note>
+
+        <para>В данном случае база данных будет создана с использованием embedded версии Firebird.
+            Для использования сетевых протоколов вы можете использовать префиксы протоколов или
+            другие правила аналогичные правила для оператора CONNECT. </para>
+
+        <example>
+            <title>Создание базы данных на удалённом сервере</title>
+
+            <para>Создание базы данных на удалённом сервере baseserver расположенном по пути, на
+                который ссылается псевдоним test, описанный в файле
+                    <filename>databases.conf</filename>. Используется протокол TCP. Владельцем базы
+                данных будет пользователь wizard.
+                <programlisting language="sql">  
+CREATE DATABASE 'baseserver:test'
+USER wizard PASSWORD 'player' ROLE RDB$ADMIN
+DEFAULT CHARACTER SET UTF8;                 
+</programlisting>
+                То же самое с использованием унифицированного URL-подобного синтаксиса задания
+                спецификации удалённого сервера.
+                <programlisting language="sql">  
+CREATE DATABASE 'inet://baseserver:3050/test'
+USER wizard PASSWORD 'player' ROLE RDB$ADMIN
+DEFAULT CHARACTER SET UTF8;                 
+</programlisting>
+                или
+                <programlisting language="sql">  
+CREATE DATABASE 'inet://baseserver:gds_db/test'
+USER wizard PASSWORD 'player' ROLE RDB$ADMIN
+DEFAULT CHARACTER SET UTF8;                 
+</programlisting>
+                Начиная с Firebird 3.0.1 можно указать какой именно из протоколов IP v4 или IP v6 вы
+                хотите использовать.
+                <programlisting language="sql">  
+CREATE DATABASE 'inet4://baseserver/test'
+USER wizard PASSWORD 'player' ROLE RDB$ADMIN
+DEFAULT CHARACTER SET UTF8;                 
+</programlisting>
+                или
+                <programlisting language="sql">  
+CREATE DATABASE 'inet6://baseserver/test'
+USER wizard PASSWORD 'player' ROLE RDB$ADMIN
+DEFAULT CHARACTER SET UTF8;                 
+</programlisting>
+                Создание базы данных с указанием IP адреса (IPv4) вместо указания имени сервера.
+                <programlisting language="sql">  
+CREATE DATABASE '127:0:0:1:test'
+USER wizard PASSWORD 'player' ROLE RDB$ADMIN
+DEFAULT CHARACTER SET UTF8;                 
+</programlisting>
+                Создание базы данных с указанием IP адреса (IPv6) вместо указания имени сервера.
+                <programlisting language="sql">  
+CREATE DATABASE '[::1]:test'
+USER wizard PASSWORD 'player' ROLE RDB$ADMIN
+DEFAULT CHARACTER SET UTF8;                 
+</programlisting>
+            </para>
+        </example>
+
+        <note>
+            <para>В отличие от оператора CONNECT в операторе CREATE DATABASE вы сразу можете указать
+                набор символов который будет использован в подключении после выполнения оператора
+                CREATE DATABASE с помощью предложения SET NAMES.</para>
+        </note>
+
+        <para>После создания базы данных вы можете выполнять к ней запросы в интерактивном режиме.
+            <programlisting>
+SQL>SELECT RDB$RELATION_ID FROM RDB$DATABASE;
+
+RDB$RELATION_ID
+===============
+128
+
+SQL> commit;            
+        </programlisting>
+        </para>
+        <para>Чтобы вернуться в командную строку введите команду <code>exit</code> или
+                <code>quit</code>.</para>
+
+        <note>
+            <para>Вышеуказанная методика, как показано, работает, но в идеале базы данных и объекты
+                метаданных должны создаваться и поддерживаться с использованием сценариев
+                определения данных. </para>
+        </note>
+    </section>
+
+    <section xml:id="isql-env">
+        <title>Установка переменных окружения ISC_USER и ISC_PASSWORD </title>
+
+        <para>Переменная среды — это именованный объект, который содержит информацию, используемую
+            одним или несколькими приложениями. Они глобальны для своих конкретных операционных
+            систем. Сервер Firebird распознает и использует определенные переменные среды,
+            настроенные в Windows, Linux и других системах Unix.</para>
+
+        <para>Переменные среды <envar>ISC_USER</envar> и <envar>ISC_PASSWORD</envar> в Firebird
+            предназначены для предоставления SYSDBA доступа к базе данных из служебных программ
+            командной строки и клиентских приложений всем, кто имеет доступ к хост-машине.</para>
+
+        <caution>
+            <para>При запуске таких утилит командной строки, как <application>isql</application>,
+                    <application>gbak</application>, <application>gstat</application> и
+                    <application>gfix</application>, Firebird будет искать, установлены ли
+                переменные среды <envar>ISC_USER</envar> и <envar>ISC_PASSWORD</envar>. Если вы не
+                предоставите имя пользователя и пароль при локальном подключении к базе данных,
+                Firebird позволит вам войти в систему, если найдет эти переменные.</para>
+            <para>Из соображений безопасности не рекомендуется указывать имя пользователя и пароль
+                SYSDBA с использованием этих двух переменных среды, особенно на незащищенном
+                компьютере.</para>
+        </caution>
+
+        <para>Переменные среды <envar>ISC_USER</envar> и <envar>ISC_PASSWORD</envar> могут быть
+            установлены для локального запуска <application>isql</application>. Чтобы установить
+            переменные среды:<itemizedlist>
+                <listitem>
+                    <para>В Windows это делается в Панели управления -> Система -> Дополнительно ->
+                        Переменные среды. Любые изменения, сделанные здесь, будут постоянными. Вы
+                        также можете определить эти переменные в командном окне до запуска любой из
+                        утилит Firebird, например isql. Например:
+                        <programlisting>
+C:\> set ISC_USER=sysdba
+C:\> set ISC_PASSWORD=secret
+C:\> isql my_employee
+
+SQL>                        
+                    </programlisting>
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>На платформах Linux и Unix это зависит от типа используемой оболочки и от
+                        конфигурации настольного компьютера. Обратитесь к документации вашей
+                        операционной системы, чтобы установить переменные среды. Для оболочки bash
+                        этот процесс показан в следующем примере:
+                        <programlisting>
+cosmos> export ISC_USER=sysdba
+cosmos> export ISC_PASSWORD=secret
+cosmos> /opt/firebird/bin/isql my_employee
+
+SQL>                        
+                    </programlisting>
+                    </para>
+                </listitem>
+            </itemizedlist></para>
+    </section>
+
+    <section xml:id="isql-sql_dialect">
+        <title>SQL диалект</title>
+        <para>Firebird поддерживает три диалекта SQL на каждом клиенте и сервере базы данных. Эти
+            диалекты SQL различаются в контексте формата даты и времени и точности числового типа
+            данных. Диалекты служат для инструктирования сервера Firebird о том, как обрабатывать
+            функции, реализованные в устаревших базах данных Borland Interbase, более ранних, чем
+            версия 6.0. Диалекты устанавливаются во время выполнения и могут быть изменены для
+            клиента во время подключения или с помощью команды SET SQL DIALECT.</para>
+
+        <note>
+            <para>Диалект 2 используется только при преобразовании базы данных диалекта 1 в базу
+                данных диалекта 3.</para>
+        </note>
+
+        <para>Следующая таблица демонстрирует некоторые различия между диалектами. <table
+                frame="all">
+                <title>Различия между SQL диалектами</title>
+                <tgroup cols="4">
+                    <colspec colname="c1" colnum="1" colwidth="1*"/>
+                    <colspec colname="c2" colnum="2" colwidth="1*"/>
+                    <colspec colname="c3" colnum="3" colwidth="1*"/>
+                    <colspec colname="c4" colnum="4" colwidth="1*"/>
+                    <thead>
+                        <row>
+                            <entry>SQL</entry>
+                            <entry>Dialect 1</entry>
+                            <entry>Dialect 2</entry>
+                            <entry>Dialect 3</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>Тип данных DATE</entry>
+                            <entry>Дата + время (Timestamp)</entry>
+                            <entry>Сообщение об ошибке</entry>
+                            <entry>Только дата</entry>
+                        </row>
+                        <row>
+                            <entry>Тип данных TIMSTAMP</entry>
+                            <entry>Timestamp</entry>
+                            <entry>Timestamp</entry>
+                            <entry>Timestamp</entry>
+                        </row>
+                        <row>
+                            <entry>Тип данных TIME</entry>
+                            <entry>Сообщение об ошибке</entry>
+                            <entry>Сообщение об ошибке</entry>
+                            <entry>Только время</entry>
+                        </row>
+                        <row>
+                            <entry>Идентификаторы с разделителями (квотированные идентификаторы)
+                                    "<replaceable>&lt;identifier&gt;</replaceable>"</entry>
+                            <entry>Строка</entry>
+                            <entry>Сообщение об ошибки</entry>
+                            <entry>Идентификатор</entry>
+                        </row>
+                        <row>
+                            <entry>Точность арифметических операций. Например 1/3</entry>
+                            <entry>0.3333333... (double precision)</entry>
+                            <entry>0</entry>
+                            <entry>0 (по правилам целочисленного деления)</entry>
+                        </row>
+                        <row>
+                            <entry>Представление NUMERIC и DECIMAL с точностью больше 10</entry>
+                            <entry>double precision</entry>
+                            <entry>64-битное целое</entry>
+                            <entry>64-битное целое (BIGINT)</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table></para>
+
+        <note>
+            <para>В настоящее время возможно создание баз данных только на диалекте 1 и 3, однако
+                рекомендуется использовать исключительно диалект 3, поскольку в конечном итоге
+                диалект 1 будет устаревшим. Диалект 2 нельзя использовать для создания базы данных,
+                поскольку он служит только для преобразования Диалекта 1 в Диалект 3.</para>
+        </note>
+
+        <para>При подключении к базе данных с использованием <application>isql</application> утилита
+            использует диалект базы данных, если не указано иное. Диалекты не могут быть установлены
+            в качестве параметра оператора <code>CREATE DATABASE</code>. Таким образом, при создании
+            базы данных с использованием <application>isql</application> база данных будет на
+            диалекте, который является текущим в <application>isql</application> во время выполнения
+            оператора <code>CREATE DATABASE</code>. Вы можете установить диалект с помощью утилиты
+                <application>isql</application> двумя способами:<itemizedlist>
+                <listitem>
+                    <para>При старте isql укажите диалект с использованием переключателя
+                        -sql_dialect
+                        <programlisting>
+cosmos> isql -sql_dialect 3                        
+                    </programlisting>
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>Внутри sql скрипта или в isql сессии с помощью команды <code>SET SQL
+                            DIALECT</code>
+                        <programlisting>
+SQL> SET SQL DIALECT 3;                       
+                    </programlisting>
+                    </para>
+                </listitem>
+            </itemizedlist></para>
+    </section>
+
+    <section xml:id="isql-terminator">
+        <title>Символ терминатора</title>
+
+        <para>Символом терминатором по умолчанию для базы данных Firebird является точка с запятой
+                <quote>;</quote>. Операторы будут только выполнены если они заканчиваются точкой с
+            запятой. Однако вы можете использовать <application>isql</application> для изменения
+            символа на любой печатный символ или несколько символов из первых 127 символов
+            подмножества ASCII с помощью команды <code>SET TERM</code>.</para>
+
+        <note>
+            <para>Терминатор по умолчанию может быть изменен во всех случаях, за исключением
+                Procedural SQL или PSQL. PSQL не принимает никаких терминаторов, кроме точки с
+                запятой.</para>
+        </note>
+
+        <para>Для изменения символа терминатора на тильду <quote>~</quote> введите следующую
+            команду: <programlisting>
+    SQL> SET TERM ~ ;        
+        </programlisting>
+        </para>
+
+        <para>Для возврата терминатора, вы должны использовать текущий терминатор! Изменение
+            терминатора полезно, если вы хотите ввести функцию PSQL, как показано в следующем
+            примере. Поскольку PSQL будет принимать только точку с запятой в качестве терминатора,
+            isql должен знать, какая точка с запятой используется для кода PSQL, а какая
+            используется для завершения вводимых команд SQL.
+            <programlisting>
+SQL> set term ~ ;
+
+SQL> create procedure test_proc (iInput integer = 666)
+CON> returns (oOutput integer)
+CON> as
+CON> begin
+CON>   oOutput = iInput;
+CON>   suspend;
+CON> end~
+
+SQL> set term ; ~
+
+SQL> commit;
+
+SQL> select * from test_proc;
+
+OOUTPUT
+============
+666            
+        </programlisting>
+        </para>
+
+        <para>Вы можете видеть, что внутри кода самой процедуры терминатором является точка с
+            запятой. Однако вне фактического кода процедуры терминатором является тильда (~).
+                <application>isql</application> обрабатывает одну команду <code>CREATE
+                PROCEDURE</code>, но внутри этого одного оператора SQL есть несколько встроенных
+            операторов PSQL:
+            <programlisting>
+oOutput = iInput;
+suspend;                
+            </programlisting>
+        </para>
+
+        <para>Они имеют точку с запятой, как того требует PSQL. Конец команды CREATE PROCEDURE
+            обозначается использованием тильды в качестве терминатора:
+            <programlisting>
+end~               
+            </programlisting>
+        </para>
+
+        <para>При желании вы можете просто изменить терминатор, потому что вы предпочитаете что-то
+            другое, а не точку с запятой.
+            <programlisting>
+SQL> -- Change terminator from ; to +
+SQL> set term + ;
+
+SQL> select count(*) from employee+
+
+COUNT
+============
+42
+
+SQL> -- Change terminator from + to 'fred'
+SQL> set term fred +
+
+SQL> select count(*) from employee fred
+
+COUNT
+============
+42
+
+SQL> -- Change back from 'fred' to ;
+SQL> set term ; fred
+            </programlisting>
+        </para>
+
+        <para>Однако вы должны быть осторожны, чтобы не выбрать символ-терминатор, который приведет
+            к сбою операторов SQL из-за того, что терминатор используется в какой-то момент в
+            операторе SQL.
+            <programlisting>
+SQL> select 600+60+6 as The_Beast from rdb$database;
+
+THE_BEAST
+=====================
+666
+
+SQL> set term + ;
+SQL> select 600+60+6 as The_Beast from rdb$database+
+
+Statement failed, SQLSTATE = 42000
+Dynamic SQL Error
+-SQL error code = -104
+-Unexpected end of command - line 1, column 8
+...
+
+SQL> set term ; +                
+            </programlisting>
+        </para>
+
+        <para>Присутствие терминатора в выражении вызвало ошибку <quote>Unexpected end of
+                command</quote>. Анализатор SQL в ядре базы данных Firebird определил, что
+                <code>select 600</code> не является допустимым оператором. По этой причине лучше
+            всегда выбирать символ или символы, которые не будут путать синтаксический
+            анализатор.
+            <programlisting>
+SQL> set term !! ;
+
+SQL> select 600+60+6 as The_Beast from rdb$database!!
+
+THE_BEAST
+=====================
+666              
+            </programlisting>
+        </para>
     </section>
 </chapter>

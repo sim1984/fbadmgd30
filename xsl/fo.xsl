@@ -24,21 +24,27 @@
     <xsl:include href="fo/formal.xsl"/>
     <xsl:include href="fo/block.xsl"/>
     <xsl:include href="fo/htmltbl.xsl"/>
+    
     <!--
     <xsl:include href="fo/table.xsl"/>
     -->
+    
     <xsl:include href="fo/sections.xsl"/>
     <xsl:include href="fo/titlepage.xsl"/>
+    
 <!--
     <xsl:include href="fo/titlepage.templates.xsl"/>
 -->
+    
     <xsl:include href="fo/admon.xsl"/>
     <xsl:include href="fo/index.xsl"/>    
     <xsl:include href="fo/xref.xsl"/>
+        
     <!--
     <xsl:include href="fo/autotoc.xsl"/>   
     <xsl:include href="fo/fop1.xsl"/>
     -->
+    
     <xsl:include href="fo/component.xsl"/> 
     
 

@@ -6,7 +6,7 @@
     <!--Язык-->
     <xsl:param name="l10n.gentext.language" select="'ru'"/>
 
-    <xsl:param name="hyphenate" select="false"/>
+    <xsl:param name="hyphenate" select="0"/>
 
     <xsl:param name="fop1.extensions" select="1"/>
 
@@ -68,8 +68,8 @@
     <xsl:template name="page.number.format">1</xsl:template>
 
     <!-- Местоположение подписей к элементам -->
-    <xsl:param name="formal.title.placement"> figure after table before example before </xsl:param>
-
+    <xsl:param name="formal.title.placement"> figure after table before example before </xsl:param>	
+      
     <!--подпись к рисункам и ссылкам к рисункам, url-ссылкам-->
     <xsl:param name="local.l10n.xml" select="document('')"/>
     <l:i18n xmlns:l="http://docbook.sourceforge.net/xmlns/l10n/1.0">

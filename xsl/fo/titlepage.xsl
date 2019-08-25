@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xsl:stylesheet 
-  xmlns:d="http://docbook.org/ns/docbook"
-  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xmlns:fo="http://www.w3.org/1999/XSL/Format"
-  exclude-result-prefixes="d"
-  version='1.0'>
+<xsl:stylesheet xmlns:d="http://docbook.org/ns/docbook"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fo="http://www.w3.org/1999/XSL/Format"
+  exclude-result-prefixes="d" version="1.0">
 
   <xsl:template match="*" mode="chapter.titlepage.recto.mode">
     <!-- if an element isn't found in this mode, -->
     <!-- try the generic titlepage.mode -->
     <xsl:apply-templates select="." mode="titlepage.mode"/>
   </xsl:template>
-  
+
   <xsl:template match="*" mode="chapter.titlepage.verso.mode">
     <!-- if an element isn't found in this mode, -->
     <!-- try the generic titlepage.mode -->
@@ -28,15 +25,13 @@
     <xsl:choose>
       <xsl:when test="d:info/d:title">
         <fo:inline color="#FB2400">
-          <xsl:apply-templates mode="book.titlepage.recto.auto.mode"
-            select="d:info/d:title"/>
+          <xsl:apply-templates mode="book.titlepage.recto.auto.mode" select="d:info/d:title"/>
         </fo:inline>
       </xsl:when>
     </xsl:choose>
     <xsl:choose>
       <xsl:when test="d:info/d:subtitle">
-        <xsl:apply-templates mode="book.titlepage.recto.auto.mode"
-          select="d:info/d:subtitle"/>
+        <xsl:apply-templates mode="book.titlepage.recto.auto.mode" select="d:info/d:subtitle"/>
       </xsl:when>
     </xsl:choose>
     <!-- Редакция -->
@@ -77,17 +72,15 @@
     <xsl:choose>
       <xsl:when test="d:info/d:title">
         <fo:inline color="#103090">
-          <xsl:apply-templates mode="book.titlepage.verso.auto.mode"
-            select="d:info/d:title"/>
+          <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="d:info/d:title"/>
         </fo:inline>
       </xsl:when>
     </xsl:choose>
-    <fo:block margin-top="0.2cm" margin-bottom="0.1cm" font-weight="bold"> Над документом
-      работали: </fo:block>
+    <fo:block margin-top="0.2cm" margin-bottom="0.1cm" font-weight="bold"> Над документом работали: </fo:block>
     <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="d:info/d:authorgroup"/>
     <fo:block margin-top="0.2cm" margin-bottom="0.1cm" font-weight="bold"> Редактор: </fo:block>
     <xsl:apply-templates mode="book.titlepage.verso.auto.mode" select="d:info/d:editor"/>
   </xsl:template>
-  
+
 
 </xsl:stylesheet>

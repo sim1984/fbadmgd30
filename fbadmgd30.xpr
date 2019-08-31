@@ -87,10 +87,10 @@
                                     <Boolean>true</Boolean>
                                 </field>
                                 <field name="outputFile">
-                                    <File>${cfd}/out/pdf/${cfn}.pdf</File>
+                                    <File>${cfd}/out/pdf/fbadmgd30.pdf</File>
                                 </field>
                                 <field name="outputResource">
-                                    <String>${cfd}/out/pdf/${cfn}.pdf</String>
+                                    <String>${cfd}/out/pdf/fbadmgd30.pdf</String>
                                 </field>
                                 <field name="openOtherLocationInBrowser">
                                     <Boolean>false</Boolean>

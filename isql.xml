@@ -1320,8 +1320,7 @@ SQL> set term ; +
         <para>Присутствие терминатора в выражении вызвало ошибку <quote>Unexpected end of
                 command</quote>. Анализатор SQL в ядре базы данных Firebird определил, что
                 <code>select 600</code> не является допустимым оператором. По этой причине лучше
-            всегда выбирать символ или символы, которые не будут путать синтаксический
-            анализатор.
+            всегда выбирать символ или символы, которые не будут путать синтаксический анализатор.
             <programlisting>
 SQL> set term !! ;
 
@@ -1332,5 +1331,344 @@ THE_BEAST
 666              
             </programlisting>
         </para>
+    </section>
+
+    <section xml:id="isql-prompts">
+        <title>Подсказки ISQL</title>
+
+        <formalpara>
+            <title>Подсказка SQL</title>
+
+            <para>Как показано выше, обычная подсказка <application>isql</application> для ввода —
+                это подсказка <code>SQL></code>. Это указывает на то, что предыдущая команда была
+                выполнена, и теперь <application>isql</application> ожидает обработки новой
+                команды.</para>
+        </formalpara>
+
+        <formalpara>
+            <title>Подсказка CON</title>
+
+            <para>Подсказка <code>CON></code> отображается, если пользователь нажимает клавишу ENTER
+                без завершения оператора SQL с помощью терминатора. Например:
+                <programlisting>
+SQL> HELP
+CON>                
+            </programlisting>
+            </para>
+        </formalpara>
+
+        <para>Всякий раз, когда вы видите приглашение <code>CON></code>, вы можете либо продолжить
+            ввод оставшейся части команды, либо ввести терминатор для завершения команды. В
+            последнем случае команда будет выполнена после нажатия клавиши ENTER.</para>
+    </section>
+
+    <section xml:id="isql-errors">
+        <title>Обработка ошибок и поддержка исключений</title>
+
+        <para>Обработка исключений — это программная конструкция, предназначенная для обработки
+            ситуаций, которые нарушает нормальное выполнение программы. Это так называемые ошибки.
+            Исключением являются именованное сообщение об ошибке, определяемые пользователем,
+            написанные специально для базы данных и сохраненные в этой базе данных для использования
+            в хранимых процедурах, функциях, пакетах, анонимных блоках и триггерах.</para>
+        <para>Например, если в триггере обнаруживается, что значение для таблицы неверно, то
+            возникает исключение. Это приводит к откату всей транзакции, которую клиентское
+            приложение пытается зафиксировать. Исключения могут совместно использоваться различными
+            модулями приложения и даже различными приложениями, совместно использующими базу данных.
+            Они предоставляют простой способ стандартизировать обработку заранее запрограммированных
+            ошибок ввода.</para>
+        <para>Исключения составляют объекты базы данных, такие как таблицы, представления и домены,
+            и являются частью метаданных базы данных. Их можно создавать, изменять и удалять, как и
+            все другие объекты Firebird, используя <application>isql</application>.</para>
+        <para>В <application>isql</application> сообщения об ошибках содержат переменную SQLSTATE и
+            статус вектор Firebird. Расшифровку кодов ошибок SQLSTATE вы можете найти в "Руководстве
+            по языку SQL СУБД Firebird".</para>
+        <example>
+            <title>Сообщение об ошибке в isql</title>
+
+            <para>
+                <programlisting>
+<![CDATA[
+SQL> select 1/0 from rdb$database;
+
+               DIVIDE
+=====================
+Statement failed, SQLSTATE = 22012
+arithmetic exception, numeric overflow, or string truncation
+-Integer divide by zero.  The code attempted to divide an integer value by an integer divisor of zero.
+]]>                    
+                </programlisting>
+            </para>
+        </example>
+    </section>
+
+    <section xml:id="isql-transactions">
+        <title>Обработка транзакций</title>
+
+        <para>В <application>isql</application> транзакция начинается сразу после запуска утилиты.
+            Транзакция начинается в изоляции SNAPSHOT с разрешением блокировки в режиме WAIT.
+            Поскольку утилита Firebird <application>isql</application> принимает DDL, DML и другие
+            команды, транзакции обрабатываются соответствующим образом следующими способами: <itemizedlist>
+                <listitem>
+                    <para>Операторы DDL фиксируются автоматически в двух случаях:<itemizedlist>
+                            <listitem>
+                                <para>Когда операторы COMMIT включен в скрипт.</para>
+                            </listitem>
+                            <listitem>
+                                <para>Когда включена автоматическая фиксация транзакций для DDL
+                                    операторов (режим по умолчанию). В этом случае выполнение
+                                    каждого DDL оператора транзакция автоматически подтверждается
+                                    после ввода каждого оператора DDL, и стартует новая транзакция.
+                                    Чтобы отключить режим автоматической фиксации, выполните
+                                    инструкцию <code>SET AUTODDL OFF</code>. Для возврата в режим
+                                    автоматической фиксации для DDL операторов выполните инструкцию
+                                        <code>SET AUTODDL ON</code>.</para>
+                            </listitem>
+                        </itemizedlist></para>
+                </listitem>
+                <listitem>
+                    <para>Операторы DML для выборки или изменения данных стартуют новую транзакцию с
+                        уровнем изоляции SNAPSHOT, если она не была начата ранее. Такая транзакция
+                        будет активной до тех пор, пока не будет вручную подтверждена оператором
+                        COMMIT или отменена оператором ROLLBACK. </para>
+                </listitem>
+                <listitem>
+                    <para>Вы можете использовать различные команды SHOW в isql для запроса
+                        метаданных базы данных. При этом ISQL запускает транзакцию с уровнем
+                        изоляции READ COMMITED, что дает возможность видеть все изменения
+                        метаданных, подтвержденные другими пользователями. </para>
+                </listitem>
+            </itemizedlist></para>
+
+        <para>Пользователи могут указать уровень изоляции и другие параметры для следующей
+            транзакции с помощью оператора <code>SET TRANSACTION</code>. Он может быть выполнен
+            только тогда, когда не активна другая транзакция. В противном случае будет задан вопрос:
+            подтвердить или откатить активную транзакцию. Синтаксис оператора <code>SET
+                TRANSACTION</code> подробно описан в <quote>Руководство по языку SQL
+                Firebird</quote>.</para>
+
+        <example>
+            <title>Старт транзакции с режимом изолированности READ COMMITED</title>
+
+            <para>
+                <programlisting language="sql">
+SET TRANSACTION WAIT READ COMMITTED LOCK TIMEOUT 10;                    
+                </programlisting>
+            </para>
+        </example>
+
+        <note>
+            <para>Поскольку оператор <code>SET TRANSACTION</code> является оператором DSQL, а не
+                собственной командой <application>isql</application>, то информация о нём
+                отсутствует в справке выдаваемой оператором <code>HELP SET</code>.</para>
+        </note>
+    </section>
+
+    <section xml:id="isql-script_handling">
+        <title>Обработка скрипта</title>
+
+        <para>Пакет операторов DDL и/или DML в текстовом файле называется сценарием (скриптом).
+            Скрипты могут быть использованы для создания и изменения объектов базы данных
+            (метаданных). Они называются сценариями языка определения данных (DDL). Скрипты, которые
+            манипулируют данными путем выбора, вставки, обновления, удаления или выполнения
+            преобразований данных, называются скриптами языка манипулирования данными (DML).</para>
+
+        <para> Одной из наиболее важных задач, выполняемых <application>isql</application>, является
+            обработка скриптов. Он может обрабатывать как сценарии DDL, так и сценарии DML. Большие
+            файлы сценариев можно разбить на несколько файлов скриптов поменьше с помощью инструкции
+            INPUT. </para>
+
+        <formalpara>
+            <title>Синтаксис:</title>
+            <para>
+                <programlisting> 
+INPUT <replaceable>&lt;filespec&gt;</replaceable>                      
+                    </programlisting>
+            </para>
+        </formalpara>
+
+        <para>Данный оператор позволяет включить один файл сценария внутрь другого. Операторы
+            сценариев выполняются в том порядке, в котором они появляются в файле сценариев.
+            Настройка по умолчанию в <application>isql</application> для AUTODDL установлена на ON.
+            Вы можете использовать команду <code>SET AUTODDL</code>, чтобы контролировать, где или
+            когда будут подтверждены операторы изменения метаданных. </para>
+
+        <note>
+            <para>Параметр AUTODDL влияет только на операторы DDL. Он не фиксирует транзакцию для
+                операторов DML. Если вы смешиваете инструкции DDL и DML в одном и том же
+                интерактивном сеансе, то фиксации транзакций для DDL с помощью AUTODDL не фиксируют
+                ваши транзакции для операторов DML. Например:
+                <programlisting>
+SQL> set autoddl on;
+
+SQL> insert into test(a) values (666);
+SQL> commit;
+
+SQL> select * from test;
+
+A
+============
+666
+
+SQL> insert into test(a) values (999);
+SQL> select * from test;
+
+A
+============
+666
+999
+
+SQL> create table another_test(b integer);
+SQL> rollback;
+
+SQL> select * from test;
+
+A
+============
+666                
+            </programlisting>
+            </para>
+        </note>
+
+        <para>Скрипты могут перенаправить свои выходные данные в файл журнала с помощью команды
+                <code>OUTPUT <replaceable>&lt;file_name&gt;</replaceable></code>. Это можно ввести
+            непосредственно в приглашении <application>isql</application> или как часть самого файла
+            скрипта. </para>
+    </section>
+
+    <section xml:id="isql-commands">
+        <title>ISQL команды</title>
+
+        <para>Команды Isql влияют на работу самого isql и никак не влияют на базу данных или данные.
+            Эти команды используются для отображения справки, чтения, записи и запуска сценариев, а
+            также выполнение инструкций командной строки. Вы можете легко увидеть список доступных
+            команд, набрав команду HELP, которая выдаст следующий вывод: <screen>
+<![CDATA[
+SQL> HELP;
+Frontend commands:
+BLOBDUMP <blobid> <file>   -- dump BLOB to a file
+BLOBVIEW <blobid>          -- view BLOB in text editor
+EDIT     [<filename>]      -- edit SQL script file and execute
+EDIT                       -- edit current command buffer and execute
+HELP                       -- display this menu
+INput    <filename>        -- take input from the named SQL file
+OUTput   [<filename>]      -- write output to named file
+OUTput                     -- return output to stdout
+SET      <option>          -- (Use HELP SET for complete list)
+SHELL    <command>         -- execute Operating System command in sub-shell
+SHOW     <object> [<name>] -- display system information
+    <object> = CHECK, COLLATION, DATABASE, DOMAIN, EXCEPTION, FILTER, FUNCTION,
+               GENERATOR, GRANT, INDEX, PACKAGE, PROCEDURE, ROLE, SQL DIALECT,
+               SYSTEM, TABLE, TRIGGER, VERSION, USERS, VIEW
+EXIT                       -- exit and commit changes
+QUIT                       -- exit and roll back changes
+
+All commands may be abbreviated to letters in CAPitals
+]]>            
+        </screen>
+        </para>
+
+        <para>Теперь обсудим каждую из команд отдельно.</para>
+
+        <note>
+            <para>Обратите внимание на последнюю строку вывода команды help. Это объясняет, что
+                каждая из команд может быть сокращена до букв, отображаемых заглавными буквами. В
+                следующем обсуждении дополнительные символы будут отображаться, как указано выше,
+                строчными буквами. Например, команда ввода будет показана как INput, чтобы указать,
+                что символы 'put' являются необязательными.</para>
+        </note>
+
+        <section xml:id="isql-commands-blobdump">
+            <title>BLOBDUMP</title>
+
+            <indexterm>
+                <primary>ISQL команды</primary>
+                <secondary>BLOBDUMP</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Сохранение данных BLOB в указанном файле.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+BLOBDUMP <replaceable>&lt;blob_id&gt;</replaceable> <replaceable>&lt;filename&gt;</replaceable>                      
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора BLOBDUMP</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>blob_id</replaceable></entry>
+                                <entry>
+                                    <para>BLOB идентификатор.</para>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry><replaceable>filename</replaceable></entry>
+                                <entry>
+                                    <para>Имя файла в который необходимо сохранить BLOB.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+            <para>Эта команда позволяет вам скопировать BLOB из базы данных во внешний файл.
+                Оператор BLOBDUMP требует два параметра, идентификатор BLOB-объекта и имя файла. Вам
+                необходимо передать идентификатор BLOB-объекта в виде пары шестнадцатеричных чисел,
+                разделенных двоеточием. Первое число — это идентификатор таблицы, а второе —
+                последовательный номер в базе данных. Для получения этого идентификатора выполните
+                любой оператор SELECT, который выбирает столбец BLOB. Вывод покажет
+                шестнадцатеричный идентификатор BLOB выше или на месте столбца BLOB в зависимости от
+                того, установлен ли SET BLOBDISPLAY в ON или OFF.</para>
+            
+            <example>
+                <title>Сохранение BLOB во внешний файл</title>
+                
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> set blobdisplay off;
+
+SQL> select proj_id, proj_desc
+CON> from project
+CON> where proj_id = 'MKTPR';
+
+PROJ_ID PROJ_DESC
+======= =================
+MKTPR   85:10
+
+SQL> blobdump 85:10 c:\project.jpg;
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+            
+            <para>Идентификатор BLOB-объекта, необходимый в приведенном выше примере, равен
+                85:10.</para>
+            
+            <formalpara>
+                <title>Смотри также:</title>
+                
+                <para>SET BLOBDISPLAY.</para>
+            </formalpara>
+        </section>
     </section>
 </chapter>

@@ -1244,9 +1244,9 @@ SQL> commit;
 
 SQL> select * from test_proc;
 
-OOUTPUT
+     OOUTPUT
 ============
-666            
+         666            
         </programlisting>
         </para>
 
@@ -1276,18 +1276,18 @@ SQL> set term + ;
 
 SQL> select count(*) from employee+
 
-COUNT
+       COUNT
 ============
-42
+          42
 
 SQL> -- Change terminator from + to 'fred'
 SQL> set term fred +
 
 SQL> select count(*) from employee fred
 
-COUNT
+       COUNT
 ============
-42
+          42
 
 SQL> -- Change back from 'fred' to ;
 SQL> set term ; fred
@@ -1581,7 +1581,7 @@ All commands may be abbreviated to letters in CAPitals
             <title>BLOBDUMP</title>
 
             <indexterm>
-                <primary>ISQL команды</primary>
+                <primary>ISQL</primary>
                 <secondary>BLOBDUMP</secondary>
             </indexterm>
 
@@ -1638,10 +1638,10 @@ BLOBDUMP <replaceable>&lt;blob_id&gt;</replaceable> <replaceable>&lt;filename&gt
                 любой оператор SELECT, который выбирает столбец BLOB. Вывод покажет
                 шестнадцатеричный идентификатор BLOB выше или на месте столбца BLOB в зависимости от
                 того, установлен ли SET BLOBDISPLAY в ON или OFF.</para>
-            
+
             <example>
                 <title>Сохранение BLOB во внешний файл</title>
-                
+
                 <para>
                     <programlisting>
 <![CDATA[
@@ -1660,15 +1660,955 @@ SQL> blobdump 85:10 c:\project.jpg;
                     </programlisting>
                 </para>
             </example>
-            
+
             <para>Идентификатор BLOB-объекта, необходимый в приведенном выше примере, равен
                 85:10.</para>
-            
+
             <formalpara>
                 <title>Смотри также:</title>
-                
-                <para>SET BLOBDISPLAY.</para>
+
+                <para>SET BLOBDISPLAY, <link linkend="isql-commands-blobview"
+                    >BLOBVIEW</link>.</para>
             </formalpara>
         </section>
+
+        <section xml:id="isql-commands-blobview">
+            <title>BLOBVIEW</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>BLOBVIEW</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение данных BLOB в текстовом редакторе по умолчанию.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+BLOBVIEW <replaceable>&lt;blob_id&gt;</replaceable>                      
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора BLOBVIEW</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>blob_id</replaceable></entry>
+                                <entry>
+                                    <para>BLOB идентификатор.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда BLOBVIEW отображает данные BLOB в текстовом редакторе по умолчанию. </para>
+
+            <example>
+                <title>Открытие BLOB во внешнем текстовом редакторе</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> set blobdisplay off;
+
+SQL> select proj_id, proj_desc
+CON> from project
+CON> where proj_id = 'MKTPR';
+
+PROJ_ID PROJ_DESC
+======= =================
+MKTPR   85:10
+
+SQL> blobview 85:10;
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+
+            <para>В примере выше содержимое выбранного BLOB будет отображено во внешнем редакторе.
+                Когда редактор закрыт, управление возвращается в <application>isql</application>. Вы
+                не можете использовать <application>isql</application>, пока редактор открыт.</para>
+
+            <note>
+                <para>BLOBVIEW может вернуть ошибку <quote>Invalid transaction handle</quote> после
+                    закрытия редактора. Для исправления ситуации запустите транзакцию вручную с
+                    помощью команды <code>SET TRANSACTION</code>.</para>
+            </note>
+
+            <formalpara>
+                <title>Смотри также:</title>
+
+                <para><link linkend="isql-commands-blobdump">BLOBDUMP</link>.</para>
+            </formalpara>
+        </section>
+
+        <section xml:id="isql-commands-edit">
+            <title>EDIT</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>EDIT</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Вызов текстового редактора по умолчанию для скрипта.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+EDIT [<replaceable>&lt;filename&gt;</replaceable>]                      
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора EDIT</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>filename</replaceable></entry>
+                                <entry>
+                                    <para>Имя файла для редактирования.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда EDIT позволяет редактировать существующий файл. Это может быть файл команд
+                SQL, который будет использоваться командой ввода <application>isql</application>
+                (см. ниже), или любой другой текстовый файл. Файл должен существовать.</para>
+
+            <para>Если имя файла не указано, история всех ваших предыдущих команд будет отображаться
+                для редактирования.</para>
+
+            <note>
+                <para>Обратите внимание, что при выходе из редактора в этом случае команды,
+                    оставленные в буфере в конце редактирования, будут выполняться как файл
+                    сценария.</para>
+            </note>
+        </section>
+
+        <section xml:id="isql-commands-help">
+            <title>HELP</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>HELP</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение список команд <application>isql</application> с их
+                    описанием.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+HELP [SET]                    
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда HELP отображает список основных команд <application>isql</application> с
+                их описанием. <screen>
+<![CDATA[
+SQL> HELP;
+Frontend commands:
+BLOBDUMP <blobid> <file>   -- dump BLOB to a file
+BLOBVIEW <blobid>          -- view BLOB in text editor
+EDIT     [<filename>]      -- edit SQL script file and execute
+EDIT                       -- edit current command buffer and execute
+HELP                       -- display this menu
+INput    <filename>        -- take input from the named SQL file
+OUTput   [<filename>]      -- write output to named file
+OUTput                     -- return output to stdout
+SET      <option>          -- (Use HELP SET for complete list)
+SHELL    <command>         -- execute Operating System command in sub-shell
+SHOW     <object> [<name>] -- display system information
+    <object> = CHECK, COLLATION, DATABASE, DOMAIN, EXCEPTION, FILTER, FUNCTION,
+               GENERATOR, GRANT, INDEX, PACKAGE, PROCEDURE, ROLE, SQL DIALECT,
+               SYSTEM, TABLE, TRIGGER, VERSION, USERS, VIEW
+EXIT                       -- exit and commit changes
+QUIT                       -- exit and roll back changes
+
+All commands may be abbreviated to letters in CAPitals
+]]>            
+        </screen>
+            </para>
+
+            <para>Если после HELP присутствует необязательное ключевое слово SET, то будет
+                отображена справка по набору команд начинающихся с SET. <screen>
+<![CDATA[
+SQL> help set;
+Set commands:
+    SET                    -- display current SET options
+    SET AUTOddl            -- toggle autocommit of DDL statements
+    SET BAIL               -- toggle bailing out on errors in non-interactive mode
+    SET BLOB [ALL|<n>]     -- display BLOBS of subtype <n> or ALL
+    SET BLOB               -- turn off BLOB display
+    SET COUNT              -- toggle count of selected rows on/off
+    SET MAXROWS [<n>]      -- limit select stmt to <n> rows, zero is no limit
+    SET ECHO               -- toggle command echo on/off
+    SET EXPLAIN            -- toggle display of query access plan in the explained form
+    SET HEADING            -- toggle display of query column titles
+    SET LIST               -- toggle column or table display format
+    SET NAMES <csname>     -- set name of runtime character set
+    SET PLAN               -- toggle display of query access plan
+    SET PLANONLY           -- toggle display of query plan without executing
+    SET SQL DIALECT <n>    -- set sql dialect to <n>
+    SET STATs              -- toggle display of performance statistics
+    SET TIME               -- toggle display of timestamp with DATE values
+    SET TERM <string>      -- change statement terminator string
+    SET WIDTH <col> [<n>]  -- set/unset print width to <n> for column <col>
+
+All commands may be abbreviated to letters in CAPitals
+]]>            
+        </screen>
+            </para>
+
+            <note>
+                <para>Обратите внимание на последнюю строку вывода команды help. Это объясняет, что
+                    каждая из команд может быть сокращена до букв, отображаемых заглавными буквами.
+                    В следующем обсуждении дополнительные символы будут отображаться, как указано
+                    выше, строчными буквами. Например, команда ввода будет показана как INput, чтобы
+                    указать, что символы 'put' являются необязательными.</para>
+            </note>
+        </section>
+
+        <section xml:id="isql-commands-add">
+            <title>ADD</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>ADD</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Добавление записей в таблицу.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+ADD <replaceable>&lt;tablename&gt;</replaceable>                    
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора ADD</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>tablename</replaceable></entry>
+                                <entry>
+                                    <para>Имя таблицы для добавления данных.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда ADD запрашивает данные для каждого столбца, указанной таблицы, и добавляет
+                запись в таблицу. Вы можете добавить столько записей, сколько пожелаете, так как
+                команда продолжается до тех пор, пока не произойдет ошибка или не будет нажата
+                клавиша ENTER без данных. Если вы хотите установить для столбца значение NULL,
+                введите его в точности так, как показано.</para>
+
+            <example>
+                <title>Добавление данных в таблицу с помощью команды ADD</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> add country;
+
+Enter data or NULL for each column. RETURN to end.
+Enter COUNTRY>Scotland
+Enter CURRENCY>GBP
+Enter COUNTRY>
+
+SQL> commit;
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+        </section>
+
+        <section xml:id="isql-commands-copy">
+            <title>COPY</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>COPY</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Копирование структуры таблицы.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+COPY <replaceable>&lt;from_tablename&gt;</replaceable> <replaceable>&lt;to_tablename&gt;</replaceable> [<replaceable>&lt;other_database&gt;</replaceable>]                  
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора COPY</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>from_tablename</replaceable></entry>
+                                <entry>
+                                    <para>Имя таблицы из которой делается копия.</para>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry><replaceable>to_tablenamee</replaceable></entry>
+                                <entry>
+                                    <para>Имя таблицы в которую будет сделана копия.</para>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry><replaceable>other_database</replaceable></entry>
+                                <entry>
+                                    <para>Спецификация для подключения к другой базе данных, в
+                                        которую будет производится копирование. </para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда COPY позволяет скопировать большую часть структуры таблицы в новую таблицу
+                в текущей базе данных или другой. К сожалению, у неё есть проблемы: <itemizedlist>
+                    <listitem>
+                        <para>Она выполняет командную строку для выполнения работы и подключается к
+                            принимающей базе данных с помощью приложения с именем
+                                <application>isql</application>. Если ваша система переименовала
+                                <filename>isql</filename> в <filename>isql-fb</filename>, вы на
+                            самом деле в конечном итоге запустите неправильное приложение
+                                <application>isql</application>, и единственным результатом будет
+                            запутанная ошибка.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Предполагается, что <application>isql</application> будет находится в
+                                <filename>$PATH</filename> или <filename>%PATH%</filename>. </para>
+                    </listitem>
+                    <listitem>
+                        <para>Вам необходимо определить <envar>ISC_USER</envar> и
+                                <envar>ISC_PASSWORD</envar> для дочернего процесса
+                                <application>isql</application> для входа в получающую базу данных
+                            для создания таблицы. Это очень небезопасно.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Из-за необходимости в <envar>ISC_USER</envar> и
+                                <envar>ISC_PASSWORD</envar> принимающая база данных должна работать
+                            на том же сервере, что и исходная база данных.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Данные таблицы не копируются в принимающую базу данных (или таблицу).
+                            Копируются только следующие части структур таблицы:<itemizedlist>
+                                <listitem>
+                                    <para>Домены, необходимые для воссоздания таблицы. Это
+                                        применимо, только если копия находится в другой базе
+                                        данных.</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Сама таблица будет создана.</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Ограничение первичного ключа, если оно есть.</para>
+                                </listitem>
+                            </itemizedlist></para>
+                    </listitem>
+                    <listitem>
+                        <para>Копируется не вся структура таблицы. Отсутствуют:<itemizedlist>
+                                <listitem>
+                                    <para>Ограничения внешнего ключа.</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Ограничения проверок (CHECK).</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Индексы, за исключением индекса необходимого для поддержки
+                                        первичного ключа.</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Триггеры.</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Все данные таблицы.</para>
+                                </listitem>
+                            </itemizedlist></para>
+                    </listitem>
+                </itemizedlist></para>
+
+            <para>Если вы хотите скопировать в другую базу данных, то другая база данных должна быть
+                на том же сервере, что и текущая. Например, вы не можете подключиться к базе данных
+                на сервере с именем tux и скопировать таблицу в базу данных, работающую на сервере
+                tuxrep. Команда COPY не может передать имя пользователя и/или пароль, установка
+                    <envar>ISC_USER</envar> и <envar>ISC_PASSWORD</envar> влияет сразу на все
+                подключения, пользователь может отсутствовать на другом сервере или у него может
+                быть другой пароль. </para>
+
+            <example>
+                <title>Копирование структуры таблицы командой COPY</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+tux>$ export ISC_USER=SYSDBA
+tux>$ export ISC_PASSWORD=secret
+tux>$ isql employee
+
+Database: employee, User: sysdba
+
+SQL> -- MAke a copy of the employee table into this database.
+SQL> copy employee employee_2;
+
+SQL> -- Compare table structures...
+SQL> show table employee;
+
+EMP_NO              (EMPNO) SMALLINT Not Null
+FIRST_NAME          (FIRSTNAME) VARCHAR(15) Not Null
+LAST_NAME           (LASTNAME) VARCHAR(20) Not Null
+PHONE_EXT           VARCHAR(4) Nullable
+HIRE_DATE           TIMESTAMP Not Null DEFAULT 'NOW'
+DEPT_NO             (DEPTNO) CHAR(3) Not Null
+                    CHECK (VALUE = '000' OR
+                    (VALUE > '0' AND VALUE <= '999') OR VALUE IS NULL)
+JOB_CODE            (JOBCODE) VARCHAR(5) Not Null
+                    CHECK (VALUE > '99999')
+JOB_GRADE           (JOBGRADE) SMALLINT Not Null
+CHECK               (VALUE BETWEEN 0 AND 6)
+JOB_COUNTRY         (COUNTRYNAME) VARCHAR(15) Not Null
+SALARY              (SALARY) NUMERIC(10, 2) Not Null DEFAULT 0
+                    CHECK (VALUE > 0)
+FULL_NAME           Computed by: (last_name || ', ' || first_name)
+CONSTRAINT INTEG_28:
+  Foreign key (DEPT_NO) References DEPARTMENT (DEPT_NO)
+CONSTRAINT INTEG_29:
+  Foreign key (JOB_CODE, JOB_GRADE, JOB_COUNTRY)
+  References JOB (JOB_CODE, JOB_GRADE, JOB_COUNTRY)
+CONSTRAINT INTEG_27:
+  Primary key (EMP_NO)
+CONSTRAINT INTEG_30:
+  CHECK ( salary >= (SELECT min_salary FROM job WHERE
+                     job.job_code = employee.job_code AND
+                     job.job_grade = employee.job_grade AND
+                     job.job_country = employee.job_country) AND
+          salary <= (SELECT max_salary FROM job WHERE
+                     job.job_code = employee.job_code AND
+                     job.job_grade = employee.job_grade AND
+                     job.job_country = employee.job_country))
+Triggers on Table EMPLOYEE:
+SET_EMP_NO, Sequence: 0, Type: BEFORE INSERT, Active
+SAVE_SALARY_CHANGE, Sequence: 0, Type: AFTER UPDATE, Active
+
+SQL> show table employee_2;
+
+EMP_NO              (EMPNO) SMALLINT Not Null
+FIRST_NAME          (FIRSTNAME) VARCHAR(15) Not Null
+LAST_NAME           (LASTNAME) VARCHAR(20) Not Null
+PHONE_EXT           VARCHAR(4) Nullable
+HIRE_DATE           TIMESTAMP Not Null DEFAULT 'NOW'
+DEPT_NO             (DEPTNO) CHAR(3) Not Null
+                    CHECK (VALUE = '000' OR
+                          (VALUE > '0' AND VALUE <= '999') OR VALUE IS NULL)
+JOB_CODE            (JOBCODE) VARCHAR(5) Not Null
+                    CHECK (VALUE > '99999')
+JOB_GRADE           (JOBGRADE) SMALLINT Not Null
+                    CHECK (VALUE BETWEEN 0 AND 6)
+JOB_COUNTRY         (COUNTRYNAME) VARCHAR(15) Not Null
+SALARY              (SALARY) NUMERIC(10, 2) Not Null DEFAULT 0
+CHECK               (VALUE > 0)
+FULL_NAME           Computed by: (last_name || ', ' || first_name)
+CONSTRAINT INTEG_93:
+  Primary key (EMP_NO)
+  
+SQL> -- Check indices on both tables...
+SQL> show indices employee;
+
+NAMEX INDEX ON EMPLOYEE(LAST_NAME, FIRST_NAME)
+RDB$FOREIGN8 INDEX ON EMPLOYEE(DEPT_NO)
+RDB$FOREIGN9 INDEX ON EMPLOYEE(JOB_CODE, JOB_GRADE, JOB_COUNTRY)
+RDB$PRIMARY7 UNIQUE INDEX ON EMPLOYEE(EMP_NO)
+
+SQL> show indices employee_2;
+RDB$PRIMARY27 UNIQUE INDEX ON EMPLOYEE_2(EMP_NO)
+
+SQL> -- Check data counts on both tables...
+SQL> select count(*) from employee;
+
+       COUNT
+============
+          42
+
+SQL> select count(*) from employee_2;
+
+       COUNT
+============
+           0
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+
+            <para>Команда COPY работает только при условии, что ваше приложение
+                    <application>isql</application> действительно называется isql. Кроме того, если
+                в таблице много данных, вам все равно придется копировать их вручную, так как
+                команда копирования будет копировать только структуру таблицы. Помните, что в новой
+                таблице не будет ни триггеров, ни внешних ключей, ни индексов, кроме первичного
+                ключа, ни данных.</para>
+
+            <note>
+                <para>Возможно команда COPY будет удалена из ISQL в следующих версиях.</para>
+            </note>
+        </section>
+
+        <section xml:id="isql-commands-input">
+            <title>INPUT</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>INPUT</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Подключение файла скрипта.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+INPUT <replaceable>&lt;filename&gt;</replaceable>                    
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора INPUT</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>filename</replaceable></entry>
+                                <entry>
+                                    <para>Имя файла с подключаемым скриптом.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда INPUT читает и выполняет блок команд из указанного текстового файла
+                (скрипта SQL). Входные файлы могут содержать другие команды INPUT, предоставляя
+                таким образом возможность проектирования цепочного или структурированного набора
+                скриптов DDL.</para>
+
+            <example>
+                <title>Использование команды INPUT для включения скрипта</title>
+
+                <para>
+                    <programlisting>
+SQL> shell;
+
+$ cat test.sql
+drop table fred;
+commit;
+
+$ exit;
+
+SQL> show table fred;
+
+A       INTEGER Nullable
+B       INTEGER Not Null
+
+SQL> input test.sql;
+
+SQL> show table fred;
+There is no table FRED in this database                        
+                    </programlisting>
+                </para>
+            </example>
+
+            <formalpara>
+                <title>Смотри также:</title>
+
+                <para><link linkend="isql-commands-shell">SHELL</link>.</para>
+            </formalpara>
+        </section>
+
+        <section xml:id="isql-commands-output">
+            <title>OUTPUT</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>OUTPUT</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Перенаправление вывода.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+OUTPUT [<replaceable>&lt;filename&gt;</replaceable>]                    
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора OUTPUT</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>filename</replaceable></entry>
+                                <entry>
+                                    <para>Имя файла для вывода.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда OUTPUT перенаправляет весь вывод, который обычно отображается на экране, в
+                определенный файл. Если указано имя файла, все последующие выходные данные
+                отправляются в этот файл и не отображаются на экране. Если имя файла не указано,
+                вывод снова перенаправляется на экран.</para>
+
+            <example>
+                <title>Использование команды OUTPUT</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> output test.log;
+
+SQL> show tables;
+
+SQL> output;
+
+SQL> shell;
+
+$ cat test.log
+
+COUNTRY              CUSTOMER
+DEPARTMENT           EMPLOYEE
+EMPLOYEE_PROJECT     FRED
+JOB                  PROJECT
+PROJ_DEPT_BUDGET     SALARY_HISTORY
+SALES
+]]>                       
+                    </programlisting>
+                </para>
+            </example>
+
+            <formalpara>
+                <title>Смотри также:</title>
+
+                <para><link linkend="isql-commands-shell">SHELL</link>.</para>
+            </formalpara>
+        </section>
+
+        <section xml:id="isql-commands-set">
+            <title>SET</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение текущий установок.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SET                  
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда SET выводит текущие опции установленные с помощью команд SET.</para>
+
+            <example>
+                <title>Использование команды SET</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> SET;
+
+Print statistics:        OFF
+Echo commands:           OFF
+List format:             OFF
+Show Row Count:          OFF
+Select maxrows limit:    0
+Autocommit DDL:          ON
+Access Plan:             OFF
+Access Plan only:        OFF
+Explain Access Plan:     OFF
+Display BLOB type:       1
+Column headings:         ON
+Terminator:              ;
+Time:                    OFF
+Warnings:                ON
+Bail on error:           OFF
+Local statement timeout: 0
+
+SQL>
+]]>                       
+                    </programlisting>
+                </para>
+            </example>
+        </section>
+
+        <section xml:id="isql-commands-shell">
+            <title>SHELL</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHELL</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Предоставление доступа к командной строке.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHELL [<replaceable>&lt;command&gt;</replaceable>]                  
+                    </programlisting>
+                </para>
+            </formalpara>
+
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHELL</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>command</replaceable></entry>
+                                <entry>
+                                    <para>Команда системной консоли.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда SHELL позволяет вам временно выйти из isql и использовать сеанс системной
+                оболочки для дальнейшей обработки. При этом не происходит подтверждение или откат
+                любой транзакции. </para>
+
+            <para>Аргумент <replaceable>&lt;command&gt;</replaceable> является необязательным, это
+                команда или вызов, допустимый в командной строке, из которой была запущена
+                    <application>isql</application>. Команда будет выполнена, а управление
+                возвращено <application>isql</application>. Если команда не указана,
+                    <application>isql</application> открывает интерактивную сессию в командной
+                строке. При выходе из оболочки вы вернетесь в <application>isql</application>. Вы не
+                можете использовать сеанс <application>isql</application>, который активировал
+                оболочку, пока сеанс оболочки остается открытым.</para>
+
+            <example>
+                <title>Использование команды SHELL</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> shell;
+
+$ cat test.log
+
+  COUNTRY              CUSTOMER
+  DEPARTMENT           EMPLOYEE
+  EMPLOYEE_PROJECT     FRED
+  JOB                  PROJECT
+  PROJ_DEPT_BUDGET     SALARY_HISTORY
+  SALES
+$ exit
+SQL>
+]]>                       
+                    </programlisting>
+                </para>
+            </example>
+        </section>
+
+        <section xml:id="isql-commands-exit">
+            <title>EXIT</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>EXIT</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Выход из isql.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+EXIT                  
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда EXIT подтверждает текущую транзакцию без подсказки, закрывает базу данных
+                и завершает сессию <application>isql</application>.</para>
+        </section>
+
+        <section xml:id="isql-commands-quit">
+            <title>QUIT</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>QUIT</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Выход из isql.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+QUIT                  
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда QUIT отменяет текущую транзакцию и закрывает базу данных и завершает
+                сессию <application>isql</application>.</para>
+        </section>
+    </section>
+    
+    <section xml:id="isql-commands_set">
+        <title>ISQL SET команды</title>
+        
+        <para></para>
     </section>
 </chapter>

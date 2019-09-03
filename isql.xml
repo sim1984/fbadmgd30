@@ -1667,8 +1667,8 @@ SQL> blobdump 85:10 c:\project.jpg;
             <formalpara>
                 <title>Смотри также:</title>
 
-                <para>SET BLOBDISPLAY, <link linkend="isql-commands-blobview"
-                    >BLOBVIEW</link>.</para>
+                <para><link linkend="isql-commands_set-set_blob">SET BLOBDISPLAY</link>, <link
+                        linkend="isql-commands-blobview">BLOBVIEW</link>.</para>
             </formalpara>
         </section>
 
@@ -2605,10 +2605,430 @@ QUIT
                 сессию <application>isql</application>.</para>
         </section>
     </section>
-    
+
     <section xml:id="isql-commands_set">
         <title>ISQL SET команды</title>
-        
-        <para></para>
+
+        <para>Как объясняется в команде HELP, вы можете ввести команду HELP SET, чтобы перейти к
+            различным опциям доступных для SET команды. Команда HELP SET выводит следующую справку. <screen>
+<![CDATA[            
+SQL> help set;
+
+Set commands:
+    SET                    -- display current SET options
+    SET AUTOddl            -- toggle autocommit of DDL statements
+    SET BAIL               -- toggle bailing out on errors in non-interactive mode
+    SET BLOB [ALL|<n>]     -- display BLOBS of subtype <n> or ALL
+    SET BLOB               -- turn off BLOB display
+    SET COUNT              -- toggle count of selected rows on/off
+    SET MAXROWS [<n>]      -- limit select stmt to <n> rows, zero is no limit
+    SET ECHO               -- toggle command echo on/off
+    SET EXPLAIN            -- toggle display of query access plan in the explained form
+    SET HEADING            -- toggle display of query column titles
+    SET LIST               -- toggle column or table display format
+    SET NAMES <csname>     -- set name of runtime character set
+    SET PLAN               -- toggle display of query access plan
+    SET PLANONLY           -- toggle display of query plan without executing
+    SET SQL DIALECT <n>    -- set sql dialect to <n>
+    SET STATs              -- toggle display of performance statistics
+    SET TIME               -- toggle display of timestamp with DATE values
+    SET TERM <string>      -- change statement terminator string
+    SET WIDTH <col> [<n>]  -- set/unset print width to <n> for column <col>
+
+All commands may be abbreviated to letters in CAPitals        
+]]>
+        </screen>
+        </para>
+        <note>
+            <para> В выше приведённом примере команды BLOB являются неполными. Они должны быть
+                отображены как BLOBdisplay. Далее мы будем использовать полную версию
+                команды.</para>
+        </note>
+
+        <para>Последняя строка вышеприведенного вывода указывает, что эти команды могут быть
+            сокращены до заглавных букв. К сожалению, кроме команды SET AUTOddl, ни одна из других
+            не имеет краткой формы.</para>
+
+        <section xml:id="isql-commands_set-set">
+            <title>SET</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение текущий установок.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SET                  
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда SET выводит текущие опции установленные с помощью команд SET.</para>
+
+            <example>
+                <title>Использование команды SET</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> SET;
+
+Print statistics:        OFF
+Echo commands:           OFF
+List format:             OFF
+Show Row Count:          OFF
+Select maxrows limit:    0
+Autocommit DDL:          ON
+Access Plan:             OFF
+Access Plan only:        OFF
+Explain Access Plan:     OFF
+Display BLOB type:       1
+Column headings:         ON
+Terminator:              ;
+Time:                    OFF
+Warnings:                ON
+Bail on error:           OFF
+Local statement timeout: 0
+
+SQL>
+]]>                       
+                    </programlisting>
+                </para>
+            </example>
+        </section>
+
+        <section xml:id="isql-commands_set-set_autoddl">
+            <title>SET AUTODDL</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET AUTODDL</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Установка или отключение автоматического подтверждения для DDL
+                    операторов.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SET AUTOddl [ON | OFF]                 
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда SET AUTODDL устанавливает будет ли автоматически подтверждаться транзакция
+                для DDL операторов. Команда без каких-либо параметров действует как переключатель,
+                она отключает функцию AUTODLL, если она включена или наоборот. Вы можете указать
+                конкретный параметр, чтобы прояснить свои намерения. Параметр должен быть одним из
+                двух ON или OFF. Команда SET без параметров отобразит текущую настройку. По
+                умолчанию функция AUTODDL включена.</para>
+        </section>
+
+        <section xml:id="isql-commands_set-set_bail">
+            <title>SET BAIL</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET BAIL</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Передача обработки ошибок операционной системе.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SET BAIL [ON | OFF]                 
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда SET BAIL устанавливает, будет ли isql останавливать выполнение скрипта в
+                пакетном режиме при возникновении ошибки и передавать управление операционной
+                системе, возвращая при этом код ошибки. В интерактивном режиме при возникновении
+                ошибок <application>isql</application> не будет прекращать свою работу.</para>
+
+            <para>Выполнение этой команды без передачи параметра приводит к переключению текущего
+                состояния. Если SET BAIL включен, то он отключится и наоборот.</para>
+        </section>
+
+        <section xml:id="isql-commands_set-set_blob">
+            <title>SET BLOB</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET BLOB</secondary>
+            </indexterm>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET BLOBdisplay</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Включение или выключение отображения подтипа BLOB.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SET BLOB [<replaceable>&lt;n&gt;</replaceable> |ALL | OFF] 
+                        
+SET BLOBDISPLAY [<replaceable>&lt;n&gt;</replaceable> |ALL | OFF]                         
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SET BLOB </title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>n</replaceable></entry>
+                                <entry>
+                                    <para>Номер подтипа BLOB. Значение по умолчанию n=1 (текст).
+                                        Положительные числа определены в системе; отрицательные
+                                        числа определяются пользователем.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда SET BLOB определяет, должны ли данные столбца BLOB отображаться в выводе.
+                Если параметры не переданы в команду SET BLOB или передан параметр OFF, то поля типа
+                BLOB отображаться не будут, вместо них будут отображаться идентификаторы BLOB.
+                Идентификатор BLOB представляет собой два шестнадцатеричных числа, разделенных
+                двоеточием. Первое число — это идентификатор таблицы, а второе — последовательный
+                номер в базе данных.</para>
+
+            <para>Если в команду SET BLOB передан параметр ALL, то будут отображаться BLOB поля всех
+                подтипов.</para>
+
+            <para>Если передано число, представляющее подтип BLOB, то будут отображаться только BLOB
+                с указанным подтипом. По умолчанию отображаются поля с подтипом 1 (текстовые
+                данные).</para>
+
+            <example>
+                <title>Использование SET BLOB</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> -- Don't display any blob data.
+SQL> set blob off;
+
+SQL> select proj_desc
+CON> from project
+CON> where proj_id = 'HWRII';
+
+        PROJ_DESC
+=================
+           85:1e4
+
+SQL> -- Display all blob data.
+SQL>  set blobdisplay all;
+
+SQL> select proj_desc
+CON> from project
+CON> where proj_id = 'HWRII';
+
+        PROJ_DESC
+=================
+           85:1e4
+==============================================================================
+PROJ_DESC:
+Integrate the hand-writing recognition module into the
+universal language translator.
+
+==============================================================================
+
+SQL> -- Only display type 1 blob data = text.
+SQL> set blob 1;
+
+SQL> select proj_desc
+CON> from project
+CON> where proj_id = 'HWRII';
+
+        PROJ_DESC
+=================
+           85:1e4
+==============================================================================
+PROJ_DESC:
+Integrate the hand-writing recognition module into the
+universal language translator.
+
+==============================================================================
+
+SQL> -- Only display blob type 7 = not text!
+SQL> set blob 7;
+
+SQL> select proj_desc
+CON> from project
+CON> where proj_id = 'HWRII';
+
+        PROJ_DESC
+=================
+           85:1e4
+==============================================================================
+PROJ_DESC:
+BLOB display set to subtype 7. This BLOB: subtype = 1
+==============================================================================
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+
+            <para>В последнем примере вы заметите, что было отображено сообщение о том, что мы
+                отображаем данные BLOB только для подтипа 7, а данные BLOB в этой таблице являются
+                подтипом 1, поэтому данные не отображаются.</para>
+
+            <formalpara>
+                <title>Смотри также:</title>
+
+                <para><link linkend="isql-commands-blobdump">BLOBDUMP</link>, <link
+                        linkend="isql-commands-blobview">BLOBVIEW</link>.</para>
+            </formalpara>
+        </section>
+
+        <section xml:id="isql-commands_set-set_bulk_insert">
+            <title>SET BULK_INSERT</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET BULK_INSERT</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Пакетная вставка записей в таблицу.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SET BULK_INSERT <replaceable>&lt;prepared insert statement&gt;</replaceable>                                             
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SET BULK_INSERT </title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>prepared insert statement</replaceable></entry>
+                                <entry>
+                                    <para>Подготовленный оператор INSERT.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда SET BULK_INSERT осуществляет примитивную обработку подготовленных запросов
+                на вставку. После ввода этой команды пользователь входит в интерактивный режим
+                    (<code>BULK></code>), где требуется ввести параметры в виде кортежа
+                        <code>(<replaceable>val1</replaceable>, ...,
+                    <replaceable>valN</replaceable>)</code>. Для выхода из интерактивного режима
+                введите пустую строку или любой символ, отличный от <quote>(</quote> и
+                    <quote>--</quote> (можно явно выйти, введя слово STOP). Кортежи должны
+                располагаться на одной строке, за исключением параметров в кавычках. Однако, если
+                добавить <quote>+++</quote> после запятой, параметры кортежа можно переносить на
+                следующую строку. Одиночные комментарии (<quote>--</quote>) можно добавлять только
+                между кортежами. Команды COMMIT или COMMIT WORK вводятся с первого символа строки и
+                располагаются на одной строке. Любые символы, идущие за кортежем, кроме
+                    <quote>)</quote> и <quote>+++</quote>, будут игнорироваться.</para>
+
+            <example>
+                <title>Использование SET BULK_INSERT для пакетной вставки</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> create table t1(id int not null primary key, name varchar(50));
+
+SQL> set bulk_insert insert into t1(id, name) values(?, ?);
+BULK> (1, 'a')
+BULK> (2, 'b')
+BULK> (3, 'c')
+BULK> commit;
+BULK>
+SQL> select * from t1;
+
+          ID NAME
+============ ==================================================
+           1 a
+           2 b
+           3 c
+           
+SQL> set bulk_insert insert into t1(id, name) values(?, ?);
+BULK> -- insert 4 record
+BULK> (4, 'abcd')
+BULK> (5, +++
+CON> 'efg')
+BULK> stop
+
+SQL> commit;
+
+SQL> select * from t1;
+
+          ID NAME
+============ ==================================================
+           1 a
+           2 b
+           3 c
+           4 abcd
+           5 efg           
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+        </section>
     </section>
 </chapter>

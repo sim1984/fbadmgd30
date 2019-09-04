@@ -2076,7 +2076,7 @@ COPY <replaceable>&lt;from_tablename&gt;</replaceable> <replaceable>&lt;to_table
                     </listitem>
                     <listitem>
                         <para>Данные таблицы не копируются в принимающую базу данных (или таблицу).
-                            Копируются только следующие части структур таблицы:<itemizedlist>
+                            Копируются только следующие части структур таблицы:<itemizedlist spacing="compact">
                                 <listitem>
                                     <para>Домены, необходимые для воссоздания таблицы. Это
                                         применимо, только если копия находится в другой базе
@@ -2091,7 +2091,7 @@ COPY <replaceable>&lt;from_tablename&gt;</replaceable> <replaceable>&lt;to_table
                             </itemizedlist></para>
                     </listitem>
                     <listitem>
-                        <para>Копируется не вся структура таблицы. Отсутствуют:<itemizedlist>
+                        <para>Копируется не вся структура таблицы. Отсутствуют:<itemizedlist spacing="compact">
                                 <listitem>
                                     <para>Ограничения внешнего ключа.</para>
                                 </listitem>

@@ -2076,7 +2076,8 @@ COPY <replaceable>&lt;from_tablename&gt;</replaceable> <replaceable>&lt;to_table
                     </listitem>
                     <listitem>
                         <para>Данные таблицы не копируются в принимающую базу данных (или таблицу).
-                            Копируются только следующие части структур таблицы:<itemizedlist spacing="compact">
+                            Копируются только следующие части структур таблицы:<itemizedlist
+                                spacing="compact">
                                 <listitem>
                                     <para>Домены, необходимые для воссоздания таблицы. Это
                                         применимо, только если копия находится в другой базе
@@ -2091,7 +2092,8 @@ COPY <replaceable>&lt;from_tablename&gt;</replaceable> <replaceable>&lt;to_table
                             </itemizedlist></para>
                     </listitem>
                     <listitem>
-                        <para>Копируется не вся структура таблицы. Отсутствуют:<itemizedlist spacing="compact">
+                        <para>Копируется не вся структура таблицы. Отсутствуют:<itemizedlist
+                                spacing="compact">
                                 <listitem>
                                     <para>Ограничения внешнего ключа.</para>
                                 </listitem>
@@ -3029,6 +3031,403 @@ SQL> select * from t1;
                     </programlisting>
                 </para>
             </example>
+        </section>
+
+        <section xml:id="isql-commands_set-set_count">
+            <title>SET COUNT</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET COUNT</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Включение или выключение отображения количества строк затронутых
+                    запросом.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SET COUNT [ON|OFF]                                            
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда SET COUNT включает или выключает отображение количества строк затронутых
+                DML запросом. Выполнение этой команды без передачи параметра приводит к переключению
+                текущего состояния.</para>
+
+            <para>
+                <programlisting>
+<![CDATA[
+SQL> set count on;
+
+SQL> select count(*) from employee;
+
+                COUNT
+=====================
+                   42
+
+Records affected: 1
+]]>                    
+                </programlisting>
+            </para>
+
+            <para>Количество затронутых записей отображается для всех DDL операторов, а не только
+                для SELECT. <programlisting>
+<![CDATA[
+SQL> create table fred( a integer);
+SQL> commit;
+
+SQL> insert into fred values (666);
+Records affected: 1
+
+SQL> update fred set a = 123 where a = 666;
+Records affected: 1
+
+SQL> delete from fred;
+Records affected: 1
+
+SQL> commit;
+]]>                    
+                </programlisting>
+            </para>
+
+            <formalpara>
+                <title>Смотри также:</title>
+
+                <para>SET ROWCOUNT.</para>
+            </formalpara>
+        </section>
+
+        <section xml:id="isql-commands_set-set_echo">
+            <title>SET ECHO</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET ECHO</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Включение или выключение отображения команд до их выполнения.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SET ECHO [ON|OFF]                                            
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда SET ECHO включает или выключает отображение команд до их выполнения. Вы
+                может отключить эхо-вывод для части файла сценария, хотя по умолчанию эхо вывод
+                выключен в ISQL. Выполнение этой команды без передачи параметра приводит к
+                переключению текущего состояния.</para>
+
+            <example>
+                <title>Использование команды SET ECHO</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> set echo on;
+
+SQL> select count(*) from rdb$database;
+select count(*) from rdb$database;
+
+                COUNT
+=====================
+                    1
+
+Records affected: 1
+SQL> set echo off;
+set echo off;
+
+SQL> select count(*) from rdb$database;
+
+                COUNT
+=====================
+                    1
+
+Records affected: 1
+]]>                    
+                </programlisting>
+                </para>
+            </example>
+
+            <para>Эта команда может быть полезна в файле сценария. Если вы получаете сообщение об
+                ошибке, иногда бывает трудно определить точный оператор SQL, вызвавший ее. Если вы
+                установите ECHO ON в своем скрипте, вы по крайней мере сможете точно определить,
+                какой оператор потерпел неудачу.</para>
+        </section>
+
+        <section xml:id="isql-commands_set-set_explain">
+            <title>SET EXPLAIN</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET EXPLAIN</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Включение или выключение отображения расширенного плана запроса.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SET EXPLAIN [ON|OFF]                                            
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда SET EXPLAIN включает или выключает отображение расширенного плана запроса.
+                Расширенный план выводит более подробную информацию о методах доступа используемых
+                оптимизатором, однако его нельзя включить в запрос. По умолчанию вывод расширенного
+                плана запроса отключен. Выполнение этой команды без передачи параметра приводит к
+                переключению текущего состояния.</para>
+
+            <example>
+                <title>Использование команды SET EXPLAIN</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> set explain on;
+SQL> set planonly on;
+SQL> select * from employee cross join rdb$database;
+
+Select Expression
+    -> Nested Loop Join (inner)
+        -> Table "RDB$DATABASE" Full Scan
+        -> Table "EMPLOYEE" Full Scan
+SQL>
+]]>                    
+                </programlisting>
+                </para>
+            </example>
+
+            <tip>
+                <para>Если вам необходимо вывести только план запроса без его выполнения, то вы
+                    можете выполнить команду <code>SET PLANONLY ON</code>.</para>
+            </tip>
+
+            <formalpara>
+                <title>Смотри также:</title>
+
+                <para>SET PLAN, SET PLANONLY.</para>
+            </formalpara>
+        </section>
+
+        <section xml:id="isql-commands_set-set_heading">
+            <title>SET HEADING</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET HEADING</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Включение или выключение отображения заголовков столбцов.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SET HEADING [ON|OFF]                                            
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда SET HEADING включает или выключает отображение заголовков столбцов. По
+                умолчанию отображение заголовков столбцов включено. Выполнение этой команды без
+                передачи параметра приводит к переключению текущего состояния.</para>
+
+            <example>
+                <title>Использование команды SET HEADING</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> set plan off;
+SQL> set heading off;
+SQL> select count(*) from employee;
+
+                   42
+
+SQL> set heading on;
+SQL> select count(*) from employee;
+
+                COUNT
+=====================
+                   42
+]]>                    
+                </programlisting>
+                </para>
+            </example>
+
+            <section xml:id="isql-commands_set-set_list">
+                <title>SET LIST</title>
+
+                <indexterm>
+                    <primary>ISQL</primary>
+                    <secondary>SET LIST</secondary>
+                </indexterm>
+
+                <formalpara>
+                    <title>Назначение:</title>
+
+                    <para>Включение или выключение отображения вывода результатов SELECT запроса в
+                        виде списка.</para>
+                </formalpara>
+
+                <formalpara>
+                    <title>Синтаксис:</title>
+                    <para>
+                        <programlisting> 
+SET LIST [ON|OFF]                                            
+                    </programlisting>
+                    </para>
+                </formalpara>
+
+                <para>Команда SET LIST управляет отображением данных, возвращаемых оператором
+                    SELECT. По умолчанию данные на экране выводятся в табличном варианте, где сверху
+                    названия столбцов, а под ними все строки, удовлетворяющие запросу SELECT.
+                    Включение режима списка приводит к другому формату, в котором заголовок каждого
+                    столбца отображается слева, а данные столбца — справа. Это повторяется для
+                    каждой строки, возвращаемой запросом. </para>
+
+                <para>Выполнение этой команды без передачи параметра приводит к переключению
+                    текущего состояния.</para>
+
+                <example>
+                    <title>Использование команды SET LIST</title>
+
+                    <para>
+                        <programlisting>
+<![CDATA[
+
+SQL> set list off;
+SQL> select emp_no, first_name, last_name, salary
+CON> from employee;
+
+ EMP_NO FIRST_NAME      LAST_NAME                           SALARY
+======= =============== ==================== =====================
+      2 Robert          Nelson                           105900.00
+      4 Bruce           Young                             97500.00
+      5 Kim             Lambert                          102750.00
+      8 Leslie          Johnson                           64635.00
+.............
+
+SQL> set list on;
+SQL> select emp_no, first_name, last_name, salary
+CON> from employee;
+
+EMP_NO                          2
+FIRST_NAME                      Robert
+LAST_NAME                       Nelson
+SALARY                          105900.00
+
+EMP_NO                          4
+FIRST_NAME                      Bruce
+LAST_NAME                       Young
+SALARY                          97500.00
+
+..........
+]]>                    
+                </programlisting>
+                    </para>
+                </example>
+            </section>
+
+            <section xml:id="isql-commands_set-set_names">
+                <title>SET NAMES</title>
+
+                <indexterm>
+                    <primary>ISQL</primary>
+                    <secondary>SET NAMES</secondary>
+                </indexterm>
+
+                <formalpara>
+                    <title>Назначение:</title>
+
+                    <para>Установка набора символов для последующий подключений.</para>
+                </formalpara>
+
+                <formalpara>
+                    <title>Синтаксис:</title>
+                    <para>
+                        <programlisting> 
+SET NAMES [<replaceable>&lt;character_set&gt;</replaceable>]                                         
+                    </programlisting>
+                    </para>
+                </formalpara>
+
+                <para>Оператор SET NAMES устанавливает набор символов для последующих подключений к
+                    базе данных с помощью isql. Это позволяет вам переопределить набор символов по
+                    умолчанию для базы данных. Чтобы вернуться к использованию набора символов по
+                    умолчанию, используйте SET NAMES без аргументов.</para>
+
+                <para>Используйте команду SET NAMES перед подключением к базе данных для того, чтобы
+                    указать требуемый набор символов. Список поддерживаемых наборов символов можно
+                    посмотреть выполнив запрос: <programlisting> 
+<![CDATA[
+SQL> select RDB$CHARACTER_SET_NAME
+CON> from RDB$CHARACTER_SETS
+CON> order by 1;
+
+RDB$CHARACTER_SET_NAME
+==============================
+ASCII
+BIG_5
+CP943C
+CYRL
+...
+DOS864
+DOS865
+DOS866
+DOS869
+...
+NONE
+OCTETS
+...
+UTF8
+...
+WIN1250
+WIN1251
+WIN1252
+...
+]]>                                        
+                    </programlisting>
+                </para>
+
+                <para>Выбор набора символов ограничивает возможные порядки сопоставления
+                    (сортировки) подмножеством всех доступных порядков сопоставления для заданного
+                    набора символов.</para>
+
+                <para>Если набор символов по умолчанию для базы данных не равен NONE, то в
+                    ситуациях, когда клиент использует другой набор символов для базы данных,
+                    возможно пострадать от повреждения данных, поскольку некоторые наборы символов
+                    не могут преобразовать некоторые символы в подходящий символ в другом наборе
+                    символов.</para>
+
+                <para>Если вы не передадите набор символов, то по умолчанию будет использоваться
+                    набор символов NONE.</para>
+            </section>
         </section>
     </section>
 </chapter>

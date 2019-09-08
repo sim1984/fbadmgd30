@@ -25,6 +25,10 @@
                 <personname><firstname>Алексей</firstname>
                     <surname>Ковязин</surname></personname>
             </author>
+            <author>
+                <personname><firstname>Kamala</firstname>
+                    <surname>Vadlamani</surname></personname>
+            </author>
         </authorgroup>
         <editor>
             <personname><firstname>Денис</firstname>

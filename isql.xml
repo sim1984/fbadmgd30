@@ -3226,7 +3226,8 @@ SQL>
             <formalpara>
                 <title>Смотри также:</title>
 
-                <para>SET PLAN, SET PLANONLY.</para>
+                <para><link linkend="isql-commands_set-set_plan">SET PLAN</link>, <link
+                        linkend="isql-commands_set-set_planonly">SET PLANONLY</link>.</para>
             </formalpara>
         </section>
 
@@ -3427,6 +3428,166 @@ WIN1252
 
                 <para>Если вы не передадите набор символов, то по умолчанию будет использоваться
                     набор символов NONE.</para>
+            </section>
+
+            <section xml:id="isql-commands_set-set_plan">
+                <title>SET PLAN</title>
+
+                <indexterm>
+                    <primary>ISQL</primary>
+                    <secondary>SET PLAN</secondary>
+                </indexterm>
+
+                <formalpara>
+                    <title>Назначение:</title>
+
+                    <para>Включение или отключение отображение плана запроса.</para>
+                </formalpara>
+
+                <formalpara>
+                    <title>Синтаксис:</title>
+                    <para>
+                        <programlisting> 
+SET PLAN [ON | OFF]                                         
+                    </programlisting>
+                    </para>
+                </formalpara>
+
+                <para>Команда SET PLAN определяет, будет ли <application>isql</application>
+                    отображать план, который он использовал для доступа к данным для каждого
+                    выполненного оператора. По умолчанию <application>isql</application> никогда не
+                    отображает план. Как и во многих других командах, отсутствие параметра
+                    переключает текущее состояние.</para>
+
+                <example>
+                    <title>Использование команды SET PLAN</title>
+
+                    <para>
+                        <programlisting>
+<![CDATA[
+SQL> set plan on;
+
+SQL> select emp_no, first_name, last_name
+CON> from employee
+CON> where emp_no = 107;
+
+PLAN (EMPLOYEE INDEX (RDB$PRIMARY7))
+
+ EMP_NO FIRST_NAME      LAST_NAME
+======= =============== ====================
+    107 Kevin           Cook
+
+SQL> update employee
+CON> set first_name = 'Norman'
+CON> where last_name = 'Cook';
+
+PLAN (EMPLOYEE INDEX (NAMEX))
+
+SQL> select count(*) from employee;
+
+PLAN (EMPLOYEE NATURAL)
+
+                COUNT
+=====================
+                   42
+]]>                            
+                        </programlisting>
+                    </para>
+                </example>
+
+                <para>План выполнения отображается перед выводом из оператора SELECT.</para>
+
+                <tip>
+                    <para>Для вывода расширенного плана используйте команду SET EXPLAIN.</para>
+                </tip>
+
+                <formalpara>
+                    <title>Смотри также:</title>
+
+                    <para><link linkend="isql-commands_set-set_explain">SET EXPLAIN</link>, <link
+                            linkend="isql-commands_set-set_planonly">SET PLANONLY</link>.</para>
+                </formalpara>
+            </section>
+
+            <section xml:id="isql-commands_set-set_planonly">
+                <title>SET PLANONLY</title>
+
+                <indexterm>
+                    <primary>ISQL</primary>
+                    <secondary>SET PLANONLY</secondary>
+                </indexterm>
+
+                <formalpara>
+                    <title>Назначение:</title>
+
+                    <para>Включение или отключение режима отображение только плана запроса без его
+                        выполнения.</para>
+                </formalpara>
+
+                <formalpara>
+                    <title>Синтаксис:</title>
+                    <para>
+                        <programlisting> 
+SET PLANONLY [ON | OFF]                                         
+                    </programlisting>
+                    </para>
+                </formalpara>
+
+                <para>Команда <code>SET PLANONLY ON</code> не позволяет Firebird фактически
+                    выполнить оператор SQL, а просто показывает план, который будет использоваться
+                    для доступа к данным. Эта команда опирается на команду SET PLAN. Если <code>SET
+                        PLAN OFF</code> был выполнен, то эта команда не имеет никакого эффекта,
+                    поэтому включение PLANONLY ON имеет дополнительный эффект неявного выполнения
+                        <code>SET PLAN ON</code>. Выполнение <code>SET PLANONLY OFF</code> не
+                    вызывает неявного выполнения <code>SET PLAN OFF</code>.</para>
+
+                <example>
+                    <title>Использование команды SET PLANONLY</title>
+
+                    <para>
+                        <programlisting>
+<![CDATA[
+SQL> set planonly on;
+
+SQL> select count(*) from employee;
+
+PLAN (EMPLOYEE NATURAL)
+]]>                            
+                        </programlisting>
+                    </para>
+                </example>
+
+                <para>Как и во многих других командах, отсутствие параметра переключает текущее
+                    состояние.</para>
+
+                <para>Действие команды <code>SET PLANONLY ON</code> также распространяется и на
+                    вывод расширенного плана без фактического выполнения запроса. </para>
+
+                <example>
+                    <title>Использование команды SET PLANONLY совместно с SET EXPLAIN</title>
+
+                    <para>
+                        <programlisting>
+<![CDATA[
+SQL> set explain on;
+SQL> set planonly on;
+
+SQL> select count(*) from employee;
+
+Select Expression
+    -> Aggregate
+        -> Table "EMPLOYEE" Full Scan
+]]>                            
+                        </programlisting>
+                    </para>
+                </example>
+
+                <formalpara>
+                    <title>Смотри также:</title>
+
+                    <para><link linkend="isql-commands_set-set_plan">SET PLAN</link>, <link
+                            linkend="isql-commands_set-set_explain">SET EXPLAIN</link>.</para>
+                </formalpara>
             </section>
         </section>
     </section>

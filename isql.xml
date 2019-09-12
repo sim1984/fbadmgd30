@@ -3589,6 +3589,161 @@ Select Expression
                             linkend="isql-commands_set-set_explain">SET EXPLAIN</link>.</para>
                 </formalpara>
             </section>
+
+            <section xml:id="isql-commands_set-set_sqlda">
+                <title>SET SQLDA_DISPLAY</title>
+
+                <indexterm>
+                    <primary>ISQL</primary>
+                    <secondary>SET SQLDA_DISPLAY</secondary>
+                </indexterm>
+
+                <formalpara>
+                    <title>Назначение:</title>
+
+                    <para>Включение или отключение отображения информации о внутренних структурах
+                        для входных и выходных сообщений.</para>
+                </formalpara>
+
+                <formalpara>
+                    <title>Синтаксис:</title>
+                    <para>
+                        <programlisting> 
+SET SQLDA_DISPLAY [ON | OFF]                                         
+                    </programlisting>
+                    </para>
+                </formalpara>
+
+                <para>Это скрытая команда, которая не упоминается в выводе команды HELP SET. Она
+                    отображает внутренние подробности о структурах для входных и выходных сообщений
+                    операторов SQL, выполняемых <application>isql</application>. Раньше она была
+                    доступна только в специальной отладочной сборке, но начиная с версии 2.0 она
+                    доступна в <application>isql</application>.</para>
+
+                <example>
+                    <title>Использование команды SET SQLDA_DISPLAY</title>
+
+                    <para>
+                        <programlisting>
+<![CDATA[
+SQL> set sqlda_display on;
+
+SQL> select count(*) from employee;
+
+INPUT message field count: 0
+
+OUTPUT message field count: 1
+01: sqltype: 580 INT64 scale: 0 subtype: 0 len: 8
+  :  name: COUNT  alias: COUNT
+  : table:   owner:
+
+                COUNT
+=====================
+                   42
+                   
+SQL> select emp_no as id, first_name from employee fetch first row only;
+
+INPUT message field count: 0
+
+OUTPUT message field count: 2
+01: sqltype: 500 SHORT scale: 0 subtype: 0 len: 2
+  :  name: EMP_NO  alias: ID
+  : table: EMPLOYEE  owner: SYSDBA
+02: sqltype: 448 VARYING scale: 0 subtype: 0 len: 15 charset: 0 NONE
+  :  name: FIRST_NAME  alias: FIRST_NAME
+  : table: EMPLOYEE  owner: SYSDBA
+
+     ID FIRST_NAME
+======= ===============
+      2 Robert       
+      
+SQL> select emp_no as id, first_name from employee 
+CON> where emp_no = ? fetch first row only;
+
+INPUT message field count: 1
+01: sqltype: 500 SHORT scale: 0 subtype: 0 len: 2
+  :  name:   alias:
+  : table:   owner:
+
+OUTPUT message field count: 2
+01: sqltype: 500 SHORT scale: 0 subtype: 0 len: 2
+  :  name: EMP_NO  alias: ID
+  : table: EMPLOYEE  owner: SYSDBA
+02: sqltype: 448 VARYING scale: 0 subtype: 0 len: 15 charset: 0 NONE
+  :  name: FIRST_NAME  alias: FIRST_NAME
+  : table: EMPLOYEE  owner: SYSDBA
+Statement failed, SQLSTATE = 07002
+Dynamic SQL Error
+-SQLDA error
+-No SQLDA for input values provided      
+]]>                            
+                        </programlisting>
+                    </para>
+                </example>
+
+                <note>
+                    <para>Обратите внимание, что при запуске команд HELP SET или SET информация об
+                        этой команде не отображается.</para>
+                </note>
+
+                <tip>
+                    <para>Как видите последний оператор вызвал ошибку, поскольку
+                            <application>isql</application> не позволяет запрашивать значения для
+                        входных параметров. Вы можете подавить её отключив фактическое выполнение
+                        команды с помощью <code>SET PLANONLY ON</code>.</para>
+                </tip>
+
+            </section>
+
+            <section xml:id="isql-commands_set-set_sqldialect">
+                <title>SET SQL DIALECT</title>
+
+                <indexterm>
+                    <primary>ISQL</primary>
+                    <secondary>SET SQL DIALECT</secondary>
+                </indexterm>
+
+                <formalpara>
+                    <title>Назначение:</title>
+
+                    <para>Установка SQL диалекта.</para>
+                </formalpara>
+
+                <formalpara>
+                    <title>Синтаксис:</title>
+                    <para>
+                        <programlisting> 
+SET SQL DIALECT {1 | 2 | 3}                                       
+                    </programlisting>
+                    </para>
+                </formalpara>
+
+                <para>Команда SET SQL DIALECT задает диалект SQL Firebird, на который должен быть
+                    изменен сеанс клиента. Если сеанс в настоящее время присоединен к базе данных,
+                    отличной от диалекта, указанного в команде, отображается предупреждение.</para>
+                <para>Посмотрите <link linkend="isql-sql_dialect">Диалекты SQL</link> для того,
+                    чтобы узнать о различиях между тремя диалектами.</para>
+                <example>
+                    <title>Использование команды SET SQL DIALECT</title>
+
+                    <para>
+                        <programlisting>
+<![CDATA[
+SQL> set sql dialect 1;
+WARNING: Client SQL dialect has been set to 1 when 
+connecting to Database SQL dialect 3 database.
+...
+SQL> set sql dialect 3;                
+]]>                            
+                        </programlisting>
+                    </para>
+                    <note>
+                        <para>Предупреждение в приведенном выше примере пришлось разделить на две
+                            строки, чтобы оно поместилось на странице. Обычно оно состоит из одной
+                            строки.</para>
+                    </note>
+                </example>
+            </section>
         </section>
     </section>
 </chapter>

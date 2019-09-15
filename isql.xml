@@ -3280,46 +3280,47 @@ SQL> select count(*) from employee;
                 </programlisting>
                 </para>
             </example>
+        </section>
 
-            <section xml:id="isql-commands_set-set_list">
-                <title>SET LIST</title>
+        <section xml:id="isql-commands_set-set_list">
+            <title>SET LIST</title>
 
-                <indexterm>
-                    <primary>ISQL</primary>
-                    <secondary>SET LIST</secondary>
-                </indexterm>
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET LIST</secondary>
+            </indexterm>
 
-                <formalpara>
-                    <title>Назначение:</title>
+            <formalpara>
+                <title>Назначение:</title>
 
-                    <para>Включение или выключение отображения вывода результатов SELECT запроса в
-                        виде списка.</para>
-                </formalpara>
+                <para>Включение или выключение отображения вывода результатов SELECT запроса в виде
+                    списка.</para>
+            </formalpara>
 
-                <formalpara>
-                    <title>Синтаксис:</title>
-                    <para>
-                        <programlisting> 
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
 SET LIST [ON|OFF]                                            
                     </programlisting>
-                    </para>
-                </formalpara>
+                </para>
+            </formalpara>
 
-                <para>Команда SET LIST управляет отображением данных, возвращаемых оператором
-                    SELECT. По умолчанию данные на экране выводятся в табличном варианте, где сверху
-                    названия столбцов, а под ними все строки, удовлетворяющие запросу SELECT.
-                    Включение режима списка приводит к другому формату, в котором заголовок каждого
-                    столбца отображается слева, а данные столбца — справа. Это повторяется для
-                    каждой строки, возвращаемой запросом. </para>
+            <para>Команда SET LIST управляет отображением данных, возвращаемых оператором SELECT. По
+                умолчанию данные на экране выводятся в табличном варианте, где сверху названия
+                столбцов, а под ними все строки, удовлетворяющие запросу SELECT. Включение режима
+                списка приводит к другому формату, в котором заголовок каждого столбца отображается
+                слева, а данные столбца — справа. Это повторяется для каждой строки, возвращаемой
+                запросом. </para>
 
-                <para>Выполнение этой команды без передачи параметра приводит к переключению
-                    текущего состояния.</para>
+            <para>Выполнение этой команды без передачи параметра приводит к переключению текущего
+                состояния.</para>
 
-                <example>
-                    <title>Использование команды SET LIST</title>
+            <example>
+                <title>Использование команды SET LIST</title>
 
-                    <para>
-                        <programlisting>
+                <para>
+                    <programlisting>
 <![CDATA[
 
 SQL> set list off;
@@ -3351,41 +3352,41 @@ SALARY                          97500.00
 ..........
 ]]>                    
                 </programlisting>
-                    </para>
-                </example>
-            </section>
+                </para>
+            </example>
+        </section>
 
-            <section xml:id="isql-commands_set-set_names">
-                <title>SET NAMES</title>
+        <section xml:id="isql-commands_set-set_names">
+            <title>SET NAMES</title>
 
-                <indexterm>
-                    <primary>ISQL</primary>
-                    <secondary>SET NAMES</secondary>
-                </indexterm>
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET NAMES</secondary>
+            </indexterm>
 
-                <formalpara>
-                    <title>Назначение:</title>
+            <formalpara>
+                <title>Назначение:</title>
 
-                    <para>Установка набора символов для последующий подключений.</para>
-                </formalpara>
+                <para>Установка набора символов для последующий подключений.</para>
+            </formalpara>
 
-                <formalpara>
-                    <title>Синтаксис:</title>
-                    <para>
-                        <programlisting> 
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
 SET NAMES [<replaceable>&lt;character_set&gt;</replaceable>]                                         
                     </programlisting>
-                    </para>
-                </formalpara>
+                </para>
+            </formalpara>
 
-                <para>Оператор SET NAMES устанавливает набор символов для последующих подключений к
-                    базе данных с помощью isql. Это позволяет вам переопределить набор символов по
-                    умолчанию для базы данных. Чтобы вернуться к использованию набора символов по
-                    умолчанию, используйте SET NAMES без аргументов.</para>
+            <para>Оператор SET NAMES устанавливает набор символов для последующих подключений к базе
+                данных с помощью isql. Это позволяет вам переопределить набор символов по умолчанию
+                для базы данных. Чтобы вернуться к использованию набора символов по умолчанию,
+                используйте SET NAMES без аргументов.</para>
 
-                <para>Используйте команду SET NAMES перед подключением к базе данных для того, чтобы
-                    указать требуемый набор символов. Список поддерживаемых наборов символов можно
-                    посмотреть выполнив запрос: <programlisting> 
+            <para>Используйте команду SET NAMES перед подключением к базе данных для того, чтобы
+                указать требуемый набор символов. Список поддерживаемых наборов символов можно
+                посмотреть выполнив запрос: <programlisting> 
 <![CDATA[
 SQL> select RDB$CHARACTER_SET_NAME
 CON> from RDB$CHARACTER_SETS
@@ -3414,56 +3415,55 @@ WIN1252
 ...
 ]]>                                        
                     </programlisting>
-                </para>
+            </para>
 
-                <para>Выбор набора символов ограничивает возможные порядки сопоставления
-                    (сортировки) подмножеством всех доступных порядков сопоставления для заданного
-                    набора символов.</para>
+            <para>Выбор набора символов ограничивает возможные порядки сопоставления (сортировки)
+                подмножеством всех доступных порядков сопоставления для заданного набора
+                символов.</para>
 
-                <para>Если набор символов по умолчанию для базы данных не равен NONE, то в
-                    ситуациях, когда клиент использует другой набор символов для базы данных,
-                    возможно пострадать от повреждения данных, поскольку некоторые наборы символов
-                    не могут преобразовать некоторые символы в подходящий символ в другом наборе
-                    символов.</para>
+            <para>Если набор символов по умолчанию для базы данных не равен NONE, то в ситуациях,
+                когда клиент использует другой набор символов для базы данных, возможно пострадать
+                от повреждения данных, поскольку некоторые наборы символов не могут преобразовать
+                некоторые символы в подходящий символ в другом наборе символов.</para>
 
-                <para>Если вы не передадите набор символов, то по умолчанию будет использоваться
-                    набор символов NONE.</para>
-            </section>
+            <para>Если вы не передадите набор символов, то по умолчанию будет использоваться набор
+                символов NONE.</para>
+        </section>
 
-            <section xml:id="isql-commands_set-set_plan">
-                <title>SET PLAN</title>
+        <section xml:id="isql-commands_set-set_plan">
+            <title>SET PLAN</title>
 
-                <indexterm>
-                    <primary>ISQL</primary>
-                    <secondary>SET PLAN</secondary>
-                </indexterm>
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET PLAN</secondary>
+            </indexterm>
 
-                <formalpara>
-                    <title>Назначение:</title>
+            <formalpara>
+                <title>Назначение:</title>
 
-                    <para>Включение или отключение отображение плана запроса.</para>
-                </formalpara>
+                <para>Включение или отключение отображение плана запроса.</para>
+            </formalpara>
 
-                <formalpara>
-                    <title>Синтаксис:</title>
-                    <para>
-                        <programlisting> 
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
 SET PLAN [ON | OFF]                                         
                     </programlisting>
-                    </para>
-                </formalpara>
+                </para>
+            </formalpara>
 
-                <para>Команда SET PLAN определяет, будет ли <application>isql</application>
-                    отображать план, который он использовал для доступа к данным для каждого
-                    выполненного оператора. По умолчанию <application>isql</application> никогда не
-                    отображает план. Как и во многих других командах, отсутствие параметра
-                    переключает текущее состояние.</para>
+            <para>Команда SET PLAN определяет, будет ли <application>isql</application> отображать
+                план, который он использовал для доступа к данным для каждого выполненного
+                оператора. По умолчанию <application>isql</application> никогда не отображает план.
+                Как и во многих других командах, отсутствие параметра переключает текущее
+                состояние.</para>
 
-                <example>
-                    <title>Использование команды SET PLAN</title>
+            <example>
+                <title>Использование команды SET PLAN</title>
 
-                    <para>
-                        <programlisting>
+                <para>
+                    <programlisting>
 <![CDATA[
 SQL> set plan on;
 
@@ -3492,60 +3492,60 @@ PLAN (EMPLOYEE NATURAL)
                    42
 ]]>                            
                         </programlisting>
-                    </para>
-                </example>
+                </para>
+            </example>
 
-                <para>План выполнения отображается перед выводом из оператора SELECT.</para>
+            <para>План выполнения отображается перед выводом из оператора SELECT.</para>
 
-                <tip>
-                    <para>Для вывода расширенного плана используйте команду SET EXPLAIN.</para>
-                </tip>
+            <tip>
+                <para>Для вывода расширенного плана используйте команду SET EXPLAIN.</para>
+            </tip>
 
-                <formalpara>
-                    <title>Смотри также:</title>
+            <formalpara>
+                <title>Смотри также:</title>
 
-                    <para><link linkend="isql-commands_set-set_explain">SET EXPLAIN</link>, <link
-                            linkend="isql-commands_set-set_planonly">SET PLANONLY</link>.</para>
-                </formalpara>
-            </section>
+                <para><link linkend="isql-commands_set-set_explain">SET EXPLAIN</link>, <link
+                        linkend="isql-commands_set-set_planonly">SET PLANONLY</link>.</para>
+            </formalpara>
+        </section>
 
-            <section xml:id="isql-commands_set-set_planonly">
-                <title>SET PLANONLY</title>
+        <section xml:id="isql-commands_set-set_planonly">
+            <title>SET PLANONLY</title>
 
-                <indexterm>
-                    <primary>ISQL</primary>
-                    <secondary>SET PLANONLY</secondary>
-                </indexterm>
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET PLANONLY</secondary>
+            </indexterm>
 
-                <formalpara>
-                    <title>Назначение:</title>
+            <formalpara>
+                <title>Назначение:</title>
 
-                    <para>Включение или отключение режима отображение только плана запроса без его
-                        выполнения.</para>
-                </formalpara>
+                <para>Включение или отключение режима отображение только плана запроса без его
+                    выполнения.</para>
+            </formalpara>
 
-                <formalpara>
-                    <title>Синтаксис:</title>
-                    <para>
-                        <programlisting> 
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
 SET PLANONLY [ON | OFF]                                         
                     </programlisting>
-                    </para>
-                </formalpara>
+                </para>
+            </formalpara>
 
-                <para>Команда <code>SET PLANONLY ON</code> не позволяет Firebird фактически
-                    выполнить оператор SQL, а просто показывает план, который будет использоваться
-                    для доступа к данным. Эта команда опирается на команду SET PLAN. Если <code>SET
-                        PLAN OFF</code> был выполнен, то эта команда не имеет никакого эффекта,
-                    поэтому включение PLANONLY ON имеет дополнительный эффект неявного выполнения
-                        <code>SET PLAN ON</code>. Выполнение <code>SET PLANONLY OFF</code> не
-                    вызывает неявного выполнения <code>SET PLAN OFF</code>.</para>
+            <para>Команда <code>SET PLANONLY ON</code> не позволяет Firebird фактически выполнить
+                оператор SQL, а просто показывает план, который будет использоваться для доступа к
+                данным. Эта команда опирается на команду SET PLAN. Если <code>SET PLAN OFF</code>
+                был выполнен, то эта команда не имеет никакого эффекта, поэтому включение PLANONLY
+                ON имеет дополнительный эффект неявного выполнения <code>SET PLAN ON</code>.
+                Выполнение <code>SET PLANONLY OFF</code> не вызывает неявного выполнения <code>SET
+                    PLAN OFF</code>.</para>
 
-                <example>
-                    <title>Использование команды SET PLANONLY</title>
+            <example>
+                <title>Использование команды SET PLANONLY</title>
 
-                    <para>
-                        <programlisting>
+                <para>
+                    <programlisting>
 <![CDATA[
 SQL> set planonly on;
 
@@ -3554,20 +3554,20 @@ SQL> select count(*) from employee;
 PLAN (EMPLOYEE NATURAL)
 ]]>                            
                         </programlisting>
-                    </para>
-                </example>
+                </para>
+            </example>
 
-                <para>Как и во многих других командах, отсутствие параметра переключает текущее
-                    состояние.</para>
+            <para>Как и во многих других командах, отсутствие параметра переключает текущее
+                состояние.</para>
 
-                <para>Действие команды <code>SET PLANONLY ON</code> также распространяется и на
-                    вывод расширенного плана без фактического выполнения запроса. </para>
+            <para>Действие команды <code>SET PLANONLY ON</code> также распространяется и на вывод
+                расширенного плана без фактического выполнения запроса. </para>
 
-                <example>
-                    <title>Использование команды SET PLANONLY совместно с SET EXPLAIN</title>
+            <example>
+                <title>Использование команды SET PLANONLY совместно с SET EXPLAIN</title>
 
-                    <para>
-                        <programlisting>
+                <para>
+                    <programlisting>
 <![CDATA[
 SQL> set explain on;
 SQL> set planonly on;
@@ -3579,52 +3579,52 @@ Select Expression
         -> Table "EMPLOYEE" Full Scan
 ]]>                            
                         </programlisting>
-                    </para>
-                </example>
+                </para>
+            </example>
 
-                <formalpara>
-                    <title>Смотри также:</title>
+            <formalpara>
+                <title>Смотри также:</title>
 
-                    <para><link linkend="isql-commands_set-set_plan">SET PLAN</link>, <link
-                            linkend="isql-commands_set-set_explain">SET EXPLAIN</link>.</para>
-                </formalpara>
-            </section>
+                <para><link linkend="isql-commands_set-set_plan">SET PLAN</link>, <link
+                        linkend="isql-commands_set-set_explain">SET EXPLAIN</link>.</para>
+            </formalpara>
+        </section>
 
-            <section xml:id="isql-commands_set-set_sqlda">
-                <title>SET SQLDA_DISPLAY</title>
+        <section xml:id="isql-commands_set-set_sqlda">
+            <title>SET SQLDA_DISPLAY</title>
 
-                <indexterm>
-                    <primary>ISQL</primary>
-                    <secondary>SET SQLDA_DISPLAY</secondary>
-                </indexterm>
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET SQLDA_DISPLAY</secondary>
+            </indexterm>
 
-                <formalpara>
-                    <title>Назначение:</title>
+            <formalpara>
+                <title>Назначение:</title>
 
-                    <para>Включение или отключение отображения информации о внутренних структурах
-                        для входных и выходных сообщений.</para>
-                </formalpara>
+                <para>Включение или отключение отображения информации о внутренних структурах для
+                    входных и выходных сообщений.</para>
+            </formalpara>
 
-                <formalpara>
-                    <title>Синтаксис:</title>
-                    <para>
-                        <programlisting> 
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
 SET SQLDA_DISPLAY [ON | OFF]                                         
                     </programlisting>
-                    </para>
-                </formalpara>
+                </para>
+            </formalpara>
 
-                <para>Это скрытая команда, которая не упоминается в выводе команды HELP SET. Она
-                    отображает внутренние подробности о структурах для входных и выходных сообщений
-                    операторов SQL, выполняемых <application>isql</application>. Раньше она была
-                    доступна только в специальной отладочной сборке, но начиная с версии 2.0 она
-                    доступна в <application>isql</application>.</para>
+            <para>Это скрытая команда, которая не упоминается в выводе команды HELP SET. Она
+                отображает внутренние подробности о структурах для входных и выходных сообщений
+                операторов SQL, выполняемых <application>isql</application>. Раньше она была
+                доступна только в специальной отладочной сборке, но начиная с версии 2.0 она
+                доступна в <application>isql</application>.</para>
 
-                <example>
-                    <title>Использование команды SET SQLDA_DISPLAY</title>
+            <example>
+                <title>Использование команды SET SQLDA_DISPLAY</title>
 
-                    <para>
-                        <programlisting>
+                <para>
+                    <programlisting>
 <![CDATA[
 SQL> set sqlda_display on;
 
@@ -3678,56 +3678,56 @@ Dynamic SQL Error
 -No SQLDA for input values provided      
 ]]>                            
                         </programlisting>
-                    </para>
-                </example>
+                </para>
+            </example>
 
-                <note>
-                    <para>Обратите внимание, что при запуске команд HELP SET или SET информация об
-                        этой команде не отображается.</para>
-                </note>
+            <note>
+                <para>Обратите внимание, что при запуске команд HELP SET или SET информация об этой
+                    команде не отображается.</para>
+            </note>
 
-                <tip>
-                    <para>Как видите последний оператор вызвал ошибку, поскольку
-                            <application>isql</application> не позволяет запрашивать значения для
-                        входных параметров. Вы можете подавить её отключив фактическое выполнение
-                        команды с помощью <code>SET PLANONLY ON</code>.</para>
-                </tip>
+            <tip>
+                <para>Как видите последний оператор вызвал ошибку, поскольку
+                        <application>isql</application> не позволяет запрашивать значения для
+                    входных параметров. Вы можете подавить её отключив фактическое выполнение
+                    команды с помощью <code>SET PLANONLY ON</code>.</para>
+            </tip>
 
-            </section>
+        </section>
 
-            <section xml:id="isql-commands_set-set_sqldialect">
-                <title>SET SQL DIALECT</title>
+        <section xml:id="isql-commands_set-set_sqldialect">
+            <title>SET SQL DIALECT</title>
 
-                <indexterm>
-                    <primary>ISQL</primary>
-                    <secondary>SET SQL DIALECT</secondary>
-                </indexterm>
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET SQL DIALECT</secondary>
+            </indexterm>
 
-                <formalpara>
-                    <title>Назначение:</title>
+            <formalpara>
+                <title>Назначение:</title>
 
-                    <para>Установка SQL диалекта.</para>
-                </formalpara>
+                <para>Установка SQL диалекта.</para>
+            </formalpara>
 
-                <formalpara>
-                    <title>Синтаксис:</title>
-                    <para>
-                        <programlisting> 
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
 SET SQL DIALECT {1 | 2 | 3}                                       
                     </programlisting>
-                    </para>
-                </formalpara>
+                </para>
+            </formalpara>
 
-                <para>Команда SET SQL DIALECT задает диалект SQL Firebird, на который должен быть
-                    изменен сеанс клиента. Если сеанс в настоящее время присоединен к базе данных,
-                    отличной от диалекта, указанного в команде, отображается предупреждение.</para>
-                <para>Посмотрите <link linkend="isql-sql_dialect">Диалекты SQL</link> для того,
-                    чтобы узнать о различиях между тремя диалектами.</para>
-                <example>
-                    <title>Использование команды SET SQL DIALECT</title>
+            <para>Команда SET SQL DIALECT задает диалект SQL Firebird, на который должен быть
+                изменен сеанс клиента. Если сеанс в настоящее время присоединен к базе данных,
+                отличной от диалекта, указанного в команде, отображается предупреждение.</para>
+            <para>Посмотрите <link linkend="isql-sql_dialect">Диалекты SQL</link> для того, чтобы
+                узнать о различиях между тремя диалектами.</para>
+            <example>
+                <title>Использование команды SET SQL DIALECT</title>
 
-                    <para>
-                        <programlisting>
+                <para>
+                    <programlisting>
 <![CDATA[
 SQL> set sql dialect 1;
 WARNING: Client SQL dialect has been set to 1 when 
@@ -3736,14 +3736,97 @@ connecting to Database SQL dialect 3 database.
 SQL> set sql dialect 3;                
 ]]>                            
                         </programlisting>
-                    </para>
-                    <note>
-                        <para>Предупреждение в приведенном выше примере пришлось разделить на две
-                            строки, чтобы оно поместилось на странице. Обычно оно состоит из одной
-                            строки.</para>
-                    </note>
-                </example>
-            </section>
+                </para>
+                <note>
+                    <para>Предупреждение в приведенном выше примере пришлось разделить на две
+                        строки, чтобы оно поместилось на странице. Обычно оно состоит из одной
+                        строки.</para>
+                </note>
+            </example>
+        </section>
+
+        <section xml:id="isql-commands_set-set_stats">
+            <title>SET STATs</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET STATs</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Включение или отключение отображения статистки.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SET STATs [ON | OFF]                                       
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда SET STATS определяет, должен ли <application>isql</application> отображать
+                различную статистику о каждой выполненной команде SQL. Как и во многих других
+                командах, отсутствие параметра переключает текущее состояние.</para>
+
+            <example>
+                <title>Использование команды SET STATS</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> set stat on;
+SQL> select count(*) from employee;
+
+                COUNT
+=====================
+                   42
+
+Current memory = 19458128
+Delta memory = 282544
+Max memory = 19531888
+Elapsed time= 0.103 sec
+Buffers = 2048
+Reads = 28
+Writes = 0
+Fetches = 360              
+]]>                            
+                        </programlisting>
+                </para>
+            </example>
+        </section>
+
+        <section xml:id="isql-commands_set-set_time">
+            <title>SET TIME</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET TIME</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Включение или отключение отображение времени для типа DATE в
+                    1-диалекте.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SET TIME [ON | OFF]                                       
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда SET TIME применяется только к базам данных диалекта 1. Её выполнение
+                приводит к тому, что часть времени отображается или нет, когда выбираются данные с
+                типом данных DATE. Команда не имеет действия с базами данных в других
+                диалектах.</para>
         </section>
     </section>
 </chapter>

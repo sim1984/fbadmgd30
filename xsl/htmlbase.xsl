@@ -40,11 +40,14 @@
   <!-- ...and include our own overrides/additions
        EXCEPT THOSE THAT CONTROL CHUNKING BEHAVIOUR OR ARE OTHERWISE
        SPECIFIC TO EITHER CHUNKED OR MONOLITH HTML -->
-
-  <xsl:output method="html"
-              encoding="ISO-8859-1"
-              indent="yes"/>
-
+  
+  <xsl:output 
+              method="html"
+              encoding="UTF-8"             
+              indent="yes"
+              saxon:character-representation="native;decimal"/>
+  
+ 
   <xsl:include href="common/param.xsl"/>
   <!--
   <xsl:include href="common/l10n.xsl"/>

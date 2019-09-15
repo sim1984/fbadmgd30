@@ -7,9 +7,33 @@
     <para>Скачать дистрибутивы Firebird можно на официальном сайте <link
             xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://firebirdsql.org"/> в
         разделе Downloads.</para>
+    
+    <section xml:id="install-linux">
+        <title>Установка на ОС Linux</title>
+        
+        <para/>
+        
+        <section xml:id="install-linux-repo">
+            <title>Установка из репозитория</title>
+            
+            <para/>
+        </section>
+        
+        <section xml:id="install-linux-tar">
+            <title>Ручная установка из tar архива</title>
+            
+            <para/>
+        </section>
+        
+        <section xml:id="install-linux-client">
+            <title>Ручная установка клиента</title>
+            
+            <para/>
+        </section>
+    </section>
 
     <section xml:id="install-windows">
-        <title>Установка в ОС Windows</title>
+        <title>Установка на ОС Windows</title>
 
         <para>Firebird под Windows распространяется в двух вариантах: в виде выполняемого файла
             установщика с расширением exe и в виде zip архивов. Для 32-разрядного варианта в имени
@@ -267,7 +291,7 @@ firebird -a
             </simplesect>
         </section>
         <section xml:id="install-windows-zip">
-            <title>Установка из ZIP архива</title>
+            <title>Ручная установка из ZIP архива</title>
 
             <para>Скачайте архив соответствующей разрядности и распакуйте его в директорию, в
                 которой будет размещён сервер Firebird.</para>

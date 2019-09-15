@@ -98,7 +98,7 @@
         article  toc
         book toc,title
         /chapter toc,title 
-        part toc,title 
+        part nop 
         /preface toc,title         
         qandadiv  toc
         qandaset  toc

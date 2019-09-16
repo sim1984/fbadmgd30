@@ -2699,7 +2699,6 @@ Terminator:              ;
 Time:                    OFF
 Warnings:                ON
 Bail on error:           OFF
-Local statement timeout: 0
 
 SQL>
 ]]>                       
@@ -3379,6 +3378,31 @@ SET NAMES [<replaceable>&lt;character_set&gt;</replaceable>]
                 </para>
             </formalpara>
 
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SET NAMES</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>character_set</replaceable></entry>
+                                <entry>
+                                    <para>Набор символов для последующих подключений.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
             <para>Оператор SET NAMES устанавливает набор символов для последующих подключений к базе
                 данных с помощью isql. Это позволяет вам переопределить набор символов по умолчанию
                 для базы данных. Чтобы вернуться к использованию набора символов по умолчанию,
@@ -3827,6 +3851,262 @@ SET TIME [ON | OFF]
                 приводит к тому, что часть времени отображается или нет, когда выбираются данные с
                 типом данных DATE. Команда не имеет действия с базами данных в других
                 диалектах.</para>
+        </section>
+
+        <section xml:id="isql-commands_set-set_term">
+            <title>SET TERM</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET TERM</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Установка символа (символов) терминатора команды или оператора.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SET TERM <replaceable>&lt;new_terminator&gt;</replaceable> <replaceable>&lt;current_terminator&gt;</replaceable>                                     
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SET TERM</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>new_terminator</replaceable></entry>
+                                <entry>
+                                    <para>Новый символ (символы) терминатор.</para>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry><replaceable>current_terminator</replaceable></entry>
+                                <entry>
+                                    <para>Текущий символ (символы) терминатор.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда SET TERM изменяет терминатор оператора по умолчанию с точки с запятой на
+                что-то другое, определенное в переданной строке. Это полезно, когда вы собираетесь
+                ввести строку SQL-операторов, составляющих, например, процедуру или триггер. Isql
+                попытается выполнить каждый оператор, когда встречает завершающую точку с запятой,
+                поэтому сначала нужно изменить терминатор, а затем ввести требуемый код. После
+                завершения ввода, вы можете изменить его обратно. При этом необходимо помнить, что
+                вы должны завершить команду SET TERM текущим символом (символами)
+                терминатором.</para>
+
+            <para>При первом запуске isql использует точку с запятой в качестве терминатора по
+                умолчанию.</para>
+
+            <example>
+                <title>Использование команды SET TERM</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> set term ~ ;
+
+SQL> create procedure test_proc (iInput integer = 666)
+CON> returns (oOutput integer)
+CON> as
+CON> begin
+CON>   oOutput = iInput;
+CON>   suspend;
+CON> end~
+
+SQL> set term ; ~
+
+SQL> commit;
+
+SQL> select * from test_proc;
+
+     OOUTPUT
+============
+         666             
+]]>                            
+                        </programlisting>
+                </para>
+            </example>
+
+            <formalpara>
+                <title>Смотри также:</title>
+
+                <para><link linkend="isql-terminator">Символ терминатора</link>.</para>
+            </formalpara>
+        </section>
+
+        <section xml:id="isql-commands_set-set_warnings">
+            <title>SET WARNINGS</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET WARNINGS</secondary>
+            </indexterm>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET WNG</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Включение или выключение вывода предупреждающих сообщений.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SET {WARNINGS | WNG} [ON | OFF]                                  
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда SET WARNINGS включает или выключает вывод предупреждающих
+                сообщений.</para>
+        </section>
+
+        <section xml:id="isql-commands_set-set_width">
+            <title>SET WIDTH</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET WIDTH</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Установка ширины вывода для символьных столбцов.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SET WIDTH <replaceable>&lt;column_name&gt;</replaceable> [<replaceable>&lt;width&gt;</replaceable>]                                  
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SET WIDTH</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>column_name</replaceable></entry>
+                                <entry>
+                                    <para>Наименование или псевдоним символьного столбца.</para>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry><replaceable>width</replaceable></entry>
+                                <entry>
+                                    <para>Ширина вывода в символах.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Обычно ширина вывода символьных столбцов в таблице определяется по размеру
+                выбираемых символьных полей. Использование команды SET WIDTH позволяет пользователю
+                определять ширину выходного столбца в большую или меньшую сторону. Если параметр
+                    <replaceable>width</replaceable> не указан, то будет использована ширина столбца
+                по умолчанию для этого столбца.</para>
+            <para>В следующем примере показано изменение ширины столбца last_name. Первый SELECT
+                отображается с настройками по умолчанию. В этом случае ширина столбца last_name
+                составляет 20 символов (считайте количество символов <quote>=</quote> в заголовке).
+                Она задаётся определением столбца last_name в таблице employee. Второй пример
+                показывает таблицу с шириной, уменьшенной до 10 символов. <programlisting> 
+<![CDATA[
+SQL> select emp_no, last_name
+CON> from employee
+CON> order by last_name
+CON> fetch first 5 rows only;
+
+ EMP_NO LAST_NAME
+======= ====================
+     34 Baldwin
+    105 Bender
+     28 Bennet
+     83 Bishop
+    109 Brown
+
+SQL> set width last_name 10;
+
+SQL> select emp_no, last_name
+CON> from employee
+CON> order by last_name
+CON> fetch first 5 rows only;
+
+ EMP_NO LAST_NAME
+======= ==========
+     34 Baldwin
+    105 Bender
+     28 Bennet
+     83 Bishop
+    109 Brown
+]]>                             
+                    </programlisting>
+            </para>
+            <para>Столбец emp_no имеет тип SMALLINT. ISQL не может изменить ширину столбцов, которые
+                не являются символьными типами. В следующем примере команда <code>set width emp_no
+                    10</code> не имеет никакого эффекта. В нём также показано отключение настройки
+                ширины для столбца last_name. <programlisting>
+<![CDATA[
+SQL> set width last_name;
+
+SQL> set width emp_no 10;
+
+SQL> select emp_no, last_name
+CON> from employee
+CON> order by last_name
+CON> fetch first 5 rows only;
+
+ EMP_NO LAST_NAME
+======= ====================
+     34 Baldwin
+    105 Bender
+     28 Bennet
+     83 Bishop
+    109 Brown
+]]>                     
+                </programlisting>
+            </para>
         </section>
     </section>
 </chapter>

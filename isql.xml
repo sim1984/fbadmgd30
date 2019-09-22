@@ -609,7 +609,7 @@ All commands may be abbreviated to letters in CAPitals
         <para>Если вы попытаетесь углубиться в какую-либо другую команду, эффект будет точно таким
             же, как при выполнении только команды HELP.</para>
         <note>
-            <para>Команда HELP SET даёт справку только по собственным командам isql. Для управляющий
+            <para>Команда HELP SET даёт справку только по собственным командам isql. Для управляющих
                 SQL операторов, таких как SET TRANSACTION или SET ROLE подсказка не будет
                 выведена.</para>
         </note>
@@ -4107,6 +4107,1315 @@ CON> fetch first 5 rows only;
 ]]>                     
                 </programlisting>
             </para>
+        </section>
+    </section>
+    <section xml:id="isql-commands_show">
+        <title>ISQL SHOW команды</title>
+
+        <para>Как объясняется в команде HELP, в isql есть несколько отдельных команд SHOW. Общий
+            синтаксис следующий:
+            <programlisting>
+SHOW <replaceable>&lt;object&gt;</replaceable> [<replaceable>&lt;name&gt;</replaceable>]   
+</programlisting>
+        </para>
+
+        <para>
+            <table frame="all">
+                <title>Параметры оператора SHOW</title>
+                <?dbfo keep-together='auto'?>
+                <tgroup cols="2">
+                    <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                    <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                    <thead>
+                        <row valign="middle">
+                            <entry align="center">Параметр</entry>
+                            <entry align="center">Описание</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry><replaceable>object</replaceable></entry>
+                            <entry>
+                                <para>Тип отображаемого или отображаемых объектов метаданных.</para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry><replaceable>name</replaceable></entry>
+                            <entry>
+                                <para>Наименование объекта метаданных.</para>
+                            </entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+        </para>
+
+        <para>Тип объекта метаданных требуется указывать всегда, а имя требуется для отображения
+            сведений о конкретном объекте. Без имени команды обычно отображают все имена объекты
+            запрошенного типа.</para>
+
+        <para>В отличие от команд SET, нет удобной детализации различных команд SHOW, c
+            использованием команды HELP. Однако, если вы наберете SHOW без аргументов, то вам будет
+            оказана небольшая помощь. <programlisting>
+        <![CDATA[
+SQL> show;
+
+Valid options are:
+CHECKs                   COMMENTs                 COLLATEs
+COLLATIONs               DOMAINs                  DB
+DATABASE                 DEPENdency               DEPENdencies
+EXCEPtions               FILTERs                  FUNCtions
+GENerators               GRANTs                   INDexes
+INDICES                  MAPping                  PROCedures
+PACKages                 ROLEs                    SYStem
+SEQuences                SECURITY CLAsses         SECCLAsses
+SCHEmas                  TABLEs                   TRIGgers
+USERS                    VIEWs
+Command error: show
+        ]]>    
+        </programlisting>
+        </para>
+
+        <para>Каждый тип объекта метаданных может быть сокращен до букв, отображаемых заглавными
+            буквами.</para>
+
+        <note>
+            <para>Подсказка выданная командой SHOW содержит несколько ошибок. Например следующие
+                команды не работают:<itemizedlist>
+                    <listitem>
+                        <para>SHOW SCHEmas (очевидно зарезервирована для будущих версий где могут
+                            появится схемы);</para>
+                    </listitem>
+                    <listitem>
+                        <para>SHOW SECURITY CLAsses</para>
+                    </listitem>
+                </itemizedlist></para>
+        </note>
+
+        <para>Команды SHOW подробно детализированы и описаны ниже. Где это возможно, приведены
+            примеры из базы данных employee.</para>
+
+        <section xml:id="isql-commands_show-show_check">
+            <title>SHOW CHECK</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW CHECK</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение ограничений для указанной таблицы.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW CHECKs <replaceable>&lt;table_name&gt;</replaceable>                                                          
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW CHECK</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>table_name</replaceable></entry>
+                                <entry>
+                                    <para>Наименование таблицы для которой требуется отобразить
+                                        ограничения.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда SHOW CHECKs отображает все проверочные ограничения, определенные
+                пользователем для заданной таблицы. В отличие от других команд SHOW, здесь нет опции
+                для отображения списка всех проверочных ограничений в базе данных. Вы всегда должны
+                указывать имя таблицы как часть команды.</para>
+
+            <example>
+                <title>Использование команды SHOW CHECK</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show check employee;
+
+CONSTRAINT INTEG_30:
+  CHECK ( salary >= (SELECT min_salary FROM job WHERE
+                        job.job_code = employee.job_code AND
+                        job.job_grade = employee.job_grade AND
+                        job.job_country = employee.job_country) AND
+            salary <= (SELECT max_salary FROM job WHERE
+                        job.job_code = employee.job_code AND
+                        job.job_grade = employee.job_grade AND
+                        job.job_country = employee.job_country))
+]]>    
+</programlisting>
+                </para>
+            </example>
+        </section>
+
+        <section xml:id="isql-commands_show-show_collations">
+            <title>SHOW COLLATION</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW COLLATION</secondary>
+            </indexterm>
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW COLLATE</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение списка пользовательских параметров сортировок или параметров для
+                    указанной сортировке.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW {COLLATIONs | COLLATION <replaceable>&lt;collate_name&gt;</replaceable> }   
+                        
+SHOW {COLLATEs | COLLATE <replaceable>&lt;collate_name&gt;</replaceable> }                         
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW COLLATION</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>collate_name</replaceable></entry>
+                                <entry>
+                                    <para>Имя определённой пользователем сортировки.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Эти команды отображают список всех параметров для опреределённых пользователем
+                сортировок в текущей базе данных. В первой форме отображается список всех параметров
+                всех определенных пользователем сортировок. Если указано имя конкретной сортировки,
+                то будут отображаться только её параметры. </para>
+
+            <example>
+                <title>Использование команды SHOW COLLATION</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show collations;
+UNICODE_ENUS_CI, CHARACTER SET UTF8, FROM EXTERNAL ('UNICODE'), PAD SPACE,
+CASE INSENSITIVE, 'COLL-VERSION=58.0.6.48'
+UNICODE_ENUS_CS, CHARACTER SET UTF8, FROM EXTERNAL ('UNICODE'), PAD SPACE,
+'COLL-VERSION=58.0.6.48'
+
+SQL> show collation unicode_enus_ci;
+UNICODE_ENUS_CI, CHARACTER SET UTF8, FROM EXTERNAL ('UNICODE'), PAD SPACE,
+CASE INSENSITIVE, 'COLL-VERSION=58.0.6.48'
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+
+            <para>Выше приведённые результаты не являются частью базы данных
+                    <filename>employee</filename>. Некоторые строки в приведенном выше тексте
+                пришлось разделить на две, чтобы они поместились на странице.</para>
+        </section>
+
+        <section xml:id="isql-commands_show-show_comments">
+            <title>SHOW COMMENTS</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW COMMENTS</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение всех комментариев, созданных для различных объектов базы
+                    данных.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW COMMENTs                        
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда SHOW COMMENTЫ отображает все комментарии, которые были созданы для
+                различных объектов в текущей базе данных. Нет возможности отобразить конкретный
+                комментарий. Каждый комментарий перечисляется вместе с типом объекта и именем, к
+                которому он был применен.</para>
+
+            <example>
+                <title>Использование команды SHOW COLLATION</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show comments;
+
+COMMENT ON DATABASE IS This is the demonstration EMPLOYEE database.;
+COMMENT ON TABLE EMPLOYEE IS The EMPLOYEE table has details of our employees.;
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+
+            <para>Фактический текст комментария отображается между ключевым словом IS и конечной
+                точкой с запятой</para>
+
+        </section>
+
+        <section xml:id="isql-commands_show-show_db">
+            <title>SHOW DATABASE</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW DATABASE</secondary>
+            </indexterm>
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW DB</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение информации о текущей базе данных.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW {DATABASE | DB}                       
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда SHOW DATABASE (или SHOW DB) отображает сведения о текущей базе данных (имя
+                файла, владелец, размер и количество выделенных страниц, интервал очистки, счётчики
+                транзакций, флаг Forced Writes, ODS, зашифрована ли база данных, набор символов по
+                умолчанию).</para>
+
+            <example>
+                <title>Использование команды SHOW DATABASE</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show database;
+
+Database: employee
+        Owner: SYSDBA
+PAGE_SIZE 8192
+Number of DB pages allocated = 326
+Number of DB pages used = 297
+Number of DB pages free = 29
+Sweep interval = 20000
+Forced Writes are OFF
+Transaction - oldest = 181
+Transaction - oldest active = 214
+Transaction - oldest snapshot = 214
+Transaction - Next = 218
+ODS = 12.0
+Database not encrypted
+Default Character set: NONE
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+        </section>
+
+        <section xml:id="isql-commands_show-show_dependencies">
+            <title>SHOW DEPENDENCIES</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW DEPENDENCIES</secondary>
+            </indexterm>
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW DEPENDENCY</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение зависимости для указанного объекта базы данных.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW DEPENdencies <replaceable>&lt;object_name&gt;</replaceable>
+
+SHOW DEPENdency <replaceable>&lt;object_name&gt;</replaceable>
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW DEPENDENCIES</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>object_name</replaceable></entry>
+                                <entry>
+                                    <para>Наименование объекта метаданных для которого отображаются
+                                        зависимости.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда SHOW DEPENDENCIES отображают все зависимости для указанного имени объекта.
+                Указанное имя объекта может быть таблицей, представлением, хранимой процедурой,
+                функцией, пакетом и т.д.</para>
+
+            <para>Выводимый список представляет собой разделенный запятыми список других объектов в
+                базе данных, от которых зависит указанный объект. Другими словами, процедура не
+                сможет скомпилироваться, если, например, будет удалена какая-либо из перечисленных
+                зависимостей. <programlisting>
+<![CDATA[
+SQL> show dependencies SET_CUST_NO;
+        [SET_CUST_NO:Trigger]
+CUSTOMER:Table<-CUST_NO, CUST_NO_GEN:Generator
++++
+]]>                
+            </programlisting>
+            </para>
+
+            <para>Вышеприведенный листинг показывает, что SET_CUST_NO является триггером и что он
+                зависит от двух объектов, столбца CUST_NO таблицы CUSTOMER и
+                последовательности/генератора с именем CUST_NO_GEN. Если вы отобразите сам триггер,
+                вы увидите оба упомянутых объекта: <programlisting>
+<![CDATA[
+SQL> show trigger set_cust_no;
+
+Triggers on Table CUSTOMER:
+SET_CUST_NO, Sequence: 0, Type: BEFORE INSERT, Active
+Trigger text:
+=============================================================================
+AS
+BEGIN
+  if (new.cust_no is null) then
+    new.cust_no = gen_id(cust_no_gen, 1);
+END
+=============================================================================
+]]>                
+            </programlisting>
+            </para>
+
+            <para>Иногда вывод может показаться немного запутанным. Вы можете увидеть различные
+                объекты в списке, которые не кажутся релевантными. Таблица RDB$DEPENDENCIES, также
+                содержит сведения об объектах, от которых будет зависеть данный объект.</para>
+        </section>
+
+        <section xml:id="isql-commands_show-show_domain">
+            <title>SHOW DOMAIN</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW DOMAIN</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение списка имён доменов или определение указанного домена.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW {DOMAINs | DOMAIN <replaceable>&lt;domain_name&gt;</replaceable>}
+                    </programlisting>
+                </para>
+            </formalpara>
+            
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW DOMAIN</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>domain_name</replaceable></entry>
+                                <entry>
+                                    <para>Наименование домена.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда SHOW DOMAIN отображает информацию о домене. Домен — это определенный
+                пользователем тип данных, глобальный для базы данных. </para>
+
+            <para>Команда SHOW DOMAIN имеют две формы. Первая отображает список всех известных
+                доменов в базе данных, а вторая отображает сведения о конкретном домене.</para>
+
+            <example>
+                <title>Использование команды SHOW DOMAIN</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show domains;
+
+       ADDRESSLINE                            BUDGET
+       COUNTRYNAME                            CUSTNO
+       DEPTNO                                 EMPNO
+       FIRSTNAME                              JOBCODE
+       JOBGRADE                               LASTNAME
+       PHONENUMBER                            PONUMBER
+       PRODTYPE                               PROJNO
+       SALARY
+       
+SQL> show domain addressline;
+
+ADDRESSLINE                     VARCHAR(30) Nullable
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+        </section>
+
+        <section xml:id="isql-commands_show-show_exeption">
+            <title>SHOW EXCEPTION</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW EXCEPTION</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение информации обо всех или указанном исключении.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW {EXCEPTIONs | EXCEPTION <replaceable>&lt;exception_name&gt;</replaceable>}
+                    </programlisting>
+                </para>
+            </formalpara>
+            
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW EXCEPTION</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>exception_name</replaceable></entry>
+                                <entry>
+                                    <para>Наименование исключения.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда SHOW EXCEPTION отображает все исключения, которые были определены в
+                текущей базе данных. Отображаются также детальная информации об каждом исключениях:
+                сообщение об ошибке, объекты, которые используют исключение. Вы можете отобразить
+                детальную информацию об отдельном исключении, задав в качестве параметра имя
+                исключения.</para>
+
+            <example>
+                <title>Использование команды SHOW EXCEPTION</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show exceptions;
+
+Exception Name                  Used by, Type
+=============================== =============================================
+CUSTOMER_CHECK                  SHIP_ORDER, Stored procedure
+Msg: Overdue balance -- can not ship.
+
+CUSTOMER_ON_HOLD                SHIP_ORDER, Stored procedure
+Msg: This customer is on hold.
+
+ORDER_ALREADY_SHIPPED           SHIP_ORDER, Stored procedure
+Msg: Order status is "shipped."
+
+REASSIGN_SALES                  DELETE_EMPLOYEE, Stored procedure
+Msg: Reassign the sales records before deleting this employee.
+
+UNKNOWN_EMP_ID                  ADD_EMP_PROJ, Stored procedure
+Msg: Invalid employee number or project id.
+
+
+
+SQL> show exception customer_on_hold;
+
+Exception Name                  Used by, Type
+=============================== =============================================
+CUSTOMER_ON_HOLD                SHIP_ORDER, Stored procedure
+Msg: This customer is on hold.
+
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+        </section>
+
+        <section xml:id="isql-commands_show-show_filter">
+            <title>SHOW FILTER</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW FILTER</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение списка BLOB-фильтров или информации об указанном фильтре.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW {FILTERs | FILTER <replaceable>&lt;filter_name&gt;</replaceable>}
+                    </programlisting>
+                </para>
+            </formalpara>
+            
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW FILTER</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>filter_name</replaceable></entry>
+                                <entry>
+                                    <para>Наименование BLOB-фильтра.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда SHOW FILTER отображает список BLOB-фильтров определённых оператором
+                    <code>DECLARE FILTER</code> или информацию об указанном фильтре.</para>
+
+            <example>
+                <title>Использование команды SHOW FILTER</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show filter;
+
+    FUNNEL
+...
+
+SQL> show filter funnel; 
+
+BLOB Filter: FUNNEL
+Input subtype: 2 Output subtype: 1
+Filter library is myfilterlib
+Entry point is blr2asc
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+        </section>
+
+        <section xml:id="isql-commands_show-show_function">
+            <title>SHOW FUNCTION</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW FUNCTION</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение информации обо всех определённых пользователем функциях или
+                    определение указанной функции.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW {FUNCTIONs | FUNCTION <replaceable>&lt;function_name&gt;</replaceable>}
+                    </programlisting>
+                </para>
+            </formalpara>
+            
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW FUNCTION</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>function_name</replaceable></entry>
+                                <entry>
+                                    <para>Наименование функции.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+            
+            <para>Команда SHOW FUNCTION отображает все определённые пользователем функции, а так же
+                их зависимости, т.е. объекты которые используются функцией. Если указано имя функции
+                в качестве параметра, то для будет отображена дополнительная информация, которая
+                зависит от типа функции:<itemizedlist>
+                    <listitem>
+                        <para>для внешних Legacy функций будет отображена информация о входных
+                            параметре и возвращаемом результате, имя динамической библиотеки, имя
+                            точки входа;</para>
+                    </listitem>
+                    <listitem>
+                        <para>для PSQL функций будет отображена информация о входных параметре и
+                            возвращаемом результате и тексте функции;</para>
+                    </listitem>
+                    <listitem>
+                        <para>для внешних UDR функций будет отображена информация о входных
+                            параметре и возвращаемом результате, имени используемого плагина и точке
+                            входа.</para>
+                    </listitem>
+                </itemizedlist></para>
+
+            <example>
+                <title>Использование команды SHOW FUNCTION</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show functions;
+Global functions
+
+Function Name                     Invalid Dependency, Type
+================================= ======= =====================================
+F                                         T, Table
+GETEXACTTIMESTAMPUTC
+ISLEAPYEAR
+ISLEAPYEAR_2
+SUM_ARGS
+
+
+SQL> show function isleapyear;
+
+External function ISLEAPYEAR:
+Function library is fbudf
+Entry point is isLeapYear
+Returns  BY VALUE INTEGER
+Argument 1: TIMESTAMP
+
+
+SQL> show function isleapyear_2;
+Function text:
+=============================================================================
+begin
+  return mod(extract(year from adate), 4) = 0;
+end
+=============================================================================
+Parameters:
+                                  OUTPUT BOOLEAN
+ADATE                             INPUT TIMESTAMP
+
+
+SQL> show function f;
+Function text:
+=============================================================================
+begin
+  return (select count(*) from t);
+end
+=============================================================================
+Parameters:
+                                  OUTPUT INTEGER
+                                  
+
+SQL> show function sum_args;
+External name: myudr!sum_args
+Engine: UDR
+Parameters:
+                                  OUTPUT INTEGER
+N1                                INPUT INTEGER
+N2                                INPUT INTEGER
+N3                                INPUT INTEGER
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+        </section>
+
+        <section xml:id="isql-commands_show-show_generator">
+            <title>SHOW GENERATOR</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW GENERATOR</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение информации обо всех не системных генераторах или об одном
+                    указанном генераторе.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW {GENERATORs | GENERATOR <replaceable>&lt;generator_name&gt;</replaceable>}
+                        
+SHOW {SEQUENCEs | SEQUENCE <replaceable>&lt;sequence_name&gt;</replaceable>}                        
+                    </programlisting>
+                </para>
+            </formalpara>
+            
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW GENERATOR</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>generator_name</replaceable></entry>
+                                <entry>
+                                    <para>Наименование генератора (последовательности).</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Эти две команды идентичны. Генераторы — это старый термин Firebird для того, что
+                обычно называют последовательностями в других базах данных, а также в SQL стандарте.
+                Вам рекомендуется использовать последовательности, а не генераторы, но Firebird
+                считает их одинаковыми.</para>
+
+            <para>Если имя генератора (последовательности) не указано, то будут выведены сведения
+                обо всех генераторах (имя, текущее значение, начальное значение, значение шага
+                приращения). Если указано имя генератора (последовательности), то будет выведены
+                сведения о конкретном генераторе.</para>
+
+            <example>
+                <title>Использование команды SHOW GENERATOR</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show generators;
+Generator CUST_NO_GEN, current value: 1015, initial value: 0, increment: 1
+Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
+
+SQL> show generator emp_no_gen;
+Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+
+            <para>См. также: <link linkend="isql-commands_show-show_sequence">SHOW
+                SEQUENCE</link>.</para>
+        </section>
+
+        <section xml:id="isql-commands_show-show_grants">
+            <title>SHOW GRANTS</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW GRANTS</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение список всех разрешений в текущей базе данных или разрешений на
+                    указанный объект или разрешений для указанной роли.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW {GRANTs | GRANT {<replaceable>&lt;object_name&gt;</replaceable> | <replaceable>&lt;role_name&gt;</replaceable>}}                        
+                    </programlisting>
+                </para>
+            </formalpara>
+            
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW GRANT</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>object_name</replaceable></entry>
+                                <entry>
+                                    <para>Наименование объекта метаданных для которого отображаются разрешения.</para>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry><replaceable>role_name</replaceable></entry>
+                                <entry>
+                                    <para>Наименование роли для которой отображается список пользователей которым эта роль назначена.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда SHOW GRANT отображает список всех разрешений в текущей базе данных, если
+                команда используется без параметров. Если в качестве аргумента команды указано имя
+                объекта (таблица, процедура, функция, триггер, и т.д.), то будут отображены
+                разрешения для указанного объекта. Если в качестве аргумента указано имя роли, то
+                будет отображён список пользователей (вместе с оператором разрешения на роль) для
+                которых выдана эта роль.</para>
+
+            <example>
+                <title>Использование команды SHOW GRANT</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show grants;
+
+/* Grant permissions for this database */
+GRANT DELETE, INSERT, SELECT, UPDATE, REFERENCES ON COUNTRY 
+TO PUBLIC WITH GRANT OPTION
+GRANT DELETE, INSERT, SELECT, UPDATE, REFERENCES 
+ON CUSTOMER TO PUBLIC WITH GRANT OPTION
+...
+GRANT EXECUTE ON PROCEDURE SHIP_ORDER TO PUBLIC WITH GRANT OPTION
+GRANT EXECUTE ON PROCEDURE SHOW_LANGS TO PUBLIC WITH GRANT OPTION
+GRANT EXECUTE ON PROCEDURE SUB_TOT_BUDGET TO PUBLIC WITH GRANT OPTION
+
+SQL> show grants employee;
+GRANT DELETE, INSERT, SELECT, UPDATE, REFERENCES 
+ON EMPLOYEE TO PUBLIC WITH GRANT OPTION
+
+SQL> show grants ship_order;
+GRANT EXECUTE ON PROCEDURE SHIP_ORDER TO PUBLIC WITH GRANT OPTION
+
+SQL> show grants default_user;
+GRANT DEFAULT_USER TO SYSDBA
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+
+            <note>
+                <para>Обратите внимание, что некоторые строки в приведенном выше разделены, чтобы
+                    они могли поместиться на странице.</para>
+            </note>
+        </section>
+
+        <section xml:id="isql-commands_show-show_indexes">
+            <title>SHOW INDEXES</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW INDEX</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение информации обо всех индексах или об указанном индексе.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW {INDexes | INDICES}
+
+SHOW {INDICES | INDexes} <replaceable>&lt;table_name&gt;</replaceable>
+                        
+SHOW INDex <replaceable>&lt;index_name&gt;</replaceable>                     
+                    </programlisting>
+                </para>
+            </formalpara>
+            
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW INDICES</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>table_name</replaceable></entry>
+                                <entry>
+                                    <para>Наименование таблицы для которой будет отображён список индексов.</para>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry><replaceable>index_name</replaceable></entry>
+                                <entry>
+                                    <para>Наименование индекса по которому бкдет отображена информации.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Первая форма этой команды перечислит все индексы в текущей базе данных. В этой
+                форме вы можете использовать либо INDEXES, либо INDECES, они рассматриваются в
+                Firebird как идентичные. Вторая форма команды будет отображать список индексов для
+                указанной таблицы <replaceable>table_name</replaceable>. Опять же, вы можете
+                использовать INDEXES, либо INDECES. В последней форме команды отображаются сведения
+                о указанном индексе <replaceable>index_name</replaceable>, и в этой форме команды
+                необходимо использовать ключевое слово INDEX.</para>
+
+            <example>
+                <title>Использование команды SHOW INDEX</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show indices;
+RDB$PRIMARY1 UNIQUE INDEX ON COUNTRY(COUNTRY)
+CUSTNAMEX INDEX ON CUSTOMER(CUSTOMER)
+CUSTREGION INDEX ON CUSTOMER(COUNTRY, CITY)
+...
+RDB$PRIMARY24 UNIQUE INDEX ON SALES(PO_NUMBER)
+SALESTATX INDEX ON SALES(ORDER_STATUS, PAID)
+
+
+SQL> show indices employee;
+NAMEX INDEX ON EMPLOYEE(LAST_NAME, FIRST_NAME)
+RDB$FOREIGN8 INDEX ON EMPLOYEE(DEPT_NO)
+RDB$FOREIGN9 INDEX ON EMPLOYEE(JOB_CODE, JOB_GRADE, JOB_COUNTRY)
+RDB$PRIMARY7 UNIQUE INDEX ON EMPLOYEE(EMP_NO)
+
+
+SQL> show index namex;
+NAMEX INDEX ON EMPLOYEE(LAST_NAME, FIRST_NAME)
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+        </section>
+
+        <section xml:id="isql-commands_show-show_mapping">
+            <title>SHOW MAPPING</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW MAPPING</secondary>
+            </indexterm>
+        </section>
+
+        <section xml:id="isql-commands_show-show_package">
+            <title>SHOW PACKAGE</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW PACKAGE</secondary>
+            </indexterm>
+        </section>
+
+        <section xml:id="isql-commands_show-show_procedure">
+            <title>SHOW PROCEDURE</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW PROCEDURE</secondary>
+            </indexterm>
+        </section>
+
+        <section xml:id="isql-commands_show-show_role">
+            <title>SHOW ROLE</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW ROLE</secondary>
+            </indexterm>
+        </section>
+
+        <section xml:id="isql-commands_show-show_secclasses">
+            <title>SHOW SECCLASSES</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW SECCLASSES</secondary>
+            </indexterm>
+            
+            
+        </section>
+
+        <section xml:id="isql-commands_show-show_sequence">
+            <title>SHOW SEQUENCE</title>
+            
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW SEQUENCE</secondary>
+            </indexterm>
+            
+            
+            <formalpara>
+                <title>Назначение:</title>
+                
+                <para>Отображение информации обо всех не системных последовательностях или об одной
+                    указанной последовательности.</para>
+            </formalpara>
+            
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW {SEQUENCEs | SEQUENCE <replaceable>&lt;sequence_name&gt;</replaceable>} 
+
+SHOW {GENERATORs | GENERATOR <replaceable>&lt;generator_name&gt;</replaceable>}                                               
+                    </programlisting>
+                </para>
+            </formalpara>
+            
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW SEQUENCE</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>sequence_name</replaceable></entry>
+                                <entry>
+                                    <para>Наименование последовательности (генератора).</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+            
+            <para>Эти две команды идентичны. Генераторы — это старый термин Firebird для того, что
+                обычно называют последовательностями в других базах данных, а также в SQL стандарте.
+                Вам рекомендуется использовать последовательности, а не генераторы, но Firebird
+                считает их одинаковыми.</para>
+            
+            <para>Если имя последовательности ( генератора) не указано, то будут выведены сведения
+                обо всех последовательностях (имя, текущее значение, начальное значение, значение
+                шага приращения). Если указано имя последовательности (генератора), то будет
+                выведены сведения о конкретном последовательности.</para>
+            
+            <example>
+                <title>Использование команды SHOW SEQUENCE</title>
+                
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show sequences;
+Generator CUST_NO_GEN, current value: 1015, initial value: 0, increment: 1
+Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
+
+SQL> show sequence emp_no_gen;
+Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+            
+            <para>См. также: <link linkend="isql-commands_show-show_generator">SHOW
+                GENERATOR</link>.</para>
+        </section>
+
+        <section xml:id="isql-commands_show-show_sql_dialect">
+            <title>SHOW SQL DIALECT</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW SQL DIALECT</secondary>
+            </indexterm>
+
+        </section>
+
+        <section xml:id="isql-commands_show-show_system">
+            <title>SHOW SYSTEM</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW SYSTEM</secondary>
+            </indexterm>
+        </section>
+
+        <section xml:id="isql-commands_show-show_table">
+            <title>SHOW TABLE</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW TABLE</secondary>
+            </indexterm>
+        </section>
+
+        <section xml:id="isql-commands_show-show_trigger">
+            <title>SHOW TRIGGER</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW TRIGGER</secondary>
+            </indexterm>
+        </section>
+
+        <section xml:id="isql-commands_show-show_users">
+            <title>SHOW USERS</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW USERS</secondary>
+            </indexterm>
+        </section>
+
+        <section xml:id="isql-commands_show-show_version">
+            <title>SHOW VERSION</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW VERSION</secondary>
+            </indexterm>
+        </section>
+
+        <section xml:id="isql-commands_show-show_view">
+            <title>SHOW VIEW</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SHOW VIEW</secondary>
+            </indexterm>
         </section>
     </section>
 </chapter>

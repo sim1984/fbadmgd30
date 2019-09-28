@@ -2,8 +2,7 @@
 <?xml-model href="http://docbook.org/xml/5.1/rng/docbookxi.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <?xml-model href="http://docbook.org/xml/5.1/sch/docbook.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
 <book xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude"
-    xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="ru-ru"
-    xml:id="fbadmgd" version="5.1">
+    xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="ru-ru" xml:id="fbadmgd" version="5.1">
     <info>
         <title>Руководство администратора Firebird 3.0</title>
         <edition>0.1 Alpha</edition>
@@ -38,7 +37,7 @@
 
     <xi:include href="intro.xml" xpointer="element(/1)"/>
     <part xml:id="install-and-settings">
-        <title>Установка и настройка</title>
+        <title>Установка и настройка</title> 
         <xi:include href="install.xml" xpointer="element(/1)"/>
         <xi:include href="server-files.xml" xpointer="element(/1)"/>
         <chapter>
@@ -50,34 +49,34 @@
                 <title>Настройка Linux</title>
 
                 <para/>
-                
+
                 <section>
                     <title>Лимиты Linux</title>
-                    
+
                     <para/>
                 </section>
-                
+
                 <section>
                     <title>Необходимые права для Firebird на Linux</title>
-                    
+
                     <para/>
                 </section>
-                
+
                 <section>
                     <title>Рекомендуемые параметры сети</title>
-                    
+
                     <para/>
                 </section>
-                
+
                 <section>
                     <title>Рекомендуемые параметры памяти</title>
-                    
+
                     <para/>
                 </section>
-                
+
                 <section>
                     <title>Рекомендуемые параметры диска</title>
-                    
+
                     <para/>
                 </section>
             </section>
@@ -86,153 +85,154 @@
                 <title>Настройка Windows</title>
 
                 <para/>
-                
+
                 <section>
                     <title>Необходимые права для Firebird на Linux</title>
-                    
+
                     <para/>
                 </section>
-                
+
                 <section>
                     <title>Рекомендуемые параметры</title>
-                    
+
                     <para/>
                 </section>
             </section>
         </chapter>
     </part>
     <part xml:id="command-line-tools">
-        <title>Утилиты командной строки</title>
+        <title>Утилиты командной строки</title> 
         <xi:include href="isql.xml" xpointer="element(/1)"/>
-        
+
         <chapter xml:id="gfix" xml:lang="ru">
             <title>GFIX</title>
-            
+
             <para/>
         </chapter>
         <chapter xml:id="nbackup" xml:lang="ru">
             <title>NBACKUP</title>
-            
+
             <para/>
         </chapter>
         <chapter>
             <title>FB_LOCK_PRINT</title>
-            
+
             <para/>
         </chapter>
         <chapter>
             <title>FBTRACEMGR</title>
-            
+
             <para/>
         </chapter>
         <chapter>
             <title>GSEC</title>
-            
+
             <para/>
         </chapter>
         <chapter>
             <title>GSPLIT</title>
-            
+
             <para/>
         </chapter>
     </part>
-    
+
     <part xml:id="tasks">
-        <title></title>
-        
+        <title/> 
+
         <chapter>
             <title>Типичные проблемы с установкой</title>
-            
+
             <para/>
-            
+
             <section>
                 <title>На Windows</title>
-                <para></para>
+                <para/>
             </section>
-            
+
             <section>
                 <title>На Linux</title>
-                <para></para>
+                <para/>
             </section>
         </chapter>
-        
+
         <chapter>
-            <title>Разрешение проблем с сетевыми настройками между клиентом и сервером Firebird</title>
-            
+            <title>Разрешение проблем с сетевыми настройками между клиентом и сервером
+                Firebird</title>
+
             <para/>
         </chapter>
-        
+
         <xi:include href="config.xml" xpointer="element(/1)"/>
         <xi:include href="hardware.xml" xpointer="element(/1)"/>
-        
+
         <chapter>
             <title>Использование инструментов резервного копирования</title>
-            
+
             <para/>
-            
+
             <section>
                 <title>gbak</title>
-                <para></para>
+                <para/>
             </section>
-            
+
             <section>
                 <title>nbackup</title>
-                <para></para>
+                <para/>
             </section>
         </chapter>
-        
+
         <chapter>
             <title>Использование инструмента валидации и починки БД gfix</title>
-            
+
             <para/>
-            
+
         </chapter>
-        
+
         <chapter>
             <title>Безопасность</title>
-            
+
             <para/>
-            
+
             <section>
                 <title>Плагины аутентификации и их использование</title>
-                <para></para>
+                <para/>
             </section>
-            
+
             <section>
                 <title>Плагины шифрования и их использование</title>
-                <para></para>
+                <para/>
             </section>
-            
+
         </chapter>
-        
+
         <chapter>
             <title>Репликация (Firebird 4.0)</title>
-            
-            <para></para>
-            
+
+            <para/>
+
         </chapter>
-        
+
         <chapter>
             <title>Использование инструментов мониторинга Firebird</title>
-            
-            <para></para>
-            
+
+            <para/>
+
             <section>
                 <title>Использование fb_lock_print</title>
-                <para></para>
+                <para/>
             </section>
-            
+
             <section>
                 <title>Использование fbtracemgr для Trace API</title>
-                <para></para>
+                <para/>
             </section>
-            
+
             <section>
                 <title>Использование таблиц мониторинга MON$</title>
-                <para></para>
+                <para/>
             </section>
         </chapter>
-    </part>
+    </part> 
 
     <index>
         <info>

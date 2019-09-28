@@ -67,7 +67,7 @@
         </itemizedlist></para>
 
     <note>
-        <para>Поскольку другие приложения в среде Linux, например mySQL, также используют isql в
+        <para>Поскольку другие приложения в среде Linux, например, mySQL, также используют isql в
             качестве имени утилиты, рекомендуется запускать утилиту Firebird из ее собственного
             каталога или указывать абсолютный путь к файлу, если у вас есть другая реляционная база
             данных, кроме Firebird, установленная на вашей машине.</para>
@@ -1013,7 +1013,7 @@ DEFAULT CHARACTER SET UTF8;
 
         <note>
             <para>В отличие от оператора CONNECT в операторе CREATE DATABASE вы сразу можете указать
-                набор символов который будет использован в подключении после выполнения оператора
+                набор символов, который будет использован в подключении после выполнения оператора
                 CREATE DATABASE с помощью предложения SET NAMES.</para>
         </note>
 
@@ -2674,7 +2674,7 @@ SET
                 </para>
             </formalpara>
 
-            <para>Команда SET выводит текущие опции установленные с помощью команд SET.</para>
+            <para>Команда SET выводит текущие опции, установленные с помощью команд SET.</para>
 
             <example>
                 <title>Использование команды SET</title>
@@ -4180,7 +4180,7 @@ Command error: show
             буквами.</para>
 
         <note>
-            <para>Подсказка выданная командой SHOW содержит несколько ошибок. Например следующие
+            <para>Подсказка, выданная командой SHOW, содержит несколько ошибок. Например, следующие
                 команды не работают:<itemizedlist>
                     <listitem>
                         <para>SHOW SCHEmas (очевидно зарезервирована для будущих версий где могут
@@ -4587,7 +4587,7 @@ SHOW {DOMAINs | DOMAIN <replaceable>&lt;domain_name&gt;</replaceable>}
                     </programlisting>
                 </para>
             </formalpara>
-            
+
             <para>
                 <table frame="all">
                     <title>Параметры оператора SHOW DOMAIN</title>
@@ -4667,7 +4667,7 @@ SHOW {EXCEPTIONs | EXCEPTION <replaceable>&lt;exception_name&gt;</replaceable>}
                     </programlisting>
                 </para>
             </formalpara>
-            
+
             <para>
                 <table frame="all">
                     <title>Параметры оператора SHOW EXCEPTION</title>
@@ -4761,7 +4761,7 @@ SHOW {FILTERs | FILTER <replaceable>&lt;filter_name&gt;</replaceable>}
                     </programlisting>
                 </para>
             </formalpara>
-            
+
             <para>
                 <table frame="all">
                     <title>Параметры оператора SHOW FILTER</title>
@@ -4836,7 +4836,7 @@ SHOW {FUNCTIONs | FUNCTION <replaceable>&lt;function_name&gt;</replaceable>}
                     </programlisting>
                 </para>
             </formalpara>
-            
+
             <para>
                 <table frame="all">
                     <title>Параметры оператора SHOW FUNCTION</title>
@@ -4861,7 +4861,7 @@ SHOW {FUNCTIONs | FUNCTION <replaceable>&lt;function_name&gt;</replaceable>}
                     </tgroup>
                 </table>
             </para>
-            
+
             <para>Команда SHOW FUNCTION отображает все определённые пользователем функции, а так же
                 их зависимости, т.е. объекты которые используются функцией. Если указано имя функции
                 в качестве параметра, то для будет отображена дополнительная информация, которая
@@ -4944,6 +4944,14 @@ N3                                INPUT INTEGER
                     </programlisting>
                 </para>
             </example>
+
+            <formalpara>
+                <title>Смотри также:</title>
+
+                <para><link linkend="isql-commands_show-show_procedure">SHOW PROCEDURE</link>, <link
+                        linkend="isql-commands_show-show_trigger">SHOW TRIGGER</link>, <link
+                        linkend="isql-commands_show-show_package">SHOW PACKAGE</link>.</para>
+            </formalpara>
         </section>
 
         <section xml:id="isql-commands_show-show_generator">
@@ -4971,7 +4979,7 @@ SHOW {SEQUENCEs | SEQUENCE <replaceable>&lt;sequence_name&gt;</replaceable>}
                     </programlisting>
                 </para>
             </formalpara>
-            
+
             <para>
                 <table frame="all">
                     <title>Параметры оператора SHOW GENERATOR</title>
@@ -5024,8 +5032,12 @@ Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
                 </para>
             </example>
 
-            <para>См. также: <link linkend="isql-commands_show-show_sequence">SHOW
-                SEQUENCE</link>.</para>
+
+            <formalpara>
+                <title>Смотри также:</title>
+
+                <para><link linkend="isql-commands_show-show_sequence">SHOW SEQUENCE</link>.</para>
+            </formalpara>
         </section>
 
         <section xml:id="isql-commands_show-show_grants">
@@ -5051,7 +5063,7 @@ SHOW {GRANTs | GRANT {<replaceable>&lt;object_name&gt;</replaceable> | <replacea
                     </programlisting>
                 </para>
             </formalpara>
-            
+
             <para>
                 <table frame="all">
                     <title>Параметры оператора SHOW GRANT</title>
@@ -5069,13 +5081,15 @@ SHOW {GRANTs | GRANT {<replaceable>&lt;object_name&gt;</replaceable> | <replacea
                             <row>
                                 <entry><replaceable>object_name</replaceable></entry>
                                 <entry>
-                                    <para>Наименование объекта метаданных для которого отображаются разрешения.</para>
+                                    <para>Наименование объекта метаданных для которого отображаются
+                                        разрешения.</para>
                                 </entry>
                             </row>
                             <row>
                                 <entry><replaceable>role_name</replaceable></entry>
                                 <entry>
-                                    <para>Наименование роли для которой отображается список пользователей которым эта роль назначена.</para>
+                                    <para>Наименование роли для которой отображается список
+                                        пользователей которым эта роль назначена.</para>
                                 </entry>
                             </row>
                         </tbody>
@@ -5154,7 +5168,7 @@ SHOW INDex <replaceable>&lt;index_name&gt;</replaceable>
                     </programlisting>
                 </para>
             </formalpara>
-            
+
             <para>
                 <table frame="all">
                     <title>Параметры оператора SHOW INDICES</title>
@@ -5172,13 +5186,15 @@ SHOW INDex <replaceable>&lt;index_name&gt;</replaceable>
                             <row>
                                 <entry><replaceable>table_name</replaceable></entry>
                                 <entry>
-                                    <para>Наименование таблицы для которой будет отображён список индексов.</para>
+                                    <para>Наименование таблицы для которой будет отображён список
+                                        индексов.</para>
                                 </entry>
                             </row>
                             <row>
                                 <entry><replaceable>index_name</replaceable></entry>
                                 <entry>
-                                    <para>Наименование индекса по которому бкдет отображена информации.</para>
+                                    <para>Наименование индекса по которому бкдет отображена
+                                        информации.</para>
                                 </entry>
                             </row>
                         </tbody>
@@ -5231,6 +5247,70 @@ NAMEX INDEX ON EMPLOYEE(LAST_NAME, FIRST_NAME)
                 <primary>ISQL</primary>
                 <secondary>SHOW MAPPING</secondary>
             </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Информация локальных и глобальных отображений для объектов
+                    безопасности.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW {MAPping | MAPping <replaceable>&lt;mapping_name&gt;</replaceable> }                                       
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW MAPPING</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>mapping_name</replaceable></entry>
+                                <entry>
+                                    <para>Имя отображения.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда SHOW MAPPING выводит информацию обо всех отображениях (локальных и
+                глобальных) для объектов безопасности. Если указано имя отображения, то будет
+                выведена информация только он нём.</para>
+            
+            <example>
+                <title>Использование команды SHOW MAPPING</title>
+                
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show mapping;
+WIN_ADMINS USING PLUGIN WIN_SSPI FROM PREDEFINED_GROUP DOMAIN_ANY_RID_ADMINS TO ROLE RDB$ADMIN
+
+*** Global mapping ***
+TRUSTED_AUTH USING PLUGIN WIN_SSPI FROM ANY USER TO USER
+
+SQL> show mapping win_admins;
+WIN_ADMINS USING PLUGIN WIN_SSPI FROM PREDEFINED_GROUP DOMAIN_ANY_RID_ADMINS TO ROLE RDB$ADMIN
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
         </section>
 
         <section xml:id="isql-commands_show-show_package">
@@ -5240,6 +5320,140 @@ NAMEX INDEX ON EMPLOYEE(LAST_NAME, FIRST_NAME)
                 <primary>ISQL</primary>
                 <secondary>SHOW PACKAGE</secondary>
             </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение списка пакетов или информации об указанном пакете.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW {PACKages | PACKage <replaceable>&lt;package_name&gt;</replaceable> }                                       
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW PACKAGE</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>package_name</replaceable></entry>
+                                <entry>
+                                    <para>Имя пакета.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда SHOW PACKAGE отображает список всех пакетов определенных в текущей базе
+                данных. Если в качестве параметра указано имя пакета, то будет отображён исходный
+                код заголовка и тела пакета.</para>
+
+            <example>
+                <title>Использование команды SHOW PACKAGE</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show packages;
+
+       CHECK_NAME_UTILS                       DATE_UTILS                            
+       REPL_APPLY_UTILS                       REPL_LOG_UTILS
+       REPL_TRIGGERS_UTILS                    REPL_WRITE_LOG
+       
+SQL> show package date_utils;
+
+DATE_UTILS
+Header source:
+BEGIN
+  ...  
+  -- Возвращает строковое представление даты в формате dd MMM yyyy
+  FUNCTION DateToChar_Rus(ADate DATE) RETURNS VARCHAR(35);
+  -- Возвращает строковое представление даты в формате dd MMM yyyy
+  FUNCTION DateToChar_En(ADate DATE) RETURNS VARCHAR(35);
+  ...
+END
+
+Body source:
+BEGIN
+  ...
+  /**
+   * Возвращает строковое представление даты в формате dd MMM yyyy
+   */
+  FUNCTION DateToChar_Rus(ADate DATE) RETURNS VARCHAR(35)
+  AS
+  BEGIN
+    RETURN EXTRACT(DAY FROM ADate) || ' ' ||
+           TRIM (CASE EXTRACT(MONTH FROM ADate)
+                  WHEN 1 THEN 'января'
+                  WHEN 2 THEN 'февраля'
+                  WHEN 3 THEN 'марта'
+                  WHEN 4 THEN 'апреля'
+                  WHEN 5 THEN 'мая'
+                  WHEN 6 THEN 'июня'
+                  WHEN 7 THEN 'июля'
+                  WHEN 8 THEN 'августа'
+                  WHEN 9 THEN 'сентября'
+                  WHEN 10 THEN 'октября'
+                  WHEN 11 THEN 'ноября'
+                  WHEN 12 THEN 'декабря'
+               END) || ' ' ||
+               EXTRACT(YEAR FROM ADate);
+  END
+
+  /**
+   * Возвращает строковое представление даты в формате dd MMM yyyy
+   */
+  FUNCTION DateToChar_En(ADate DATE) RETURNS VARCHAR(35)
+  AS
+  BEGIN
+    RETURN EXTRACT(DAY FROM ADate) || ' ' ||
+           TRIM (CASE EXTRACT(MONTH FROM ADate)
+                   WHEN 1 THEN 'January'
+                   WHEN 2 THEN 'February'
+                   WHEN 3 THEN 'March'
+                   WHEN 4 THEN 'April'
+                   WHEN 5 THEN 'May'
+                   WHEN 6 THEN 'June'
+                   WHEN 7 THEN 'July'
+                   WHEN 8 THEN 'August'
+                   WHEN 9 THEN 'September'
+                   WHEN 10 THEN 'October'
+                   WHEN 11 THEN 'November'
+                   WHEN 12 THEN 'December'
+               END) || ' ' ||
+               EXTRACT(YEAR FROM ADate);
+  END
+  ...
+END  
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+            
+            <formalpara>
+                <title>Смотри также:</title>
+                
+                <para><link linkend="isql-commands_show-show_function">SHOW FUNCTION</link>, <link
+                    linkend="isql-commands_show-show_trigger">SHOW TRIGGER</link>, <link
+                        linkend="isql-commands_show-show_procedure">SHOW PROCEDURE</link>.</para>
+            </formalpara>
         </section>
 
         <section xml:id="isql-commands_show-show_procedure">
@@ -5249,6 +5463,111 @@ NAMEX INDEX ON EMPLOYEE(LAST_NAME, FIRST_NAME)
                 <primary>ISQL</primary>
                 <secondary>SHOW PROCEDURE</secondary>
             </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение информации обо всех процедурах в текущей базе данных или об
+                    указанной процедуре.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW {PROCedures | PROCedure <replaceable>&lt;procedure_name&gt;</replaceable> }                                       
+                    </programlisting>
+                </para>
+            </formalpara>
+
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW PROCEDURE</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>procedure_name</replaceable></entry>
+                                <entry>
+                                    <para>Имя хранимой процедуры.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда SHOW PROCEDURE позволяет отобразить список всех хранимых процедур
+                определённых в текущей базе данных и их зависимостей, т.е. объекты которые
+                используются процедурой. Если указано имя хранимой процедуры, то будет отображён её
+                исходный код, а также сведения о входных и выходных параметрах.</para>
+
+            <example>
+                <title>Использование команды SHOW PROCEDURE</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show procedures;
+Global procedures
+
+Procedure Name                    Invalid Dependency, Type
+================================= ======= =====================================
+ADD_EMP_PROJ                              EMPLOYEE_PROJECT, Table
+                                          UNKNOWN_EMP_ID, Exception
+ALL_LANGS                                 JOB, Table
+                                          SHOW_LANGS, Procedure
+...
+
+
+SQL> show procedure all_langs;
+Procedure text:
+=============================================================================
+BEGIN
+        FOR SELECT job_code, job_grade, job_country FROM job
+                INTO :code, :grade, :country
+
+        DO
+        BEGIN
+            FOR SELECT languages FROM show_langs
+                    (:code, :grade, :country) INTO :lang DO
+                SUSPEND;
+            /* Put nice separators between rows */
+            code = '=====';
+            grade = '=====';
+            country = '===============';
+            lang = '==============';
+            SUSPEND;
+        END
+    END
+=============================================================================
+Parameters:
+CODE                              OUTPUT VARCHAR(5)
+GRADE                             OUTPUT VARCHAR(5)
+COUNTRY                           OUTPUT VARCHAR(15)
+LANG                              OUTPUT VARCHAR(15)
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+
+            <formalpara>
+                <title>Смотри также:</title>
+
+                <para><link linkend="isql-commands_show-show_function">SHOW FUNCTION</link>, <link
+                        linkend="isql-commands_show-show_trigger">SHOW TRIGGER</link>, <link
+                        linkend="isql-commands_show-show_package">SHOW PACKAGE</link>.</para>
+            </formalpara>
+
         </section>
 
         <section xml:id="isql-commands_show-show_role">
@@ -5258,6 +5577,71 @@ NAMEX INDEX ON EMPLOYEE(LAST_NAME, FIRST_NAME)
                 <primary>ISQL</primary>
                 <secondary>SHOW ROLE</secondary>
             </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение списка ролей в текущей базе данных, или списка пользователей
+                    назначенных указанной роли.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW {ROLEs | ROLE <replaceable>&lt;role_name&gt;</replaceable> }                                       
+                    </programlisting>
+                </para>
+            </formalpara>
+
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW ROLE</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>role_name</replaceable></entry>
+                                <entry>
+                                    <para>Имя роли.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда SHOW ROLE выводит список ролей в текущей базе данных. Если в качестве
+                аргумента передано имя роли, то будет выведен список пользователей которым назначена
+                указанная роль.</para>
+
+            <example>
+                <title>Использование команды SHOW ROLE</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show roles;
+       R1                                     R2
+       R3
+       
+SQL> show role r1;
+Role R1 is granted to:
+U1
+U2       
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
         </section>
 
         <section xml:id="isql-commands_show-show_secclasses">
@@ -5267,26 +5651,84 @@ NAMEX INDEX ON EMPLOYEE(LAST_NAME, FIRST_NAME)
                 <primary>ISQL</primary>
                 <secondary>SHOW SECCLASSES</secondary>
             </indexterm>
-            
-            
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение информации о классах безопасности для заданного объекта.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW SECCLAsses <replaceable>&lt;object_name&gt;</replaceable>                                      
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW SECCLASSES</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>object_name</replaceable></entry>
+                                <entry>
+                                    <para>Имя объекта метаданных.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда SHOW SECCLASSES отображает информацию о классах безопасности для заданного
+                объекта. В качестве <replaceable>object_name</replaceable> может быть передано не
+                только имя таблицы, это может быть имя хранимой процедуры, представления и
+                т.д.</para>
+
+            <example>
+                <title>Использование команды SHOW SECCLASSES</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show secclasses employee;
+
+Table's main sec class SQL$440
+Table's default sec class SQL$DEFAULT54    
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
         </section>
 
         <section xml:id="isql-commands_show-show_sequence">
             <title>SHOW SEQUENCE</title>
-            
+
             <indexterm>
                 <primary>ISQL</primary>
                 <secondary>SHOW SEQUENCE</secondary>
             </indexterm>
-            
-            
+
+
             <formalpara>
                 <title>Назначение:</title>
-                
+
                 <para>Отображение информации обо всех не системных последовательностях или об одной
                     указанной последовательности.</para>
             </formalpara>
-            
+
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
@@ -5297,7 +5739,7 @@ SHOW {GENERATORs | GENERATOR <replaceable>&lt;generator_name&gt;</replaceable>}
                     </programlisting>
                 </para>
             </formalpara>
-            
+
             <para>
                 <table frame="all">
                     <title>Параметры оператора SHOW SEQUENCE</title>
@@ -5322,20 +5764,20 @@ SHOW {GENERATORs | GENERATOR <replaceable>&lt;generator_name&gt;</replaceable>}
                     </tgroup>
                 </table>
             </para>
-            
+
             <para>Эти две команды идентичны. Генераторы — это старый термин Firebird для того, что
                 обычно называют последовательностями в других базах данных, а также в SQL стандарте.
                 Вам рекомендуется использовать последовательности, а не генераторы, но Firebird
                 считает их одинаковыми.</para>
-            
+
             <para>Если имя последовательности ( генератора) не указано, то будут выведены сведения
                 обо всех последовательностях (имя, текущее значение, начальное значение, значение
                 шага приращения). Если указано имя последовательности (генератора), то будет
                 выведены сведения о конкретном последовательности.</para>
-            
+
             <example>
                 <title>Использование команды SHOW SEQUENCE</title>
-                
+
                 <para>
                     <programlisting>
 <![CDATA[
@@ -5349,9 +5791,14 @@ Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
                     </programlisting>
                 </para>
             </example>
-            
-            <para>См. также: <link linkend="isql-commands_show-show_generator">SHOW
-                GENERATOR</link>.</para>
+
+            <formalpara>
+                <title>Смотри также:</title>
+
+                <para><link linkend="isql-commands_show-show_generator">SHOW
+                    GENERATOR</link>.</para>
+            </formalpara>
+
         </section>
 
         <section xml:id="isql-commands_show-show_sql_dialect">
@@ -5362,6 +5809,36 @@ Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
                 <secondary>SHOW SQL DIALECT</secondary>
             </indexterm>
 
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение SQL диалекта клиента и текущей базы данных.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW SQL DIALECT                                              
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда SHOW SQL DIALECT отображает SQL диалект установленный в ISQL и диалект
+                подключенной базы данных.</para>
+
+            <example>
+                <title>Использование команды SHOW SQL DIALECT</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show sql dialect;
+        Client SQL dialect is set to: 3 and database SQL dialect is: 3
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
         </section>
 
         <section xml:id="isql-commands_show-show_system">
@@ -5371,6 +5848,109 @@ Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
                 <primary>ISQL</primary>
                 <secondary>SHOW SYSTEM</secondary>
             </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение списка системных объектов.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW SYStem [{TABLEs | FUNCTIONs | COLLATIONs | COLLATEs}]                                              
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда SHOW SYSTEM выводит список внутренних, то есть системных объектов,
+                созданных и используемых в текущей базе данных. По умолчанию отображаются системные
+                таблицы, функции и сортировки. Необязательный параметр позволяет уточнить какой
+                именно вид системных объектов необходимо отобразить.</para>
+
+            <example>
+                <title>Использование команды SHOW SYSTEM</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show system;
+
+Tables:
+       MON$ATTACHMENTS                        MON$CALL_STACK
+       MON$CONTEXT_VARIABLES                  MON$DATABASE
+...
+       SEC$DB_CREATORS                        SEC$GLOBAL_AUTH_MAPPING
+       SEC$USERS                              SEC$USER_ATTRIBUTES
+
+Collations:
+       ASCII                                  BIG_5
+       BS_BA                                  CP943C
+       CP943C_UNICODE                         CS_CZ
+       CYRL                                   DA_DA
+....
+       WIN1257_EE                             WIN1257_LT
+       WIN1257_LV                             WIN1258
+       WIN_CZ                                 WIN_CZ_CI_AI
+       WIN_PTBR
+       
+SQL> show system tables;
+
+       MON$ATTACHMENTS                        MON$CALL_STACK
+       MON$CONTEXT_VARIABLES                  MON$DATABASE
+...
+       SEC$DB_CREATORS                        SEC$GLOBAL_AUTH_MAPPING
+       SEC$USERS                              SEC$USER_ATTRIBUTES       
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+
+            <note>
+                <para>В Firebird 2.0-2.5 существовали системные функции RDB$GET_CONTEXT и
+                    RDB$SET_CONTEXT, которые позже стали встроенными. В Firebird 2.5 команда SHOW
+                    SYSTEM отобразит следующее: <programlisting>
+<![CDATA[
+SQL> show system;
+
+Tables:
+       MON$ATTACHMENTS                        MON$CALL_STACK
+       MON$CONTEXT_VARIABLES                  MON$DATABASE
+...
+
+Functions:
+       RDB$GET_CONTEXT                        RDB$SET_CONTEXT
+
+Collations:
+       ASCII                                  BIG_5
+       BS_BA                                  CP943C
+....
+       WIN_CZ                                 WIN_CZ_CI_AI
+       WIN_PTBR
+]]>                        
+                    </programlisting>
+                </para>
+            </note>
+
+            <para>Если вы хотите отобразить детали определенного объекта, просто используйте
+                соответствующую команду show. <programlisting>
+<![CDATA[
+SQL> show table mon$io_stats;
+
+MON$STAT_ID                     (RDB$STAT_ID) INTEGER Nullable
+MON$STAT_GROUP                  (RDB$STAT_GROUP) SMALLINT Nullable
+MON$PAGE_READS                  (RDB$COUNTER) BIGINT Nullable
+MON$PAGE_WRITES                 (RDB$COUNTER) BIGINT Nullable
+MON$PAGE_FETCHES                (RDB$COUNTER) BIGINT Nullable
+MON$PAGE_MARKS                  (RDB$COUNTER) BIGINT Nullable
+
+SQL> show collation ascii;
+
+ASCII, CHARACTER SET ASCII, PAD SPACE, SYSTEM
+]]>                        
+                    </programlisting>
+            </para>
         </section>
 
         <section xml:id="isql-commands_show-show_table">
@@ -5380,6 +5960,113 @@ Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
                 <primary>ISQL</primary>
                 <secondary>SHOW TABLE</secondary>
             </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение списка таблиц или информации о заданной таблице.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW {TABLEs | TABLE <replaceable>&lt;table_name&gt;</replaceable>}                                             
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW TABLE</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>table_name</replaceable></entry>
+                                <entry>
+                                    <para>Имя таблицы.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>В первом варианте команда SHOW TABLES отображает список таблиц, определённых в
+                базе данных, в алфавитном порядке. Во втором варианте отображается список столбцов и
+                их типы или домены для указанной в качестве параметра таблицы.</para>
+
+            <example>
+                <title>Использование команды SHOW TABLE</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show tables;
+
+       COUNTRY                                CUSTOMER
+       DEPARTMENT                             EMPLOYEE
+       EMPLOYEE_PROJECT                       JOB
+       PROJECT                                PROJ_DEPT_BUDGET
+       SALARY_HISTORY                         SALES
+
+SQL> show table country;
+
+COUNTRY                         (COUNTRYNAME) VARCHAR(15) Not Null
+CURRENCY                        VARCHAR(10) Not Null
+CONSTRAINT INTEG_2:
+  Primary key (COUNTRY)   
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+            <para>Если для таблицы определены комментарии, эта команда не будет их отображать. Вы
+                можете использовать команду SHOW COMMENTS, но помните, что тогда вам будут
+                отображены все комментарии в базе данных. По-видимому, не существует метода
+                извлечения комментариев для одного объекта, если только вы не запросите системные
+                таблицы напрямую. <programlisting>
+<![CDATA[
+SQL> comment on table country is 'This table holds details about countries.';
+SQL> commit;
+
+SQL> show comments;
+...
+COMMENT ON TABLE        COUNTRY IS This table holds details about countries.;
+...
+
+SQL> show table country;
+
+COUNTRY                         (COUNTRYNAME) VARCHAR(15) Not Null
+CURRENCY                        VARCHAR(10) Not Null
+CONSTRAINT INTEG_2:
+  Primary key (COUNTRY)
+  
+SQL> select rdb$description
+CON> from rdb$relations
+CON> where rdb$relation_name = 'COUNTRY';
+
+  RDB$DESCRIPTION
+=================
+            6:1ec
+==============================================================================
+RDB$DESCRIPTION:
+This table holds details about countries.
+============================================================================== 
+]]>                        
+                    </programlisting>
+            </para>
+
+            <para>Вывод последнего запроса выше не идеален, но, по крайней мере, он отображает
+                гораздо меньше информации, когда в вашей базе данных много комментариев.</para>
         </section>
 
         <section xml:id="isql-commands_show-show_trigger">
@@ -5389,6 +6076,110 @@ Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
                 <primary>ISQL</primary>
                 <secondary>SHOW TRIGGER</secondary>
             </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение списка триггеров или подробной информации об указанном
+                    триггере.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW {TRIGgers | TRIGger <replaceable>&lt;trig_name&gt;</replaceable>}                                             
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW TRIGGER</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>trig_name</replaceable></entry>
+                                <entry>
+                                    <para>Имя триггера.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда SHOW TRIGGER отображает список всех триггеров определённых в текущей базе
+                данных. Для табличных триггеров будет выведено имя таблицы для которого был создан
+                триггер.</para>
+
+            <example>
+                <title>Использование команды SHOW TRIGGERS</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show triggers;
+Trigger name                     Invalid
+================================ =======
+TR_BEFORE_DISCONNECT
+
+Table name                       Trigger name                     Invalid
+================================ ================================ =======
+AGE                              AGE_BD
+AGE                              AGE_BI
+AGE                              AGE_BU
+AIMTYPE                          TR_AIMTYPE_BI
+ALGORITHM                        TR_ALGORITHM_BI
+......
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+
+            <para>Если указано имя триггера, то будет отображена подробная информация о триггере
+                (имя триггера, порядок срабатывания, событие, активен ли триггер), а также его
+                исходный код.</para>
+
+            <example>
+                <title>Использование команды SHOW TRIGGER</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show trigger set_cust_no;
+
+Triggers on Table CUSTOMER:
+SET_CUST_NO, Sequence: 0, Type: BEFORE INSERT, Active
+Trigger text:
+=============================================================================
+AS
+BEGIN
+    if (new.cust_no is null) then
+    new.cust_no = gen_id(cust_no_gen, 1);
+END
+=============================================================================
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+            
+            <formalpara>
+                <title>Смотри также:</title>
+                
+                <para><link linkend="isql-commands_show-show_function">SHOW FUNCTION</link>, <link
+                    linkend="isql-commands_show-show_procedure">SHOW PROCEDURE</link>, <link
+                        linkend="isql-commands_show-show_package">SHOW PACKAGE</link>.</para>
+            </formalpara>
         </section>
 
         <section xml:id="isql-commands_show-show_users">
@@ -5398,6 +6189,46 @@ Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
                 <primary>ISQL</primary>
                 <secondary>SHOW USERS</secondary>
             </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение списка пользователей в текущей БД безопасности.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW USERs                                           
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда SHOW USERS отображает список пользователей определённых в текущей базе
+                данных безопасности. Если пользователь не является администратором в базе данных
+                безопасности, то будет отображены только сведения о нём самом. Перед каждым именем
+                пользователя указано число, которое отображает количество соединений выполненное
+                этим пользователем. Если перед именем пользователя напечатана решётка
+                    <quote>#</quote>, то это текущий пользователь.</para>
+
+            <example>
+                <title>Использование команды SHOW USERS</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show users;
+Users in the database
+  1 #SYSDBA                              2  U1
+  0  U3
+]]>                        
+                    </programlisting>
+                </para>
+
+                <para>В данном случае есть одно соединение пользователем SYSDBA — это текущий
+                    пользователь, и два соединения пользователем U1.</para>
+            </example>
         </section>
 
         <section xml:id="isql-commands_show-show_version">
@@ -5407,6 +6238,51 @@ Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
                 <primary>ISQL</primary>
                 <secondary>SHOW VERSION</secondary>
             </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение информации о версии ISQL, сервера и ODS базы данных.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW VERsion                                         
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Команда SHOW VERSION отображает информацию о версии ISQL, версии сервера Firebird,
+                сетевом протоколе, ODS текущей базы данных.</para>
+
+            <example>
+                <title>Использование команды SHOW VERSION</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show version;
+
+ISQL Version: WI-V3.0.5.33168 Firebird 3.0
+Server version:
+Firebird/Windows/AMD/Intel/x64 (access method), 
+version "WI-V3.0.5.33168 Firebird 3.0"
+Firebird/Windows/AMD/Intel/x64 (remote server), 
+version "WI-V3.0.5.33168 Firebird 3.0/tcp (DESKTOP-E3INAFT)/P15:C"
+Firebird/Windows/AMD/Intel/x64 (remote interface), 
+version "WI-V3.0.5.33168 Firebird 3.0/tcp (DESKTOP-E3INAFT)/P15:C"
+on disk structure version 12.0
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
+
+            <note>
+                <para>Обратите внимание, что некоторые строки в приведенном выше разделены, чтобы
+                    они могли поместиться на странице.</para>
+            </note>
         </section>
 
         <section xml:id="isql-commands_show-show_view">
@@ -5416,6 +6292,80 @@ Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
                 <primary>ISQL</primary>
                 <secondary>SHOW VIEW</secondary>
             </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Отображение списка представлений или информации об указанном
+                    представлении.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SHOW {VIEWs | VIEW <replaceable>&lt;view_name&gt;</replaceable>}                                        
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>
+                <table frame="all">
+                    <title>Параметры оператора SHOW VIEW</title>
+                    <?dbfo keep-together='auto'?>
+                    <tgroup cols="2">
+                        <colspec colname="colArgument" colnum="1" colwidth="1.2*" align="left"/>
+                        <colspec colname="colDesc" colnum="2" colwidth="2.8*" align="left"/>
+                        <thead>
+                            <row valign="middle">
+                                <entry align="center">Параметр</entry>
+                                <entry align="center">Описание</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry><replaceable>view_name</replaceable></entry>
+                                <entry>
+                                    <para>Имя представления.</para>
+                                </entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+
+            <para>Команда SHOW VIEW отображает список представлений определённых в текущей базе
+                данных. Если в качестве аргумента указано имя представления, то будет отображён
+                список его столбцов с типами или доменами, и исходный код представления.</para>
+
+            <example>
+                <title>Использование команды SHOW VIEW</title>
+
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> show views;
+
+       PHONE_LIST
+       
+SQL> show view phone_list;
+
+EMP_NO                          (EMPNO) SMALLINT Not Null
+FIRST_NAME                      (FIRSTNAME) VARCHAR(15) Not Null
+LAST_NAME                       (LASTNAME) VARCHAR(20) Not Null
+PHONE_EXT                       VARCHAR(4) Nullable
+LOCATION                        VARCHAR(15) Nullable
+PHONE_NO                        (PHONENUMBER) VARCHAR(20) Nullable
+View Source:
+==== ======
+SELECT
+    emp_no, first_name, last_name, phone_ext, location, phone_no
+    FROM employee, department
+    WHERE employee.dept_no = department.dept_no
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
         </section>
     </section>
 </chapter>

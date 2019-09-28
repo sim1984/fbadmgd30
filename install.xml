@@ -1,33 +1,33 @@
 <!DOCTYPE chapter>
-<chapter xmlns="http://docbook.org/ns/docbook" version="5.1" xml:id="install" xml:lang="ru">
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="5.1" xml:id="install" xml:lang="ru">
     <info>
         <title>Установка, обновление и запуск сервера</title>
     </info>
 
     <para>Скачать дистрибутивы Firebird можно на официальном сайте <link
-            xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://firebirdsql.org"/> в
-        разделе Downloads.</para>
-    
+            xlink:href="https://firebirdsql.org"/> в разделе Downloads.</para>
+
     <section xml:id="install-linux">
         <title>Установка на ОС Linux</title>
-        
+
         <para/>
-        
+
         <section xml:id="install-linux-repo">
             <title>Установка из репозитория</title>
-            
+
             <para/>
         </section>
-        
+
         <section xml:id="install-linux-tar">
             <title>Ручная установка из tar архива</title>
-            
+
             <para/>
         </section>
-        
+
         <section xml:id="install-linux-client">
             <title>Ручная установка клиента</title>
-            
+
             <para/>
         </section>
     </section>
@@ -212,7 +212,7 @@
                     </figure>
                 </para>
                 <para>Каждый из режимов стабилен, и нет причин полностью отдавать предпочтение
-                    какому то одному. Конечно, у вас могут быть свои собственные конкретные
+                    какому-то одному. Конечно, у вас могут быть свои собственные конкретные
                     соображения. Если Вы сомневаетесь, просто следуйте за установкой по умолчанию.
                     Позже вы можете изменить архитектуру через файл конфигурации
                         <filename>firebird.conf</filename> (параметр ServerMode), что потребует
@@ -258,11 +258,9 @@ firebird -a
                     поскольку не является безопасной.</para>
                 <para>Вы можете разрешить авторизацию предыдущими версиями клиентов Firebird в
                     процессе инсталяции. Это можно сделать и после установки изменив параметры <link
-                        xmlns:xlink="http://www.w3.org/1999/xlink" linkend="config-param-AuthServer"
-                        >AuthServer</link>, <link xmlns:xlink="http://www.w3.org/1999/xlink"
+                        linkend="config-param-AuthServer">AuthServer</link>, <link
                         linkend="config-param-UserManager">UserManager</link> и <link
-                        xmlns:xlink="http://www.w3.org/1999/xlink" linkend="config-param-WireCrypt"
-                        >WireCrypt</link>.</para>
+                        linkend="config-param-WireCrypt">WireCrypt</link>.</para>
             </simplesect>
 
             <simplesect>
@@ -285,9 +283,9 @@ firebird -a
                     </figure>
                 </para>
 
-                <para>После этого шага будет отображено окно, в котором отображаются опции выбранные
-                    пользователем, если вас всё устраивает можно начать автоматическую установку
-                    сервера.</para>
+                <para>После этого шага будет отображено окно, в котором отображаются опции,
+                    выбранные пользователем, если вас всё устраивает можно начать автоматическую
+                    установку сервера.</para>
             </simplesect>
         </section>
         <section xml:id="install-windows-zip">
@@ -402,10 +400,9 @@ ServerMode = Classic
                         </programlisting>
                     </para>
                     <para>Подробнее о режимах севера и параметре <parameter>ServerMode</parameter>
-                        читайте в <link xmlns:xlink="http://www.w3.org/1999/xlink"
-                            linkend="install-windows-exe-servermode">Выбор архитектуры
-                            сервера</link> и <link xmlns:xlink="http://www.w3.org/1999/xlink"
-                            linkend="config-param-ServerMode">ServerMode</link>.</para>
+                        читайте в <link linkend="install-windows-exe-servermode">Выбор архитектуры
+                            сервера</link> и <link linkend="config-param-ServerMode"
+                            >ServerMode</link>.</para>
                 </section>
                 <section xml:id="install-windows-config-auth">
                     <title>Авторизация с предыдущих версий клиента Firebird</title>
@@ -416,11 +413,8 @@ ServerMode = Classic
                         Firebird 3.0 по-умолчанию, поскольку не является безопасной.</para>
 
                     <para>Для поддержки традиционной аутентификации необходимо изменить следующие
-                        параметры <link xmlns:xlink="http://www.w3.org/1999/xlink"
-                            linkend="config-param-AuthServer">AuthServer</link>, <link
-                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                        параметры <link linkend="config-param-AuthServer">AuthServer</link>, <link
                             linkend="config-param-UserManager">UserManager</link> и <link
-                            xmlns:xlink="http://www.w3.org/1999/xlink"
                             linkend="config-param-WireCrypt">WireCrypt</link>.</para>
 
                     <example>

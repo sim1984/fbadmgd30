@@ -258,7 +258,7 @@ firebird -a
                     поскольку не является безопасной.</para>
                 <para>Вы можете разрешить авторизацию предыдущими версиями клиентов Firebird в
                     процессе инсталяции. Это можно сделать и после установки изменив параметры <link
-                        linkend="config-param-AuthServer">AuthServer</link>, <link
+                        linkend="config-param-Auth">AuthServer</link>, <link
                         linkend="config-param-UserManager">UserManager</link> и <link
                         linkend="config-param-WireCrypt">WireCrypt</link>.</para>
             </simplesect>
@@ -413,7 +413,7 @@ ServerMode = Classic
                         Firebird 3.0 по-умолчанию, поскольку не является безопасной.</para>
 
                     <para>Для поддержки традиционной аутентификации необходимо изменить следующие
-                        параметры <link linkend="config-param-AuthServer">AuthServer</link>, <link
+                        параметры <link linkend="config-param-Auth">AuthServer</link>, <link
                             linkend="config-param-UserManager">UserManager</link> и <link
                             linkend="config-param-WireCrypt">WireCrypt</link>.</para>
 

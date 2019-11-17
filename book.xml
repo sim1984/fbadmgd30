@@ -2,7 +2,7 @@
 <?xml-model href="http://docbook.org/xml/5.1/rng/docbookxi.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <?xml-model href="http://docbook.org/xml/5.1/sch/docbook.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
 <book xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2001/XInclude"
-    xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="ru-ru" xml:id="fbadmgd" version="5.1">
+    xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="ru" xml:id="fbadmgd" version="5.1">
     <info>
         <title>Руководство администратора Firebird 3.0</title>
         <edition>0.1 Alpha</edition>
@@ -202,13 +202,6 @@
                 <title>Плагины шифрования и их использование</title>
                 <para/>
             </section>
-
-        </chapter>
-
-        <chapter>
-            <title>Репликация (Firebird 4.0)</title>
-
-            <para/>
 
         </chapter>
 

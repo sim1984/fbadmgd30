@@ -205,26 +205,7 @@
 
         </chapter>
 
-        <chapter>
-            <title>Использование инструментов мониторинга Firebird</title>
-
-            <para/>
-
-            <section>
-                <title>Использование fb_lock_print</title>
-                <para/>
-            </section>
-
-            <section>
-                <title>Использование fbtracemgr для Trace API</title>
-                <para/>
-            </section>
-
-            <section>
-                <title>Использование таблиц мониторинга MON$</title>
-                <para/>
-            </section>
-        </chapter>
+        <xi:include href="mon_tools.xml" xpointer="element(/1)"/>
     </part> 
 
     <index>

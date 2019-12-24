@@ -11,7 +11,548 @@
 
     <section>
         <title>Использование fb_lock_print</title>
-        <para/>
+        <para>Утилита <application>fb_lock_print</application> служит для получения информации о
+            состоянии лок-менеджера ФБ. Информация может быть выведена как в виде заголовка
+            лок-таблицы, так и в виде развернутых данных о видах ресурсов, на которые установлены
+            блокировки, владельцах этих блокировок и тех соединениях, кто ждёт высвобождения
+            ресурсов (если такие есть).</para>
+        <para>Операция получения заголовка лок-таблицы выполняется очень быстро, без затрат
+            ресурсов. Получение развернутой информации может потребовать (при сильной нагрузке)
+            десятков секунд, в течение которых работа с базой будет приостановлена. Лог вывода при
+            этом может достигать десятков и даже сотен мегабайт.</para>
+        <para>Утилита должна запускаться на том же сервере, где работает база (т.е. возможности
+            удаленно получить содержимое лок-таблицы на сегодня нет).</para>
+        <para>Вызов может проводиться как для получения информации по конкретной базе данных (ключ
+            "-d"), так и для получения информации о лок-таблице по имени её файла (ключ
+            "-f").</para>
+        <para>При использовании ключа "-d", допускается указывать как файл, так и алиас базы.</para>
+        <para>Если над базой активно проводятся операции записи, то для получения консистентного
+            состояния лок-таблицы настоятельно рекомендуется указывать дополнительно ключ "-c". Этот
+            ключ приведёт к блокировке лок-таблицы, затем будет создана её копию, после чего
+            лок-таблица разблокируется и анализ будет уже идти по данным из созданной копии.</para>
+        <para>В противном случае возможно зацикливание <application>fb_lock_print</application> и
+            получение бесконечного растущего лога. Кроме того, возможен вывод значений, совершенно
+            невозможных с точки зрения здравого смысла, например:
+            <screen>
+Free requests (-1297897313): forward: 1052750528, backward: 997957440            
+        </screen>
+        </para>
+        <para>Лок-таблица для базы создается в момент установки первого соединения с этой базой.
+            Вызов <application>fb_lock_print</application> с указанием базы, к которой нет
+            подключений, приведёт к выводу: <itemizedlist>
+                <listitem>
+                    <para>в поток STDOUT — сообщения "Unable to access lock table";</para>
+                </listitem>
+                <listitem>
+                    <para>в поток STDERR — сообщения, текст которого зависит от операционной
+                        системы: <itemizedlist>
+                            <listitem>
+                                <para>Linux: "shmem_data->sh_mem_length_mapped is 0"</para>
+                            </listitem>
+                            <listitem>
+                                <para>Windows: "File for memory mapping is empty".</para>
+                            </listitem>
+                        </itemizedlist></para>
+                </listitem>
+            </itemizedlist></para>
+
+        <para>Код возврата (bash: $?; batch: errorlevel) при указании команде
+                <application>fb_lock_print</application> несуществующего файла БД или при указании
+            базы, к которой нет подключений, всегда одинаковый и равен нулю.</para>
+
+        <section>
+            <title>Структура заголовка лок-таблицы</title>
+
+            <para>При указании только имени базы (возможно, с ключом "-c"), выводится ЗАГОЛОВОК
+                лок-таблицы.</para>
+
+            <para>Примеры вызова, возвращающие только заголовок лок-таблицы:
+                <synopsis>
+/opt/firebird/bin/fb_lock_print -c 
+    -d employee 1>/tmp/lkp_employee.log 2>/tmp/lkp_employee.err
+    
+/opt/firebird/bin/fb_lock_print -f 
+    /tmp/firebird/fb_lock_00fd0000000000009400220000000000 1>/tmp/lkp.log 2>
+    /tmp/lkp.err                
+            </synopsis>
+            </para>
+            <note>
+                <para>Некоторые строки в командах перенесены на другую строку.</para>
+            </note>
+            <para>Пример заголовка (с нумерацией строк): <synopsis>
+/opt/firebird/bin/fb_lock_print -c -d employee | cat -n                
+            </synopsis>
+                <screen>
+ 1  LOCK_HEADER BLOCK
+ 2          Version: 146, Creation timestamp: 2017-12-07 11:42:46
+ 3          Active owner:      0, Length: 5242880, Used: 235688
+ 4          Enqs:   1195, Converts:     26, Rejects:     30, Blocks:     15
+ 5          Deadlock scans:      3, Deadlocks:      2, Scan interval:  33
+ 6          Acquires:   2150, Acquire blocks:     14, Spin count:   0
+ 7          Mutex wait: 0.7%
+ 8          Hash slots: 20011, Hash lengths (min/avg/max):    0/   0/   4
+ 9          Remove node:      0, Insert queue:      0, Insert prior:      0
+10          Owners (3):     forward: 172960, backward: 208096
+11          Free owners (2):        forward: 226648, backward: 217480
+12          Free locks (17):        forward: 174344, backward: 233744
+13          Free requests (236):    forward: 235544, backward: 224360                
+            </screen>
+            </para>
+            <para>
+                <orderedlist>
+                    <listitem>
+                        <para>LOCK_HEADER BLOCK</para>
+                    </listitem>
+                    <listitem>
+                        <para><code>Version: 146, Creation timestamp: 2017-12-07
+                            11:42:46</code></para>
+                        <para>Номер версии лок-таблицы и штамп времени, когда к базе был установлен
+                            первое подключение.</para>
+                    </listitem>
+                    <listitem>
+                        <para><code>Active owner: 0, Length: 5242880, Used: 235688</code></para>
+                        <para>
+                            <itemizedlist>
+                                <listitem>
+                                    <para>Active owner — номер соединения с сервером, который в
+                                        данный момент занимает лок-таблицу. При запуске
+                                        fb_lock_print с ключом "-c" это значение всегда равно
+                                        нулю.</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Length — общий объём памяти, выделенный под лок-таблицу,
+                                        см параметр LockMemSize в firebird.conf (databases.conf). </para>
+                                    <para>Существует эмпирическое правило для выбора этого значения: <equation>
+                                            <mathphrase>LockMemSize_bytes = db_cache_pages *
+                                                count_of_connections * 100</mathphrase>
+                                        </equation>, где <itemizedlist spacing="compact">
+                                            <listitem>
+                                                <para>db_cache_pages — размер страничного кеша
+                                                  Firebird;</para>
+                                            </listitem>
+                                            <listitem>
+                                                <para>count_of_connections — ожидаемое максимальное
+                                                  количество подключений.</para>
+                                            </listitem>
+                                        </itemizedlist></para>
+                                    <para>Однако, правильнее выполнять мониторинг параметра Used
+                                        лок-таблицы в течении дня и устанавливать LockMemSize в
+                                        значение, большее чем зафиксированный максимум used в
+                                        полтора-два раза.</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Used — Объём памяти, используемый в момент получения
+                                        снимка. Не уменьшается, пока существует хотя бы 1 коннект.
+                                        Когда Used будет больше значения (Length - LockMemSize),
+                                        произойдёт увеличение размера лок-таблицы на число,
+                                        указанное в параметре LockMemSize файла конфигурации
+                                        firebird.conf (databases.conf).</para>
+                                </listitem>
+                            </itemizedlist>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para><code>Enqs: 1195, Converts: 26, Rejects: 30, Blocks: 15</code></para>
+                        <para>Строка со счетчиками операций: <itemizedlist>
+                                <listitem>
+                                    <para>Enqs — запросы на установку новой блокировки;</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Converts — изменения статуса блокировки (например,
+                                        понижение её с монопольной до shared)</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Rejects — отказы в получении блокировки</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Blocks — число ожиданий высвобождения ресурсов, на которые
+                                        другими соединениями были ранее установлены блокировки с
+                                        уровнями, несовместимыми с теми, которые запрашивают
+                                        ожидающие соединения; например, подключение, запрашивающий
+                                        страницу на чтение, будет ожидать её высвобождения, если на
+                                        неё установлена блокировка для записи другим
+                                        соединением.</para>
+                                </listitem>
+                            </itemizedlist></para>
+                    </listitem>
+                    <listitem>
+                        <para><code>Deadlock scans: 3, Deadlocks: 2, Scan interval: 33</code></para>
+                        <para><itemizedlist>
+                                <listitem>
+                                    <para>Deadlock scans — число длительных ожиданий (возможно,
+                                        продолжающихся и сейчас) установки блокировок на ресурсы.
+                                        Под "длительными" понимаются ожидания, превосходящие
+                                        значение <parameter>DeadLockTimeout</parameter> секунд,
+                                        указанное в конфигурации
+                                            <filename>firebird.conf</filename>/<filename>databases.conf</filename>.</para>
+                                    <para>Это общее число неудачных попыток установить блокировку на
+                                        какой-либо ресурс в рамках либо WAIT-транзакций, либо
+                                        транзакций, запущенных с <code>LOCK TIMEOUT
+                                                &lt;<replaceable>n</replaceable>&gt;</code>, где
+                                        число <replaceable>n</replaceable> больше, чем параметр
+                                        конфигурации <parameter>DeadLockTimeout</parameter>. Равно
+                                        сумме таких попыток по всем соединениям (т.е. 10 соединений
+                                        могли ждать только 1 раз, но также могли ждать и 5
+                                        соединений 2 раза; какой именно был сценарий — определить
+                                        невозможно).</para>
+                                    <para>Накапливается с момента первого подключения к базе,
+                                        меняется только в рамках WAIT-транзакций.</para>
+                                    <para>Высокое значение может говорить о частых попытках вставок
+                                        записей с одинаковыми ключами в уникальный индекс или о
+                                        конфликтах, при которых транзакции_1 нужен ресурс
+                                        транзакции_2, и наоборот (эта ситуация называется
+                                        "deadlock").</para>
+                                    <para>Также, это значение может оказаться высоким при групповом
+                                        удалении подключений с использованием
+                                            <database>mon$attachments</database>.</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Deadlocks — накопленное количество длительных ожиданий из
+                                        множества, определенного в Deadlock scans, завершившихся
+                                        ошибками.</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Scan interval — Значение параметра ожидания
+                                            <parameter>DeadLockTimeout</parameter>, заданного в
+                                            <filename>firebird.conf</filename>/<filename>databases.conf</filename>.</para>
+                                </listitem>
+                            </itemizedlist>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para><code>Acquires: 2150, Acquire blocks: 14, Spin count: 0</code></para>
+                        <para>
+                            <itemizedlist>
+                                <listitem>
+                                    <para>Acquires — общее количество обращений к лок-таблице с
+                                        момента старта ФБ.</para>
+                                    <para>В случае, когда соединение висит в ожидании ресурса
+                                        (например, в WAIT-транзакции), этот счетчик увеличивается на
+                                        1 каждые <parameter>DeadLockTimeout</parameter>
+                                        секунд.</para>
+                                    <para>Может служить индикатором того, насколько интенсивно
+                                        операция обращается к лок-менеджеру. Например, каждое новое
+                                        соединение, устанавливаемое к базе утилитой ISQL, требует 86
+                                        обращений (первое — более 120). Каждое новое соединение,
+                                        выполняемое с помощью Python-драйвера, требует 78 обращений.
+                                        Таким образом, даже операция установки соединения с базой
+                                        данных требует доступа к лок-таблице и, следовательно,
+                                        влияет на количество соединений, которые ждут доступа к ней
+                                        (см следующую секцию, "mutex wait, %").</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Acquire blocks — число обращений, которые привели к
+                                        ожиданию на мьютексе (лок-таблица была занята).</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Spin count — значение
+                                            <parameter>LockAcquireSpins</parameter> из файла
+                                        конфигурации
+                                            (<filename>firebird.conf</filename>/<filename>databases.conf</filename>).</para>
+                                </listitem>
+                            </itemizedlist>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para><code>Mutex wait, %</code></para>
+                        <para>Перед обновлением лок-таблицы процесс устанавливает на неё блокировку,
+                            называемую мьютексом. mutex wait,% — это процент от общего числа
+                            процессов, что вынуждены были ждать доступа к лок-таблице ввиду её
+                            обновления каким-то одним из соединений. Значение получается в момент
+                            получения снимка лок-таблицы и может меняться в любую сторону.
+                            Вычисляется по формуле: <equation>
+                                <mathphrase>mutex wait = acquire blocks / acquires *
+                                    100%</mathphrase>
+                            </equation></para>
+                        <para>В обычных производственных базах под нагрузкой может достигать
+                            25-35%.</para>
+                        <para>Большее значение может быть объяснено либо слишком длинными цепочками
+                            (см. ниже, Hash Lenghts; в этом случае надо увеличивать значение
+                            параметра <parameter>LockHashSlots</parameter>), либо чрезмерно высокой
+                            нагрузкой на сервер от приложения.</para>
+                        <note>
+                            <para>В архитектуре SuperServer нет страничных блокировок, лок-таблица
+                                используется редко, поэтому значение параметра mutex wait очень
+                                часто близко к нулю.</para>
+                        </note>
+                    </listitem>
+                    <listitem>
+                        <para><code>Hash slots: 20011, Hash lengths (min/avg/max): 0/ 0/
+                            4</code></para>
+                        <para>
+                            <itemizedlist>
+                                <listitem>
+                                    <para>Hash slots — это количество "кустов" в хеш-таблице, по
+                                        которым распределяются данные о ресурсах и установленных
+                                        блокировках. Чем больше это число, тем меньше длина цепочек,
+                                        которые возникают при коллизиях хеш-значений. Максимально
+                                        допустимое значение этого параметра равно 65521 (значения
+                                        больше этого порога игнорируются и используется всё равно
+                                        именно этот порог: 65521).</para>
+                                    <para>Значение по умолчанию (8191) можно считать подходящим для
+                                        работы 100 пользователей и умалчиваемом размере страничного
+                                        кеша (256).</para>
+                                    <para>Значение берётся из конфигурационного файла
+                                            (<filename>firebird.conf</filename>/<filename>databases.conf</filename>),
+                                        параметр <parameter>LockHashSlots</parameter>. Рекомендуется
+                                        назначать этот параметр равным простому числу. </para>
+                                </listitem>
+                                <listitem>
+                                    <para>Hash lengths (min/avg/max) — минимальное, среднее
+                                        арифметическое и максимальное значение длины цепочек в
+                                        лок-таблице, вычисленные в момент получения снимка.</para>
+                                    <para>Вычисляются каждый раз как результат просмотра содержимого
+                                        всех слотов, потому меняются при каждом запросе вывода
+                                        лок-таблицы, в том числе в сторону уменьшения (т.е. никакого
+                                        накопления "с начала работы" по ним нет).</para>
+                                    <para>Среднее арифметическое учитывает все слоты таблицы, в том
+                                        числе — с нулевыми значениями длин цепочек (т.е.
+                                        пустые).</para>
+                                    <para>Если в нескольких снимках подряд любое из значений
+                                        достигает лимитов:
+                                        <literallayout class="monospaced">
+min >= 5, avg >= 8...10, max >= 13...15                                        
+                                    </literallayout>
+                                        то следует увеличить параметры
+                                            <parameter>LockHashSlots</parameter> и
+                                            <parameter>LockMemSize</parameter>. </para>
+                                    <para>Эффект от новых значений будет достигнут только при
+                                        отсоединении всех соединений от всех баз, которые работают
+                                        на сервере.</para>
+                                </listitem>
+                            </itemizedlist>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para/>
+                    </listitem>
+                    <listitem>
+                        <para><code>Owners (3) ...</code> — количество соединений, которые
+                            существуют в момент получения снимка.</para>
+                    </listitem>
+                    <listitem>
+                        <para><code>Free owners (2) ...</code> — разность между максимальным
+                            количеством соединений, которые были в базе данных с момента старта
+                            Firebird, и текущим их числом. Другими словами, Free Owners — это число
+                            соединений, которые прекратили свою работу и отсоединились от
+                            базы.</para>
+                    </listitem>
+                </orderedlist>
+            </para>
+        </section>
+        <section>
+            <title>Детализация лок-таблицы</title>
+
+            <section>
+                <title>Представление ресурсов как блокировок различных видов</title>
+                <para>Ресурсы, которые на момент получения снимка лок-таблицы находились в
+                    использовании (или запрашивались для использования), представлены в виде блоков
+                    записей, начинающихся с фразы <code>LOCK BLOCK
+                            <replaceable>&lt;nnnnnn&gt;</replaceable></code>. Эти блоки записей дают
+                    информацию о виде блокировок и их состоянии. Таким образом, ресурсы (то, за что
+                    часто идёт борьба) представлены в лок-таблице опосредовано, через
+                    блокировки.</para>
+                <para>В СУБД Firebird определены следующие виды блокировок (см.
+                        <filename>src/jrd/lck.h</filename>): <orderedlist>
+                        <listitem>
+                            <para><code>LCK_database</code> — Root of lock tree</para>
+                            <para>Монопольная блокировка базы. В архитектуре Classic Server
+                                предоставляется первому процессу, выполнившему соединение. Второе
+                                подключение, пытающееся установить соединение, "видит" монопольную
+                                блокировку, уже выданную первому, и посылает ему сигнал о
+                                необходимости понизить уровень блокировки с exclusive до shared. В
+                                итоге, обе блокировки на базу приходят к уровню "разделяемое
+                                чтение". В архитектуре Superserver база устанавливает монопольную
+                                блокировку сама на себя.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_relation</code> — Individual relation lock</para>
+                            <para>Блокировка на таблицу (как объект БД) при чтении или записи данных
+                                в неё.</para>
+                            <para>При любых операциях таблицы блокируются в разделяемом режиме и это
+                                не влияет на параллельный доступ. Исключения, накладывающие более
+                                высокие уровни блокировки: <itemizedlist spacing="compact">
+                                    <listitem>
+                                        <para>создание индекса</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>онлайн-валидация</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>операции в транзакции уровня изоляции consistency (aka
+                                            SNAPSHOT TABLE STABILITY), либо при явном задании
+                                            блокировок таблиц в транзакции (фраза RESERVING в SET
+                                            TRANSACTION)</para>
+                                    </listitem>
+                                </itemizedlist></para>
+                            <para>Также эксклюзивная блокировка <code>LCK_relation</code> со
+                                специальным ключом -1 берется при генерации нового ID для
+                                создаваемой таблицы.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_bdb</code> — Individual buffer block</para>
+                            <para>Блокировка любой физической страницы, независимо от её типа
+                                (таблица или индекс или что-то другое).</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_tra</code> — Individual transaction lock</para>
+                            <para>Эксклюзивная блокировка транзакции тем, кто ее стартовал.
+                                Остальные могут пытаться брать разделяемую блокировку для
+                                определения состояния (активности) транзакции, либо ждать на такой
+                                блокировке до окончания текущей транзакции (в режиме WAIT).</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_rel_exist</code> — Relation existence lock</para>
+                            <para>Блокировка-защита существования таблицы; в Key записан ID таблицы
+                                (rdb$relations.rdb$relation_id).</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_idx_exist</code> — Index existence lock</para>
+                            <para>Блокировка-защита существования индекса; в "Key" записаны: старшие
+                                два байта — ID таблицы, младшие — ID индекса.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_attachment</code> — Attachment lock</para>
+                            <para>Монопольная блокировка, устанавливаемая процессом, соединившимся с
+                                базой, на объект его собственного соединения. Через эту блокировку
+                                происходит уведомление соединения о его принудительном
+                                завершении.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_shadow</code> — Lock to synchronize addition of
+                                shadows</para>
+                            <para>Блокировка для синхронизации добавления теневых копий к
+                                базе.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_sweep</code> — Sweep lock for single sweeper</para>
+                            <para>Блокировка для гарантии существования только одного
+                                sweep-процесса.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_expression</code> — Expression index caching
+                                mechanism</para>
+                            <para>Блокировка-защита неизменности выражения для вычисляемого
+                                индекса.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_prc_exist</code> — Procedure existence lock</para>
+                            <para>Блокировка-защита существования хранимой процедуры. Применяется
+                                только процедур. Для функций <code>LCK_fun_exist</code>. Для
+                                триггеров такой защиты нет.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_update_shadow</code> — shadow update sync lock</para>
+                            <para>Блокировка для сериализации обновлений теневой копии (обновляться
+                                должна только одним процессом).</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_backup_alloc</code> — Lock for page allocation table in
+                                backup spare file</para>
+                            <para>nbackup: блокировка, синхронизирующая доступ к таблице
+                                соответствия страниц внутри дельта-файла.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_backup_database</code> — Lock to protect writing to
+                                database file</para>
+                            <para>nbackup: блокировка физического состояния базы данных
+                                (normal/stalled/merge). Управляет направлением чтения/записи между
+                                файлом БД и дельта-файлом.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_backup_end</code> — Lock to protect end_backup
+                                consistency</para>
+                            <para>nbackup: блокировка для обеспечения слияния дельты в основной файл
+                                в единственном процессе.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_rel_partners</code> — Relation partners lock</para>
+                            <para>Блокировка-защита существования ограничения ссылочной целостности
+                                (ссылки по внешнему ключу) между таблицами.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_page_space</code> — Page space ID lock</para>
+                            <para>Блокировка для уникальной идентификации пространства страниц для
+                                GTT.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_dsql_cache</code> — DSQL cache lock</para>
+                            <para>Блокировка актуальности состояния объектов кеша метаданных.</para>
+                            <para>В движке существует два кеша метаданных: на уровне парсера и на
+                                уровне ядра. Блокировки <code>LCK_dsql_cache</code> используются,
+                                чтобы инвалидировать объекты в кеше первого уровня.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_monitor</code> — Lock to dump the monitoring data</para>
+                            <para>Блокировка актуальности состояния данных мониторинга для
+                                соединения.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_tt_exist</code> — TextType existence lock</para>
+                            <para>Блокировка-защита существования collate (правила сопоставления
+                                символов для упорядоченного вывода текста).</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_cancel</code> — Cancellation lock</para>
+                            <para>Блокировка для уведомления об отмене текущей операции.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_btr_dont_gc</code> — Prevent removal of btree page from
+                                index</para>
+                            <para>Блокировка-защита от удаления страницы в индексе, расположенной
+                                слева от вставляемой новой страницы.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_shared_counter</code> — Databasewide shared
+                                counter</para>
+                            <para>Блокировка, синхронизирующая генерацию уникальных идентификаторов
+                                для запросов (а также для соединений и транзакций в read-only
+                                БД).</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_tra_pc</code> — Precommitted transaction lock</para>
+                            <para>Блокировка-признак precommitted транзакции (для них не создается
+                                    <code>LCK_tra</code> блокировка), используется для проверки
+                                состояния транзакции.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_rel_gc</code> — Allow garbage collection for
+                                relation</para>
+                            <para>Блокировка, разрешающая/запрещающая сборку мусора в определенной
+                                таблице (и ее индексах).</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_fun_exist</code> — Function existence lock</para>
+                            <para>Блокировка-защита существования UDF и PSQL-функции.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_rel_rescan</code> — Relation forced rescan lock</para>
+                            <para>Блокировка состояния метаданных таблицы, используется для
+                                обновления информации в кеше метаданных (после ALTER TABLE).</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_crypt</code> — Crypt lock for single crypt thread</para>
+                            <para>Блокировка для обеспечения работы потока шифрования в единственном
+                                экземпляре.</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_crypt_status</code> — Notifies about changed database
+                                encryption status</para>
+                            <para>Блокировка текущего состояния шифрования БД (зашифрована или
+                                нет).</para>
+                        </listitem>
+                        <listitem>
+                            <para><code>LCK_record_gc</code> — Recordlevel GC lock</para>
+                            <para>Блокировка, разрешающая/запрещающая сборку мусора для конкретной
+                                записи.</para>
+                        </listitem>
+                    </orderedlist></para>
+                <para>Числовые индексы 1...30, приведенные в этом списке, используются в отображении
+                    типа блокировки как <quote>номер серии</quote> (см ниже, подстрока
+                        <quote>Series:</quote>). Эти индексы следует использовать для определения
+                    того, какой вид блокировки выведен.</para>
+            </section>
+        </section>
     </section>
 
     <section xml:id="using-trace">
@@ -203,7 +744,8 @@
             <para>Более подробно виды фильтрации будут рассмотрены далее в примерах.</para>
             <para>Типичный сценарий работы с трассировки — следующий:<orderedlist>
                     <listitem>
-                        <para>Создается текстовый файл конфигурации для пользовательской трассировки:<orderedlist>
+                        <para>Создается текстовый файл конфигурации для пользовательской
+                            трассировки: <orderedlist numeration="arabic" inheritnum="inherit">
                                 <listitem>
                                     <para>Проверяется шаблон заголовочной строки (<code>database =
                                             ...</code>). Этот шаблон должен удовлетворять правилам
@@ -307,6 +849,1035 @@
                     трассировку в Firebird 3.0 может любой пользователь, но видеть он будет только
                     активность своей учетной записи.</para>
             </note>
+        </section>
+
+        <section>
+            <title>Структура конфигурации. Проверка имен на соответствие шаблонам</title>
+
+            <para>Наиболее важным в конфигурации трассировки является параметр-заголовок
+                    <quote>database</quote>, строковое значение которого задает ДВЕ группы шаблонов:<orderedlist>
+                    <listitem>
+                        <para>шаблоны каталогов и имен файлов баз, далее назовем эту группу G1
+                            и</para>
+                    </listitem>
+                    <listitem>
+                        <para>шаблоны алиасов БД для подключения, далее назовем эту группу
+                            G2.</para>
+                    </listitem>
+                </orderedlist></para>
+            <para>Решение о том, отражать ли активность в некоторой базе (или её алиасе) с именем X,
+                принимается прежде всего по результату проверки на соответствие имени X хотя бы
+                одному шаблону из этих двух групп: G1 или G2. Соответствие проверяется по тем же
+                принципам, которые используются в работе SQL-оператора SIMILAR TO, но при этом не
+                учитывается регистр символов.</para>
+            <para>В конфигурационном файле трассировки может быть произвольное количество
+                database-секций.</para>
+            <para>При выполнении подключения к какой-то базе файл перечитывается каждый раз заново,
+                с первой строки и до тех пор, пока имя базы данных или её псевдоним не будут
+                соответствовать какому-либо из шаблонов. Пройденная проверка шаблона означает, что
+                начинают применяться ТОЛЬКО те параметры, что указаны в секции внутри фигурных
+                скобок.</para>
+            <para>Все секции, расположенные ниже той, где прошла проверка шаблона, для данного файла
+                БД/алиаса уже не действуют.</para>
+            <para>Самая последняя секция из указываемых в файле конфигурации может не иметь шаблона
+                и выглядеть так:
+                <programlisting>
+database = 
+{
+    <replaceable>&lt;params&gt;</replaceable> ...
+}                
+            </programlisting>
+            </para>
+            <para>Эта секция служит для применения её параметров ко всем файлам БД/алиасам, по
+                которым еще не было найдено соответствий шаблонам, указанным в файле конфигурации
+                ВЫШЕ данной строки.</para>
+            <para>Объяснить структуру файла будет проще на следующем примере. <programlisting>
+<![CDATA[
+# P1 — шаблон проверки имён тех БД/алиасов, отслеживание активности 
+# в которых нас не интересует
+database = <P1> 
+{ 
+   enabled = false 
+}
+
+# P2 — шаблон для тех БД/алиасов, в которых нас интересуют только 
+# события отклоненных попыток регистрации
+database = <P2> 
+{
+   enabled = true
+   log_connections = true
+   log_errors = true
+}
+
+database = <P3> 
+# P3 - шаблон только для тех БД алиасов, в которых нам интересно выполнение 
+# выражений над таблицей "some_very_huge_table",
+# причём длительность выполнения должна быть не менее 5000 мс.
+{
+    enabled = true
+    time_threshold = 5000
+    log_statement_finish = true
+    include_filter = "%((from|join)[[:WHITESPACE:]]+some_very_huge_table)%"
+}
+
+database =
+# Нет шаблонов после знака "=". Это означает: все прочие имена файлов 
+# БД/алиасов, которые не попали на соответствие в шаблонах,
+# указанных выше этой строки: P1, P2 и P3.
+{
+    enabled = true
+    time_threshold = 1000
+    log_statement_finish = true
+    log_procedure_finish = true
+    log_function_finish = true
+    exclude_filter = "%(execute[[:WHITESPACE:]]+block[[:WHITESPACE:]]+as)%"
+}
+]]>             
+            </programlisting>
+            </para>
+            <para>Работающий пример с конкретными шаблонами: <programlisting>
+<![CDATA[
+# Запрещаем регистрацию любой активности, которая происходит 
+# в базе учетных записей пользователей и паролей
+database = (%[\\/](security3).fdb|(security.db))
+{
+    enabled = false
+}
+
+# Разрешаем регистрацию ошибок — и только их — в базе с секретными сведениями.
+# Прочих разрешений (например, показ выполняемых SQL-выражений) — нет:
+database = (%[\\/](top_secret).fdb|(secret_alias))
+{
+    enabled = true
+    log_initfini = false
+    log_errors = true
+}
+
+# Для базы, работающей под интенсивной нагрузкой, разрешаем 
+# регистрацию SQL-выражений любой длительности, но только тех,
+# которые относятся к таблицам мониторинга.
+database = (%[\\/](heavy_production).fdb|(heavy_prod_alias))
+{
+    enabled = true
+    log_initfini = false
+    log_errors = false
+    time_threshold = 0
+    log_statement_finish = true
+    include_filter = "%((from|join)[[:WHITESPACE:]]+mon$)%"
+}
+
+
+# Для всех остальных файлов БД/алиасов: разрешаем регистрацию 
+# выполняемых SQL-выражений любой длительности.
+# Важно: специальные требования для security3, top_secret и 
+# heavy_production, размещённые в database-секциях выше этой строки, 
+# остаются в силе. Эта секция определяет требования для всех 
+# ДРУГИХ файлов баз и алиасов:
+database =
+{
+    enabled = true
+    log_initfini = false
+    log_errors = false
+
+    time_threshold = 0
+    log_statement_finish = true
+}
+]]>
+                </programlisting>
+            </para>
+            <para>Рекомендации:<orderedlist>
+                    <listitem>
+                        <para>Всегда размещайте секции с шаблонами "большей конкретики" выше секций,
+                            где указаны "общие шаблоны". Если по некоторой базе нужно заблокировать
+                            показ чего-либо в трейсе, добавьте секцию с шаблоном, которому отвечают
+                            имя и алиас этой базы, в начало файла.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Подключения к базе как к файлу с точки зрения трейса НЕ идентичны
+                            подключениям к этой же базе по её алиасу. Поэтому, если вам нужна
+                            регистрация всех видов подключений (по имени файла БД и по алиасу),
+                            указывайте в database-секции всегда ДВА шаблона. Первым должен быть
+                            указан шаблон с именем файла, затем должен следовать разделитель (символ
+                            вертикальной черты, без кавычек) и после него надо указать шаблон со
+                            всеми возможными алиасами, по которым к данной базе могут выполняться
+                            подключения. Если шаблон состоит из нескольких возможных фраз,
+                            объединяйте их в круглые скобки:
+                            <programlisting>
+( %[\\/](heavy_production).fdb | (heavy_prod_alias|alias_for_heavy_prod|prod_alias_heavy) )
+                        </programlisting></para>
+                    </listitem>
+                    <listitem>
+                        <para>Для предварительной проверки того, будет ли работать шаблон, создайте
+                            подключение к базе и выполните выражение: <programlisting>
+<![CDATA[
+SQL> set list on;
+SQL> select 1 from rdb$database where '<expr>' SIMILAR TO '<pattern>';
+]]>                                
+                            </programlisting>
+                        </para>
+                        <para>Например, чтобы проверить, будет ли отслеживаться любой допустимый
+                            запрос к таблицам мониторинга при использовании шаблона: <programlisting>
+<![CDATA[  
+include_filter = "%((from|join)[[:WHITESPACE:]]+mon$)%"
+]]>
+                        </programlisting> — можно сделать следующую проверку: <programlisting>
+<![CDATA[  
+SQL> select 1 from rdb$database where '
+CON> select
+CON> mon$server_pid
+CON> from
+CON>    mon$attachments
+CON> where mon$attachments_id = current_connection
+CON> '
+CON> similar to
+CON> '%((from|join)[[:WHITESPACE:]]+mon$)%';
+]]>
+                        </programlisting>
+                            <screen>
+    CONSTANT
+============
+           1                                
+                            </screen>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>Шаблоны для include/exclude фильтров лучше всегда указывать в двойных
+                            кавычках, даже если они примитивные (select|insert|delete). Шаблоны для
+                            имен файлов БД/алиасов указываются без двойных кавычек</para>
+                    </listitem>
+                </orderedlist></para>
+        </section>
+        <section>
+            <title>Виды отслеживаемых событий</title>
+
+            <para>Трассировка позволяет: <orderedlist>
+                    <listitem>
+                        <para>Отследить события, относящиеся к работе приложений c базой данных
+                            (старт/завершение транзакций, исполняемых SQL-выражений и др.);</para>
+                    </listitem>
+                    <listitem>
+                        <para>Установить дополнительные параметры для событий, относящихся к БД
+                            (минимальное время длительности, include/exclude-фильтры и др.);</para>
+                    </listitem>
+                    <listitem>
+                        <para>Установить параметры для работы собственно трассировки (имя лога для
+                            системного аудита, размер для переименования лога, и др.);</para>
+                    </listitem>
+                    <listitem>
+                        <para>Отследить события, относящиеся к сервисам Firebird (администрирование
+                            пользователей, управление сессиями трассировки, резервного копирования и
+                            прочее).</para>
+                    </listitem>
+                </orderedlist></para>
+            <para>В списке параметров, которые приводятся ниже, все значения считаются логического
+                типа (true | false), если не оговорено другое. </para>
+            <section>
+                <title>Основные параметры для событий, относящихся к работе c базой данных</title>
+                <para>
+                    <orderedlist numeration="arabic">
+                        <listitem>
+                            <para>Подключение к базе данных. Регулируется параметром конфигурации
+                                    <parameter>log_connections</parameter>.</para>
+                        </listitem>
+                        <listitem>
+                            <para>Старт транзакции, завершение транзакции (фиксация или отмена).
+                                Параметр: <parameter>log_transactions</parameter>.</para>
+                        </listitem>
+                        <listitem>
+                            <para>Выполнение SQL-запросов: <orderedlist numeration="arabic"
+                                    inheritnum="inherit">
+                                    <listitem>
+                                        <para>Подготока запроса к выполнению. Параметр:
+                                                <parameter>log_statement_prepare</parameter>.</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Старт запроса (запуск его на выполнение). Параметр:
+                                                <parameter>log_statement_start</parameter>.</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Окончание выполнения выражения. Для выборок — переход
+                                            за последнюю запись, для DML — завершение выполнения.
+                                            Параметр:
+                                            <parameter>log_statement_finish</parameter>.</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Высвобождение ресурсов, занимавшихся курсором,
+                                            выполнявшим запрос. Параметр:
+                                                <parameter>log_statement_free</parameter>.</para>
+                                    </listitem>
+                                </orderedlist></para>
+                        </listitem>
+                        <listitem>
+                            <para>Выполнение процедурных модулей: <orderedlist numeration="arabic"
+                                    inheritnum="inherit">
+                                    <listitem>
+                                        <para>Старт выполнения хранимой процедуры (созданной как
+                                            отдельная или в составе пакета). Параметр:
+                                                <parameter>log_procedure_start</parameter>.</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Окончание выполнения хранимой процедуры. Параметр:
+                                                <parameter>log_procedure_finish</parameter>.</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Старт выполнения PSQL-функции (созданной как отдельная
+                                            или в составе пакета). Параметр:
+                                                <parameter>log_function_start</parameter>.</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Окончание выполнения PSQL-функции. Параметр:
+                                                <parameter>log_function_finish</parameter>.</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Старт выполнения триггера (любого уровня: для каждой
+                                            записи или ан события уровня БД). Параметр:
+                                                <parameter>log_trigger_start</parameter>.</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Окончание выполнения триггера. Параметр:
+                                                <parameter>log_trigger_finish</parameter>.</para>
+                                    </listitem>
+                                </orderedlist></para>
+                        </listitem>
+                        <listitem>
+                            <para>Предупреждения и ошибки, происходящие при компиляции или на этапе
+                                выполнения выражений <orderedlist numeration="arabic"
+                                    inheritnum="inherit">
+                                    <listitem>
+                                        <para>Предупреждения. Параметр:
+                                                <parameter>log_warnings</parameter>.</para>
+                                        <para>Пример предупреждения, который часто появляется при
+                                            работе с базами 1-го диалекта:
+                                            <screen>
+SQL warning code = 301 / DATE data type is now called TIMESTAMP                      
+                                                </screen>
+                                        </para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Регистрация ошибок (разрешение на это). Параметр:
+                                                <parameter>log_errors</parameter>.</para>
+                                    </listitem>
+                                </orderedlist></para>
+                        </listitem>
+                        <listitem>
+                            <para>Изменение контекстных переменных. Регистрируются все обращения к
+                                функции RDB$SET_CONTEXT(). Параметр:
+                                    <parameter>log_context</parameter>.</para>
+                        </listitem>
+                        <listitem>
+                            <para>Компиляция в BLR-код и выполнение BLR-кода (BLR — Binary Language
+                                Representation — двоичное представление PSQL-инструкций). Для
+                                краткого информирования о фактах успешной компиляции кода
+                                (COMPILE_BLR), а также о выполнении команд ISQL, обращающихся к
+                                словарю базы (EXECUTE_BLR; в основном, это SHOW-команды), служит
+                                параметр <parameter>log_blr_requests</parameter>.</para>
+                            <para>Для развернутого показа того, какой именно BLR-код выполняется,
+                                применяется параметр <parameter>print_blr</parameter>. Указание
+                                    <code>print_blr = true</code> требует, чтобы также был указан
+                                    <code>log_blr_requests = true</code> (иначе ничего
+                                регистрироваться не будет).</para>
+                        </listitem>
+                    </orderedlist>
+                </para>
+            </section>
+            <section>
+                <title>Дополнительные параметры для событий, относящихся к работе с базой
+                    данных</title>
+                <para>
+                    <orderedlist numeration="arabic">
+                        <listitem>
+                            <para>Минимальная длительность выполнения SQL-выражения, процедуры или
+                                функции, необходимое для того, чтобы их завершение отразилось в логе
+                                трейса.</para>
+                            <para>Параметр: <parameter>time_threshold</parameter>, числовой.
+                                Измерение: миллисекунды. </para>
+                            <para>Значение по умолчанию: 100.</para>
+                            <tip>
+                                <title>РЕКОМЕНДАЦИЯ</title>
+
+                                <para>Никогда не удаляйте строку с этим параметром. Может оказаться
+                                    так, что вы не увидите в трассировки никакой активности, но на
+                                    самом деле она там будет. Это произойдёт в случае, когда все
+                                    выполняемые выражения и процедуры длятся менее 100 мс —
+                                    умалчиваемого лимита для параметра
+                                        <parameter>time_threshold</parameter>. Удаление этой строки
+                                    затруднит поиск причины, по которой в трассировки нет показа
+                                    активности приложений.</para>
+                            </tip>
+                        </listitem>
+                        <listitem>
+                            <para>Фильтрация выполняемых SQL-выражений через include/exclude списки
+                                шаблонов.</para>
+                            <para>Списки работают по принципу: <itemizedlist>
+                                    <listitem>
+                                        <para>регистрировать только тех выражения, которые содержат
+                                            хотя бы один из шаблонов из include-списка;</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>запретить регистрацию тех выражений, которые содержат
+                                            хотя бы один из шаблонов из exclude-списка.</para>
+                                    </listitem>
+                                </itemizedlist></para>
+                            <para>Параметры: <parameter>include_filter</parameter> и
+                                    <parameter>exclude_filter</parameter>. Значения: см. примеры
+                                далее в тексте.</para>
+                            <para>Эти параметры работают только при условии, что хотя бы один из
+                                следующих параметров равен true:
+                                    <parameter>log_statement_prepare</parameter>,
+                                    <parameter>log_statement_start</parameter>,
+                                    <parameter>log_statement_finish</parameter>,
+                                    <parameter>log_statement_free</parameter>.</para>
+                        </listitem>
+                        <listitem>
+                            <para>Фильтрация ошибок через include/exclude-списки кодов ошибок или их
+                                мнемонических обозначений.</para>
+                            <para>Списки работают по принципу: <itemizedlist>
+                                    <listitem>
+                                        <para>регистрировать только тех ошибки, которые принадлежат
+                                            include-списку;</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>запретить регистрацию тех ошибок, которые принадлежат
+                                            exclude-списку.</para>
+                                    </listitem>
+                                </itemizedlist></para>
+                            <para>Параметры: <parameter>include_gds_codes</parameter> и
+                                    <parameter>exclude_gds_codes</parameter>. Значения: см. примеры
+                                далее в тексте. Эти параметры работают только при условии, что
+                                    <code>log_errors = true</code>.</para>
+                        </listitem>
+                        <listitem>
+                            <para>Печать плана выполнения SQL-запроса: <orderedlist
+                                    numeration="arabic" inheritnum="inherit">
+                                    <listitem>
+                                        <para>В кратком ("традиционном") виде:
+                                            <programlisting>
+PLAN (RDB$DATABASE NATURAL)                                                    
+                                                </programlisting>
+                                        </para>
+                                        <para>Параметр: <parameter>print_plan</parameter>.</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>В развернутом виде (доступно начиная с Firebird 3.0):
+                                            <programlisting>
+Select Expression
+    -> Table "RDB$DATABASE" Full Scan                                                  
+                                                </programlisting>
+                                        </para>
+                                        <para>Параметр: <parameter>explain_plan</parameter>.</para>
+                                        <para>Работает только при условии, что <code>print_plan =
+                                                true</code>. При указании обоих параметров в true
+                                            будет выводиться только развернутый план.</para>
+                                    </listitem>
+                                </orderedlist></para>
+                            <para>Эти параметры работают только при условии, что хотя бы один из
+                                следующих параметров равен true:
+                                    <parameter>log_statement_prepare</parameter>,
+                                    <parameter>log_statement_start</parameter>,
+                                    <parameter>log_statement_finish</parameter>,
+                                    <parameter>log_statement_free</parameter>.</para>
+                        </listitem>
+                        <listitem>
+                            <para>Печать статистики выполнения SQL-запросов и PSQL-модулей.</para>
+                            <para>При заказе этой статистики в логе будут выведены длительность
+                                выполнения и значения счетчиков fetches, reads, writes, marks. Для
+                                SQL-выражений будут показаны сводные данные по операциям, которые
+                                выполнялись над таблицами: общее количество чтений, модификаций
+                                записей и др.</para>
+                            <para>Параметр: <parameter>print_perf</parameter>.</para>
+                            <para>Статистика выводится только для того вида события, по которому
+                                задан параметр регистрации, то есть:<itemizedlist>
+                                    <listitem>
+                                        <para>если задан
+                                            <parameter>log_statement_finish</parameter>, то будет
+                                            выводиться статистика по выполнявшимся
+                                            SQL-выражениям;</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>если задан
+                                            <parameter>log_procedure_finish</parameter>, то будет
+                                            выводиться статистика по выполнявшимся хранимым
+                                            процедурам и так далее.</para>
+                                    </listitem>
+                                </itemizedlist></para>
+                        </listitem>
+                        <listitem>
+                            <para>Ограничение длины текста регистрируемых событий: <orderedlist
+                                    numeration="arabic" inheritnum="inherit">
+                                    <listitem>
+                                        <para>Максимальная длина выполняемого SQL-выражения.
+                                            Параметр: <parameter>max_sql_length</parameter>,
+                                            значение по умолчанию: 300.</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Максимальная длина отдельного аргумента, который
+                                            передается SQL-выражению. Параметр:
+                                                <parameter>max_arg_length</parameter>, значение по
+                                            умолчанию: 80.</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Максимальное количество аргументов, которые будут
+                                            показаны в трейсе (ниже последнего будет выведено
+                                            "..."). Параметр: <parameter>max_arg_count</parameter>,
+                                            значение по умолчанию: 10.</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Максимальная длина выводимого BLR-запроса. Параметр:
+                                                <parameter>max_blr_length</parameter>, значение по
+                                            умолчанию: 500.</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Максимальная длина выводимой dyn-request
+                                            инструкции.</para>
+                                        <para>Под термином 'DYN' понимается язык, ранее (в эпоху
+                                            InterBase) называвшийся GDEF. От него отказались еще в
+                                            IB 4.0, но затем он был снова возвращен в открытой
+                                            версии Interbase 6.0 (уже под именем DYN). И хотя этот
+                                            язык манипулирования метаданными не разрешен к
+                                            использованию в Firebird 3.0, возможность отслеживания
+                                            инструкций на нем до сих пор оставлена (только в
+                                            системном аудите).</para>
+                                        <para>Параметр: <parameter>max_dyn_length</parameter>,
+                                            значение по умолчанию: 500.</para>
+                                    </listitem>
+                                </orderedlist></para>
+                        </listitem>
+                        <listitem>
+                            <para>Ограничение показа активности, выполняемой только одним
+                                подключением.</para>
+                            <para>Параметр: <parameter>connection_id</parameter>, числовой. Значение
+                                по умолчанию: 0 — означает регистрацию активности от всех
+                                подключений.</para>
+                        </listitem>
+                    </orderedlist>
+                </para>
+            </section>
+            <section>
+                <title>Дополнительные параметры для системного аудита</title>
+                <para>
+                    <orderedlist>
+                        <listitem>
+                            <para>Системный аудит, запускаемый автоматически при старте Firebird,
+                                должен "знать" имя конфигурационного файла, который необходимо
+                                прочитать перед началом работы.</para>
+                            <para>Имя этого файла назначается в конфигурационном файле СЕРВЕРА,
+                                    <filename>firebird.conf</filename>, параметром
+                                    <parameter>AuditTraceConfigFile</parameter>. </para>
+                            <important>
+                                <para>Отсутствие значения у этого параметра (или помещение его под
+                                    комментарий) означает выключение системного аудита. Это
+                                    произойдет при рестарте Firebird.</para>
+                            </important>
+                        </listitem>
+                        <listitem>
+                            <para>В файле конфигурации трассировки существует параметр
+                                    <parameter>log_filename</parameter>, значение которого должно
+                                быть именем файла, в который будет проводиться запись лога аудита.
+                                Это имя будет далее использоваться в механизме переименований логов
+                                при их заполнении до лимита, указанного параметром
+                                    <parameter>max_log_size</parameter>. См. следующий пункт.</para>
+                        </listitem>
+                        <listitem>
+                            <para>В файле конфигурации трассировки существует параметр
+                                    <parameter>max_log_size</parameter>, значение которого
+                                измеряется в мегабайтах. Он служит для цели автоматического
+                                переименования логов с целью недопущения бесконечного роста только
+                                лишь одного файла ("текущего" журнала).</para>
+                            <para>Его значение — это максимальный размер лога системного аудита, по
+                                достижении которого запись в текущий (заполненный) лог
+                                останавливается, лог переименовывается, а затем запись новых
+                                сообщений продолжается в НОВЫЙ файл с именем, указанный в параметре
+                                    <parameter>AuditTraceConfigFile</parameter>.</para>
+                            <para>По умолчанию значение равно 0, что подразумевает отсутствие
+                                переименований файлов и запись всего аудита только в один
+                                файл.</para>
+                            <important>
+                                <title>Важно</title>
+                                <para>
+                                    <itemizedlist>
+                                        <listitem>
+                                            <para>этот параметр относится только к системному
+                                                аудиту. Пользовательская трассировка всегда пишется
+                                                только в тот файл, который был указан в командной
+                                                строке запуска.</para>
+                                        </listitem>
+                                        <listitem>
+                                            <para>круговой ротации логов аудита (т.е. использования
+                                                их по "револьверному принципу") в готовом виде нет.
+                                                Это является задачей администратора сервера
+                                                Firebird.</para>
+                                        </listitem>
+                                    </itemizedlist>
+                                </para>
+                            </important>
+                        </listitem>
+                    </orderedlist></para>
+            </section>
+            <section>
+                <title>События, относящиеся к сервисам Firebird</title>
+                <para>Многие действия можно выполнять, вызывая функции из набора, называемого
+                    сервисами Firebird. Например управление сессиями трассировки, резервное
+                    копирование, сбор статистики и прочее.</para>
+                <para>Эти функции доступны как через API, так и через вызов утилиты командной строки
+                    fbsvcmgr.</para>
+                <para>Трассировка позволяет отследить активность вызовов функций, относящихся к
+                    сервисам Firebird. Кроме того, делать это можно с указанием include/exclude
+                    фильтров, перечисляя только те функции, которые интересуют.</para>
+                <para>Допускается отслеживание следующих сервисных функций:<orderedlist>
+                        <listitem>
+                            <para>Работа с базами данных: <orderedlist spacing="compact"
+                                    numeration="arabic" inheritnum="inherit">
+                                    <listitem>
+                                        <para>Backup Database</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Restore Database</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Repair Database</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Incremental Backup Database</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Incremental Restore Database</para>
+                                    </listitem>
+                                </orderedlist></para>
+                        </listitem>
+                        <listitem>
+                            <para>Администрирование пользователей <orderedlist spacing="compact"
+                                    numeration="arabic" inheritnum="inherit">
+                                    <listitem>
+                                        <para>Add User</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Delete User</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Modify User</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Display User</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Set Domain Admins Mapping to RDB$ADMIN</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Drop Domain Admins Mapping to RDB$ADMIN</para>
+                                    </listitem>
+                                </orderedlist></para>
+                        </listitem>
+                        <listitem>
+                            <para>Показ свойств и статистики по БД. Получение содержимого
+                                    <filename>firebird.log</filename>
+                                <orderedlist spacing="compact" numeration="arabic"
+                                    inheritnum="inherit">
+                                    <listitem>
+                                        <para>Database Properties</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Database Stats</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Get Log File</para>
+                                    </listitem>
+                                </orderedlist></para>
+                        </listitem>
+                        <listitem>
+                            <para>Управление сессиями пользовательского трассировки: <orderedlist
+                                    spacing="compact" numeration="arabic" inheritnum="inherit">
+                                    <listitem>
+                                        <para>Start Trace Session</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Stop Trace Session</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Suspend Trace Session</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>Resume Trace Session</para>
+                                    </listitem>
+                                    <listitem>
+                                        <para>List Trace Sessions</para>
+                                    </listitem>
+                                </orderedlist></para>
+                        </listitem>
+                    </orderedlist></para>
+
+                <para>Секция в конфигурации трассировки, объявляющая слежение за вызовами сервисов
+                    Firebird, может содержать следующие параметры: <programlisting>
+<![CDATA[
+services 
+{
+    # Разрешается ли применение этой секции
+    enabled = false
+
+    # Имя файла, используемого как журнал операций при работе системного аудита:
+    #log_filename = name
+
+    # Максимальный размер журнала (в мегабайтах), используемый системным аудитом 
+    # как порог для начала переименования лога и перевода дальнейшей записи 
+    # в новый (пустой) файл, задаваемый параметром <log_filename>:
+    #max_log_size = 0
+
+    # Services filters.
+    #
+    # Only services whose names fall under given regular expression are 
+    # reported in the log.
+
+    # Фильтрация имен сервисов, которые могут попадать в лог (НЕ чувствиительна 
+    # к регистру символов):
+    #
+    # 1. Включающая фильтрация (сохранять только те сервисы, которые присутствуют 
+    #    в списке шаблонов include_filter).
+    #    Внимание: при включенном параметре log_services в лог будут попадать 
+    #    события подключения и отключения от сервиса, даже если имя функции не 
+    #    отвечает шаблону include_filter. Пример разершения регистрации только 
+    #    двух вызовов: "%((backup database)|(restore database))%"
+    #include_filter
+
+    # 2. Искючающая фильтрация (Не регистрировать вызовы тех сервисов, которые 
+    # присутствуют в списке шаблонов exclude_filter):
+    #exclude_filter 
+
+    # Регистрировать ли события подключения к сервисной функции, её старта и 
+    # отключения от сервиса
+    log_services = false
+
+    # Регистрировать ли запросы, идущие от сервиса
+    log_service_query = true
+
+    # Регистрировать ли ошибки, происходящие при обращении к сервисной 
+    # функции Firebird
+    log_errors = true
+
+    # Регистрировать ли предупреждения
+    #log_warnings = false
+
+    # Filters for errors and warnings GDS codes.
+    # Comma separated list of GDS codes values and\or names.
+    # For example: deadlock, req_sync, 335544321
+
+    # Include filter. If empty, trace all errors\warnings events.
+    # Else trace event if any code from list is found in status-vector.
+
+    # Фильтрация ошибок, возникающих при вызове сервисных функций:
+    #    Включающая фильтрация: регистрировать только те ошибки, чьи числовые 
+    #    коды или мнемонические имена принадлежат
+    #    к указанному списку:
+    #include_gds_codes
+
+    #    Исключающая фильтрация: НЕ регистрировать те ошибки, чьи числовые 
+    #    коды или мнемонические имена принадлежат
+    #    к указанному списку:
+    #exclude_gds_codes
+
+}
+]]>                    
+                </programlisting>
+                </para>
+            </section>
+            <section>
+                <title>Контроль состояния пользовательской трассировки</title>
+
+                <formalpara>
+                    <title>Расположение:</title>
+                    <para><filename>firebird.conf</filename>.</para>
+                </formalpara>
+                <formalpara>
+                    <title>Параметр:</title>
+                    <para><parameter>MaxUserTraceLogSize</parameter>.</para>
+                </formalpara>
+                <formalpara>
+                    <title>Значение по умолчанию:</title>
+                    <para>10</para>
+                </formalpara>
+                <formalpara>
+                    <title>Единица измерения:</title>
+                    <para>Мб, мегабайт.</para>
+                </formalpara>
+                <para>Задает максимальный суммарный размер временных файлов, создаваемых сессией
+                    пользовательской трассировки Services API.</para>
+                <para>Этот параметр ограничивает объём информации трассировки, которая может
+                    храниться на сервере до того, как она будет прочитана клиентом.</para>
+                <para>Пользовательский трассировка пишет свои данные асинхронно, не дожидаясь ответа
+                    от клиента о готовности приему очередного сообщения. Для реализации этого при
+                    работе трейса создаются временные файлы для хранения текста, который еще не был
+                    прочитан. Клиент может читать данные медленнее, чем их генерирует сервер,
+                    поэтому необходимо контролировать их общий размер. Если этот общий размер
+                    превысит некоторый порог, пользовательская сессия трассировка будет
+                    приостановлена с выводом сообщения:
+                    <screen>
+--- Session &lt;NN&gt; is suspended as its log is full ---            
+                    </screen>
+                </para>
+                <para>После того, как клиентское приложение закончит читать последний из файлов,
+                    трассировка автоматически возобновится.</para>
+
+                <important>
+                    <para>Активность в базе данных происходившая в период паузы трассировки ввиду
+                        "медлительности" клиента, НЕ будет зафиксирована.</para>
+                    <para>Это значит, что на практике параметр
+                            <parameter>MaxUserTraceLogSize</parameter> должен иметь значение,
+                        исключающее приостановку трассировки. Для наблюдения за размером временных
+                        файлов трассировки нужно сначала получить информацию о том, где содержится
+                        лок-таблица. Поскольку эти файлы всегда создаются в том же каталоге:
+                        <screen>
+# /opt/firebird/bin/fbsvcmgr localhost:service_mgr user sysdba 
+password masterkey info_get_env_lock
+
+Path to lock files: /tmp/firebird/
+                    </screen>
+                    </para>
+                    <para>Затем (в Linux) можно воспользоваться командой watch:
+                        <screen>
+watch -n 1 "ls -l /tmp/firebird/fb*_trace* | awk '{print \$9,\$5}' ; 
+ls -l /tmp/firebird/fb*_trace* | wc -l"                            
+                        </screen>
+                    </para>
+                    <para>Пример её вывода:
+                        <screen>
+Every 1.0s: ls -l /tmp/firebird/fb*_trace* | awk '{print $9,$5}' ; 
+ls -l /tmp/firebird/fb*_trace* | wc -l  Thu Dec 14 10:51:25 2017    
+
+/tmp/firebird/fb12_trace 4192
+/tmp/firebird/fb_trace.{6F356FF8-5D63-4AC5-4E88-4959A27A6ED5} 88
+/tmp/firebird/fb_trace.{6F356FF8-5D63-4AC5-4E88-4959A27A6ED5}.0000151 1048576
+/tmp/firebird/fb_trace.{6F356FF8-5D63-4AC5-4E88-4959A27A6ED5}.0000152 1048576
+/tmp/firebird/fb_trace.{6F356FF8-5D63-4AC5-4E88-4959A27A6ED5}.0000153 1048576
+/tmp/firebird/fb_trace.{6F356FF8-5D63-4AC5-4E88-4959A27A6ED5}.0000154 461276
+/tmp/firebird/fb_trace_iPi4m3 1443
+7
+                    </screen>
+                    </para>
+                    <para>Предельный размер каждого файла равен 1 Мб. Если количество этих файлов
+                        часто приближается к значению параметра
+                            <parameter>MaxUserTraceLogSize</parameter>, следует увеличить
+                        его.</para>
+                </important>
+                <para>Дополнительно про параметр <parameter>MaxUserTraceLogSize</parameter> можно
+                    прочитать <link
+                        xlink:href="https://www.firebirdsql.org/file/documentation/release_notes/html/ru/rlsnotes25.html#rnfb25-fbconf-maxtrace"
+                        >здесь</link>.</para>
+            </section>
+        </section>
+        <section>
+            <title>Примеры полезных конфигураций</title>
+            <informalexample>
+                <para>Запретить отслеживание базы учетных записей пользователей, разрешить
+                    наблюдение за возникающими ошибками в базе 'foo', которая может иметь расширения
+                        <filename>.fdb</filename> или <filename>.gdb</filename> и находиться в любом
+                    каталоге:
+                    <programlisting>
+database = (%[\\/](security3).fdb|(security.db))
+{
+    enabled = false
+}
+
+database = ( %[\\/](foo)(.fdb|.gdb) )
+{
+    enabled = true
+    log_initfini = false
+    log_errors = true
+    time_threshold = 0
+}                    
+                </programlisting>
+                </para>
+                <tip>
+                    <para>Для проверки того, будет ли работать шаблон в секции database, можно
+                        ввести на выполнение следующее выражение с SIMILAR TO
+                        <programlisting language="sql">
+select 1 from rdb$database 
+where _utf8 'c:\temp\data\fOO.Gdb' collate unicode_ci similar 
+      to _utf8 '%[\\/](foo)(.fdb|.gdb)' collate unicode_ci;                        
+                    </programlisting>
+                    </para>
+                    <para>Результат его выполнения будет не пустым, следовательно шаблон —
+                        корректный.</para>
+                </tip>
+            </informalexample>
+            <informalexample>
+                <para>Разрешить отслеживание активности во всех базах, расположенных в каталоге
+                        <filename>c:\data\fb3x\</filename>, и его подкаталогах. Отслеживать только
+                    SQL-выражения, длительность выполнения которых 1000 мс и выше.
+                    <programlisting>
+database = ( 'c:\data\fb3x([\\][^\]+)+.fdb' )
+{
+    enabled = true
+    log_initfini = false
+    time_threshold = 1000
+    log_statements = true
+}                        
+                    </programlisting>
+                </para>
+            </informalexample>
+            <informalexample>
+                <para>Отслеживать только запросы к таблицам мониторинга (во всех базах и алиасах).
+                    <programlisting>
+database =
+{
+    enabled = true
+    log_initfini = false
+    log_errors = false
+    time_threshold = 0
+    log_statement_finish = true
+    include_filter = "%((from|join)[[:WHITESPACE:]]+mon$)%"
+}                        
+                    </programlisting>
+                </para>
+            </informalexample>
+            <informalexample>
+                <para>Накопление сведений по ошибкам отдельных видов, возникавшим при работе
+                    приложений при подключении их к базе 'foo.fdb' или к двум возможным её алиасам
+                    'bar' и 'gee'.
+                    <programlisting>
+database = ( %[\\/](foo).fdb | (bar|gee) )
+{
+    enabled = true
+    log_initfini = false
+    log_errors = true
+    include_gds_code
+    time_threshold = 0
+
+    # Разрешаем регистрацию:
+    # всех видов переполнения (арифметических, строковых)
+    # нарушения уникального ключа
+    # нарушения первичного ключа
+
+    # Запись через перечисление мнемоник исключений:
+    include_gds_codes = arith_except,unique_key_violation,no_dup
+
+    # То же самое, через "комбинированную" запись мнемоник и числовых кодов ошибок:
+    #include_gds_codes = arith_except,unique_key_violation,335544349
+
+    # Запрещаем регистрацию:
+    # исключения, вызванного прерыванием операции (клиентом или администратором БД)
+    # любого пользовательского исключения,
+    # вызванного попыткой курсора прочесть запись после достижения 
+    # конца выборки (фактически ошибкой не является)
+
+    # Запись через перечисление мнемоник исключений:
+    exclude_gds_codes = cancelled,user_exc,req_sync
+
+    # То же самое, через запись числовых кодов: 
+    # exclude_gds_codes = 335544794,335544517,335544364
+}                        
+                    </programlisting>
+                </para>
+            </informalexample>
+            <section>
+                <title>Отслеживание вызова сервисов</title>
+                <para>Следующий конфигурационный файл позволит вам отслеживать запуски резервного
+                    копирования.
+                    <programlisting>
+services 
+{
+    enabled = true
+    log_initfini = false
+    include_filter = "%(backup database)%"
+    log_services = true
+}                    
+                </programlisting>
+                </para>
+                <para>Например, при вводе следующей команды:
+                    <programlisting>
+C:\FB\30SS\fbsvcmgr.exe localhost:service_mgr user sysdba password masterkey 
+action_backup dbname c:\temp\test.fdb bkp_file c:\temp\test.fbk                        
+                    </programlisting>
+                </para>
+                <para>Журнал трассировки будет содержать следующее:
+                    <screen>
+2017-12-15T14:23:55.1150 (3972:0000000002B30040) ATTACH_SERVICE
+        service_mgr, (Service 00000000022EB140, SYSDBA, TCPv6:::1/57162, 
+        C:\FB\30SS\fbsvcmgr.exe:7152)
+
+2017-12-15T14:23:55.1150 (3972:0000000002B30040) START_SERVICE
+        service_mgr, (Service 00000000022EB140, SYSDBA, TCPv6:::1/57162, 
+        C:\FB\30SS\fbsvcmgr.exe:7152)
+        "Backup Database"
+        C:\FBTESTING\qa\fbt-repo\tmp\e30.fdb 
+        C:\FBTESTING\qa\fbt-repo\tmp\e30-tmp2.fbk
+
+2017-12-15T14:23:55.8920 (3972:0000000002B30040) DETACH_SERVICE
+        service_mgr, (Service 00000000022EB140, SYSDBA, TCPv6:::1/57162, 
+        C:\FB\30SS\fbsvcmgr.exe:7152)                    
+                </screen>
+                </para>
+                <note>
+                    <para>Некоторые строки в выводе трассировки перенесены поскольку они не
+                        помещаются на экран.</para>
+                </note>
+            </section>
+        </section>
+        <section>
+            <title>Структура заголовка выводимого блока информации</title>
+
+            <para>Под заголовком блока в следующем примере понимается текст, расположенный на
+                строках 1...4:
+                <programlisting>
+1 2017-12-15T21:17:18.3590 (2424:01EF2620) EXECUTE_STATEMENT_FINISH
+2     e30 (ATT_63, SYSDBA:NONE, NONE, TCPv4:192.168.1.57/1449)
+3     C:\MIX\firebird\fb30\isql.exe:3924
+4         (TRA_67, READ_COMMITTED | NO_REC_VERSION | WAIT | READ_WRITE)
+5
+6 Statement 20:
+7 -------------------------------------------------------------------------------
+8 SELECT CURRENT_USER, CURRENT_ROLE FROM RDB$DATABASE
+9 ...                
+            </programlisting>
+            </para>
+            <para>Этот текст является одинаковым для любого события, зарегистрированного для
+                отслеживаемого подключения.</para>
+
+            <para>В строке 1 всегда указывается штамп даты и времени, к которому относится
+                зарегистрированное событие. Затем в круглых скобках указывается служебная информация
+                трассировки, после чего — вид события. Если к событию применимо понятие
+                "успех"/"неудача", то при успехе пишется только само событие, а при неудаче слева от
+                него пишется слово 'FAILED '.</para>
+            <para>В строке 2 указывается либо полное имя файла базы, либо алиас — то, что было
+                указано клиентом при подключении. Далее с круглых скобках указаны: ID подключения
+                ("ATT_nnnnn"), имя пользователя и его роль (через двоеточие), набор символов
+                подключения (client charset), затем протокол и, если это TCPv4 или TCPv6, то далее
+                через двоеточие указаны адрес и порт. Для локального протокола будет указано
+                &lt;internal&gt;.</para>
+            <para>В строке 3 указано полное имя клиентского приложения, выполнившего подключение, и
+                порт. Для подключений, выполненных с помощью драйвера, который не требует наличия на
+                клиентской машине библиотеки fbclient, может отсутствовать строка с именем
+                приложения (<application>isql.exe</application>). На сегодня таким является
+                JDBC-драйвер JayBird. Кроме того, строка с информацией о приложении может
+                отсутствовать, если это приложение использует очень старую версию библиотеки
+                fbclient (до версии 2.1.0).</para>
+            <para>В строке 4 указывается ID транзакции ("TRA_nnnnn"), уровень изолированности
+                транзакции, режим WAIT/NO_WAIT и режим чтения/записи.</para>
+            <note>
+                <para>При отсутствии информации о клиентском процессе строка номер 4 становится
+                    строкой номер 3 (то есть пропуска в виде пустой строки не возникнет).</para>
+            </note>
+        </section>
+
+        <section>
+            <title>Кодировка non-ascii информации</title>
+
+            <para>Текст, в котором есть non-ascii строки, отображается в трассировки всегда в
+                кодировке UTF8, если сборка Firebird датирована 19.07.2017 (3.0.3.32758) или более
+                поздняя. Для более ранних сборок существовала особенность: строковые параметры к
+                вызываемым хранимым процедурам передавались в кодировке того подключения, которое
+                выполняло соответствующий вызов. Лог трассировки для таких сборок, при просмотре его
+                на машине с локалью UTF8, будет содержать нечитабельные строковые параметры к
+                процедурам, если эти параметры содержат кириллицу и клиентские приложения объявляли
+                кодировку подключения WIN1251.</para>
+
+            <para>Чтобы выполнить перекодировку, воспользуйтесь инструментами операционной системы
+                или сторонних производителей.</para>
+
+            <para>Пример преобразования в POSIX (для случая, когда вызывавший процесс указывал при
+                подключении к базе кодировку WIN-1251, а фрагмент трассировки сохранен в файле
+                    <filename>/tmp/non-ascii-sample.txt</filename>):
+                <programlisting>
+cat /tmp/non-ascii-sample.txt | iconv -f WINDOWS-1251 -t UTF-8                    
+                </programlisting>
+            </para>
         </section>
     </section>
 

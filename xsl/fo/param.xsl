@@ -42,6 +42,8 @@
             <xsl:otherwise>4pc</xsl:otherwise>
         </xsl:choose>
     </xsl:param>
+    
+    <xsl:param name="body.margin.top">0.33in</xsl:param>
 
     <!-- Шрифты -->
     <xsl:param name="body.font.family" select="'Arial'"/>
@@ -67,9 +69,16 @@
     <xsl:param name="highlight.source" select="1"/>
     <xsl:param name="highlight.xslthl.config"
         >file:/d:/fbdoc/fbadmgd30/xsl/highlighting/xslthl-config.xml</xsl:param>
+    <!-- нумерация строк в синтаксисе -->
+    <xsl:param name="use.extensions" select="1"/>
+    <xsl:param name="linenumbering.everyNth" select="1"/>
+    
     <!-- формат нумерации страниц -->
     <xsl:template name="initial.page.number">auto</xsl:template>
     <xsl:template name="page.number.format">1</xsl:template>
+    
+    <xsl:param name="orderedlist.label.width">2em</xsl:param>
+    <xsl:param name="procedure.step.numeration.formats" select="11111"/>
 
     <!-- В оглавлении печатаем 4 уровня -->
     <xsl:param name="toc.section.depth" select="4"/>

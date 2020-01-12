@@ -405,6 +405,16 @@ MYBIGDB = opt/databases/mybigdb.fdb
                 <para>String (специальный формат).</para>
             </formalpara>
 
+            <formalpara>
+                <title>Синтаксис:</title>
+
+                <para>
+                    <programlisting>
+DatabaseAccess = None | Full | { Restrict &lt;<replaceable>dir_1</replaceable>&gt;[;&lt;<replaceable>dir_2</replaceable>&gt;[...;&lt;<replaceable>dir_N</replaceable>&gt;] }
+                     </programlisting>
+                </para>
+            </formalpara>
+
             <para>Параметр <parameter>DatabaseAccess</parameter> позволяет обеспечить управление
                 безопасностью при доступе к файлам базы данных. Доступ к файлам базы данных на
                 сервере может быть полным (<literal>Full</literal>), ограниченным
@@ -417,7 +427,7 @@ MYBIGDB = opt/databases/mybigdb.fdb
                 сохранены файлы базы данных.</para>
 
             <para>При указании списка каталогов могут быть использованы как абсолютные, так и
-                относительные пути. Относительные пути берутся от корневого каталога сервера
+                относительные пути. Относительные пути считаются от корневого каталога сервера
                 Firebird. В качестве разделителя каталогов используется символ
                 <quote>;</quote>.</para>
 
@@ -508,6 +518,16 @@ RemoteAccess = true
                 <para>Строка (специальный формат).</para>
             </formalpara>
 
+            <formalpara>
+                <title>Синтаксис:</title>
+
+                <para>
+                    <programlisting>
+ExternalFileAccess = None | Full | { Restrict &lt;<replaceable>dir_1</replaceable>&gt;[;&lt;<replaceable>dir_2</replaceable>&gt;[...;&lt;<replaceable>dir_N</replaceable>&gt;] }
+                     </programlisting>
+                </para>
+            </formalpara>
+
             <para>Параметр <parameter>ExternalFileAccess</parameter> позволяет управлять правами
                 размещения файлов внешних таблиц. Разрешение на доступ к внешним файлам может быть
                 полным (<literal>Full</literal>), ограниченным (Restrict) или запрещённым (None). </para>
@@ -560,6 +580,16 @@ ExternalFileAccess = Full
                 <title>Тип параметра:</title>
 
                 <para>String (специальный формат).</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+
+                <para>
+                    <programlisting>
+UdfAccess = None | Full | { Restrict &lt;<replaceable>dir_1</replaceable>&gt;[;&lt;<replaceable>dir_2</replaceable>&gt;[...;&lt;<replaceable>dir_N</replaceable>&gt;] }
+                     </programlisting>
+                </para>
             </formalpara>
 
             <para>Параметр <parameter>UdfAccess</parameter> предназначен для определения директорий,
@@ -619,7 +649,10 @@ UdfAccess = Restrict UDF
             <para>Параметр <parameter>TempDirectories</parameter> имеет строковый тип; значение по
                 умолчанию равно пустой строке. Если параметр <parameter>TempDirectories</parameter>
                 не активен, то путь к временному каталогу определяется исходя из значения переменных
-                окружения FIREBIRD_TMP, TEMP, TMP.</para>
+                окружения <envar>FIREBIRD_TMP</envar>, <envar>TEMP</envar>, <envar>TMP</envar>. Если
+                никакая из вышеперечисленных переменных не задана, то значением для POSIX будет
+                каталог <filename>/tmp</filename>, а для Windows —
+                <filename>C:\TEMP</filename>.</para>
             <para>В качестве значения параметра может быть задан путь к одному или нескольким
                 каталогам. В этом случае выгрузка временных данных при сортировке будет
                 осуществляться в указанные каталоги. Для папок допускаются как абсолютные, так и
@@ -641,6 +674,64 @@ TempDirectories = c:\temp;d:\temp
                 </programlisting>
                 </para>
             </example>
+
+            <para>Количество ресурсов, выделяемых под <parameter>TempDirectories</parameter>,
+                следует увеличивать, если планируется восстановление базы (restore), имеющей большие
+                индексы. Иначе могут возникнуть проблемы с нехваткой места для
+                    <filename>fb_sort*</filename> файлов, создаваемых СУБД в процессе построения
+                индексов (СУБД не будет запрашивать у операционной системы новое место в этом
+                случае).</para>
+
+            <note>
+                <title>Замечания</title>
+                <itemizedlist>
+                    <listitem>
+                        <para>Данные GTT (глобальных временных таблиц) хранятся в файлах с маской
+                                <filename>fb_table*</filename>, создаваемых в каталогах, заданных
+                            переменными <envar>FIREBIRD_TMP</envar> (затем — <envar>TMP</envar>; при
+                            отсутствии их обоих GTT-данные будут сохраняться — для POSIX — в
+                            каталоге <filename>/tmp</filename>). СУБД при определении места, где
+                            надо хранить GTT-данные, не учитывает значение параметра
+                                <parameter>TempDirectories</parameter>. Поэтому правильным методом
+                            является назначение переменной <envar>FIREBIRD_TMP</envar> того же
+                            каталога, что указан в <parameter>TempDirectories</parameter>.</para>
+                    </listitem>
+                    <listitem>
+                        <para>В POSIX временные файлы, создаваемые СУБД
+                                (<filename>fb_table*</filename>, <filename>fb_sort*</filename>,
+                                <filename>fb_recbuf*</filename>, <filename>fb_blob*</filename>,
+                                <filename>fb_merge*</filename>), сразу маркируются как
+                                <quote>deleted</quote> и не видны при обычном просмотре каталога.
+                            Для получения их списка воспользуйтесь, например, пакетом
+                                <application>lsof</application> с указанием в качестве аргумента PID
+                            процесса Firebird (если он работает как SuperServer или
+                            SuperClassic).</para>
+                    </listitem>
+                    <listitem>
+                        <para>В следующем примере процесс firebird имеет PID = 9447, и для получения
+                            открытых им временных файлов следует ввести команду:</para>
+                        <synopsis>
+#lsof -p 9447 | grep "/fb_table\|/fb_sort\|/fb_recbuf\|/fb_blob\|/fb_merge"                            
+                        </synopsis>
+                        <para>Пример вывода:</para>
+                        <screen>
+firebird 9447 firebird  296u REG  253,0    147456  2490547 /tmp/fb_table_5aNN2s 
+  (deleted)
+firebird 9447 firebird 1503u REG  253,0    147456  2490573 /tmp/fb_table_0Jwjo3 
+  (deleted)
+firebird 9447 firebird  623u REG   0,16  75497472 25189649 /tmp/fb_sort_kv21Av 
+  (deleted)
+firebird 9447 firebird  296u REG  253,0    147456  2490547 /tmp/fb_table_5aNN2s 
+  (deleted)
+                        </screen>
+                    </listitem>
+                    <listitem>
+                        <para>В Windows временные файлы видны, но их равен нулю до тех пор, пока
+                            остается свободная память, заданные параметром
+                                <parameter>TempCacheLimit</parameter>.</para>
+                    </listitem>
+                </itemizedlist>
+            </note>
         </section>
 
         <section xml:id="config-param-AuditTraceConfigFile">
@@ -703,11 +794,11 @@ AuditTraceConfigFile = fbtrace.conf
             </formalpara>
 
             <para>Задает максимальный суммарный размер (в мегабайтах) временных файлов, создаваемых
-                сессией пользовательской трассировки Services API. После прочтения временного файла
-                приложением он автоматически удаляется. Параметр имеет целочисленный тип. Единица
-                измерения — мегабайты. По умолчанию максимальный размер файла вывода ограничен 10
-                МБ. Если значения ограничения <parameter>MaxUserTraceLogSize</parameter> достигнуто,
-                то сервер автоматически приостанавливает сессию слежения.</para>
+                сессией пользовательской трассировки. После прочтения временного файла приложением
+                он автоматически удаляется. Параметр имеет целочисленный тип. Единица измерения —
+                мегабайты. По умолчанию максимальный размер файла вывода ограничен 10 МБ. Если
+                значения ограничения <parameter>MaxUserTraceLogSize</parameter> достигнуто, то
+                сервер автоматически приостанавливает сессию слежения.</para>
 
             <example>
                 <title>Примеры задания значения параметра MaxUserTraceLogSize</title>
@@ -718,6 +809,12 @@ MaxUserTraceLogSize = 10
                 </programlisting>
                 </para>
             </example>
+            <note>
+                <para>Количество пользовательских сессий трассировки, которые можно запускать на
+                    одном сервере, ничем не ограничено. Указанный параметр лимитирует размер файлов
+                    для каждой отдельной сессии трассировки, а не для всех сеансов. Поэтому общий
+                    размер временных файлов может превышать 10 Мб.</para>
+            </note>
         </section>
 
         <section xml:id="config-param-DefaultDbCachePages">
@@ -741,10 +838,10 @@ MaxUserTraceLogSize = 10
             </formalpara>
 
             <para>Параметр <parameter>DefaultDbCachePages</parameter> используется для настройки
-                количества страниц одной базы данных, находящихся в кэш-памяти одновременно.
-                Суперсервер использует единый кэш (2048 страниц по умолчанию) для всех подключений.
-                Классик и суперклассик создает отдельный кэш (по умолчанию 256 страниц) для каждого
-                соединения.</para>
+                количества страниц одной базы данных, находящихся в кеш-памяти одновременно.
+                SuperServer использует единый страничный кеш (2048 страниц по умолчанию) для всех
+                подключений. Classic и SuperClassic создает отдельный страничный кеш (по умолчанию
+                256 страниц) для каждого соединения.</para>
 
             <para>Параметр имеет целочисленный тип. Допустимо использовать множители (k, m, g).
                 Максимальное значение 2147483647 страниц.</para>
@@ -753,14 +850,14 @@ MaxUserTraceLogSize = 10
                 находятся несколько разных баз данных под управлением одного экземпляра
                 Firebird.</para>
 
-            <para>Размер страничного кэша может быть установлен на странице заголовков файла базы
+            <para>Размер страничного кеша может быть установлен на странице заголовков файла базы
                 данных с помощью утилиты gfix.
                 <programlisting>
 gfix -b[uffers] <replaceable>&lt;page-count&gt;</replaceable> <replaceable>&lt;database&gt;</replaceable>                   
                 </programlisting>
             </para>
 
-            <para>В этом случае размер страничного кэша устанавливается для каждой базы
+            <para>В этом случае размер страничного кеша устанавливается для каждой базы
                 одновременно. На наш взгляд предпочтительно делать это в файле
                     <filename>databases.conf</filename>, где вы можете установить и другие параметры
                 индивидуальные для вашей базы данных.</para>
@@ -770,7 +867,7 @@ gfix -b[uffers] <replaceable>&lt;page-count&gt;</replaceable> <replaceable>&lt;d
                     <filename>databases.conf</filename>.</para>
 
             <tip>
-                <para>Чтобы проверить установлен ли размер страничного кэша на уровне заголовка базы
+                <para>Чтобы проверить установлен ли размер страничного кеша на уровне заголовка базы
                     данных вы можете воспользоваться утилитой gstat <programlisting>
 d:\fb\fb30>gstat -u sysdba -p masterkey -h testdb               
                 </programlisting>
@@ -815,6 +912,16 @@ Gstat completion time Wed Jul 17 12:59:26 2019
             <para>При изменении данного параметра стоит учитывать архитектуру сервера, максимальное
                 количество соединений с базой данных (Classic, SuperClassic), количество доступной
                 оперативной памяти, а также некоторые другие настройки сервера.</para>
+            <para>В архитектуре Classic количество страниц может управляться отдельным подключением
+                (то есть оно само может сказать, сколько ему сейчас нужно страниц). Размер
+                страничного кеша может быть увеличен только после рестарта Firebird (для архитектуры
+                SuperServer) или переподключения (для Classic).</para>
+            <para>В архитектуре SuperServer (предоставляющей для всех подключений общий страничный
+                кеш) рекомендуется назначать страничный кеш как можно большим, но также есть
+                рекомендация не делать его размер более, чем половина от физического размера ОЗУ.
+                Для очень больших БД достаточно выделить такой размер кеша, чтобы в него помещалась
+                активная часть БД. Достаточность кеша обычно проверяют соотношением read/fetch.
+                Хорошим соотношением для FB является <code>read/fetch &lt; 0.005</code>.</para>
 
             <example>
                 <title>Установка параметра DefaultDbCachePages в firebird.conf</title>
@@ -839,6 +946,12 @@ testdb = d:\fb\fb30\data\testdb.fdb
                     </programlisting>
                 </para>
             </example>
+
+            <para>Кроме того, следует обращать внимание на значение параметра
+                    <parameter>FileSystemCacheThreshold</parameter>. Если размер страничного кеша
+                превышает значение параметра <parameter>FileSystemCacheThreshold</parameter>, то
+                системный файловый кеш будет отключен. </para>
+
 
             <formalpara>
                 <title>Смотри также:</title>
@@ -939,11 +1052,14 @@ FileSystemCacheThreshold = 128K
             <note>
                 <para>Системный файловый кэш имеет смысл отключать только при достаточно большом
                     размере страничного кэша базы данных. Это позволяет избегать двойного
-                    кэширования и снизить потребление оперативной памяти. Однако стоит учитывать,
-                    что отключение системного файлового кэша может снизить производительность при
-                    работе с базой данных, особенно на непрогретом страничном кэше (собственный
-                    страничный кэш пока не умеет делать упреждающего чтения, поэтому наполняется
-                    существенно медленней файлового кэша системы).</para>
+                    кэширования и снизить потребление оперативной памяти. Это может быть полезным
+                    для баз, работающих в режиме read-only на архитектуре SuperServer. Для баз
+                    данных, работающих в режиме OLTP-нагрузки, отказ от кеширования файловой
+                    системой почти всегда приводит к крайне сильной просадке производительности.
+                    Одна из причин — отсутствие в СУБД Firebird возможности упреждающего чтения и
+                    отложенной записи, которые есть в операционной системе. Для таких баз всегда
+                    должно соблюдаться правило: <code>DefaultDbCachePages &lt;
+                        FileSystemCacheThreshold</code>.</para>
             </note>
 
             <formalpara>
@@ -1097,8 +1213,8 @@ RemoteFileOpenAbility = 0
             <para>Параметр <parameter>TempBlockSize</parameter> используется для управления
                 временным пространством. Временное хранилище используются большими сортировками, или
                 для промежуточного хранения набора данных. Параметр
-                    <parameter>TempBlockSize</parameter> определяет минимальный размер блока,
-                выделяемого для временного хранилища. Это значение отражает гранулярность выделения
+                    <parameter>TempBlockSize</parameter> определяет размер блока, выделяемого для
+                временного хранилища. Это значение отражает гранулярность выделения
                 пространства.</para>
 
             <para>Параметр имеет целочисленный тип. Единица измерения — байты. По умолчанию параметр
@@ -1114,6 +1230,21 @@ TempBlockSize = 2M
                     </programlisting>
                 </para>
             </example>
+
+            <para>Оптимальное значение этого параметра (хотя и трудно определяемое) — средний размер
+                памяти, отводимой на операцию сортировки.</para>
+
+            <para>Предельный размер всей области оперативной памяти, выделяемой для временных
+                файлов, задается параметром <parameter>TempCacheLimit</parameter>. Блоки, которые
+                ранее выделялись, хранится в нём как линейный список, поиск в котором выполняется
+                методом половинного деления (бисекции). Если <parameter>TempCacheLimit</parameter>
+                задан слишком большого размера, например, 16 Гб, то даже при его заполненности на
+                50% (т.е. 8Гб) для поиска блока размером 1 Мб потребуется 13 шагов. В этом случае
+                лучше увеличить размер <parameter>TempBlockSize</parameter> до 3-4М, что приведет к
+                уменьшению числа шагов бисекции до 6-8. В то же время, рекомендуется ставить
+                    <parameter>TempBlockSize</parameter> в значение, НЕ превышающее 5% от
+                    <parameter>TempCacheLimit</parameter>, а также оно должно быть НЕ меньше 1
+                Мб.</para>
 
             <formalpara>
                 <title>Смотри также:</title>
@@ -1139,7 +1270,7 @@ TempBlockSize = 2M
             <formalpara>
                 <title>Тип параметра:</title>
 
-                <para>Integer.</para>
+                <para>Int64.</para>
             </formalpara>
 
             <para>Параметр <parameter>TempCacheLimit</parameter> определяет максимальный объём
@@ -1165,6 +1296,48 @@ TempCacheLimit = 256M
                     </programlisting>
                 </para>
             </example>
+
+            <note>
+                <itemizedlist>
+                    <listitem>
+                        <para>Firebird 3.0 и выше позволяет указывать значения этого параметра
+                            больше, чем 4 Гб.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Когда какому-то соединению память перестает быть нужной, она
+                            возвращается операционной системе. Другими словами, задание
+                                <code>TempCacheLimit = 4096M</code> не означает, что 4 Гб памяти
+                            будут сразу и безвозвратно зарезервированы процессом Firebird.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Увеличение <parameter>TempCacheLimit</parameter> даёт лучший эффект
+                            чем назначение для временных файлов каталога на tmpfs (см. параметр
+                                <parameter>TempDirectories</parameter>), так как при этом не
+                            возникает дополнительных расходов на обмен данными с ядром операционной
+                            системы.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Значение <parameter>TempCacheLimit</parameter> гарантирует, что данные
+                            этого размера будут находиться в оперативной памяти. Когда память,
+                            отведенная для временного хранения данных, будет исчерпана, очередной
+                            запрос от Firebird на получение блока размером
+                                <parameter>TempBlockSize</parameter> байт приведет к тому, что новая
+                            память может быть уже выделена на диске в swap-области.</para>
+                    </listitem>
+                    <listitem>
+                        <para>В Firebird 3.0 в области <parameter>TempCacheLimit</parameter>
+                            размещаются данные при выполнении hash-соединений.</para>
+                    </listitem>
+                </itemizedlist>
+            </note>
+
+            <warning>
+                <para>Будьте осторожны с назначением этого параметра при работе СУБД в режиме
+                    Classic Server. Общий лимит памяти, которую Firebird будет запрашивать у
+                    операционной системы для временных файлов, определяется при этом как результат
+                    умножения <parameter>TempCacheLimit</parameter> на количество
+                    подключений.</para>
+            </warning>
 
             <formalpara>
                 <title>Смотри также:</title>
@@ -1242,7 +1415,7 @@ AuthServer = Srp256
                 клиента версии 3 и старше. Если ваш сервер должен принимать подключения от клиентов
                 версий до 2.5 включительно, необходимо добавить в этот список элемент
                 Legacy_Auth.</para>
-            
+
             <note>
                 <para>Традиционная (Legacy_Auth) не умеет работать с новым менеджером пользователей
                     Srp. Поэтому если вы хотите соединяться с Firebird 3.0 клиентами fbclient
@@ -1845,6 +2018,9 @@ BugcheckAbort = 0
                     трассируемые дампы, когда внутри UDF происходит что-то неприятное, например
                     SIGSEGV. В Windows включение этой опции заставляет ядро вызывать средства
                     отладки JIT при возникновении ошибок.</para>
+                <para>В POSIX при <code>BugCheckBort = 1</code> сервер Firebird будет устанавливать
+                    soft-лимит для размера файлов равным hard-лимиту, и делать запись в каталог,
+                    доступный для записи, как правило это <filename>/tmp</filename>.</para>
             </note>
         </section>
         <section xml:id="config-param-RelaxedAliasChecking">
@@ -2304,6 +2480,35 @@ TcpNoNagle = 1
                 </para>
             </example>
         </section>
+        <section xml:id="config-param-TcpLoopbackFastPath">
+            <title>TcpLoopbackFastPath</title>
+
+            <indexterm>
+                <primary>Параметр конфигурации</primary>
+                <secondary>TcpLoopbackFastPath</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Тип параметра:</title>
+                <para>Boolean.</para>
+            </formalpara>
+
+            <para>Параметр <parameter>TcpLoopbackFastPath</parameter> включает или отключает
+                использование функции <quote>TCP Loopback Fast Path</quote>
+                (SIO_LOOPBACK_FAST_PATH).</para>
+            <para>Применим только в Windows (версия 8/2012 и выше). Параметр доступен начиная с
+                Firebird 3.0.5.</para>
+            <para>Параметр имеет логический тип. По умолчанию значение параметра равно 1
+                (истина).</para>
+            <example>
+                <title>Установка параметра TcpLoopbackFastPath</title>
+                <para>
+                    <programlisting>
+TcpLoopbackFastPath = 1 
+                    </programlisting>
+                </para>
+            </example>
+        </section>
         <section xml:id="config-param-IPv6V6Only">
             <title>IPv6V6Only</title>
 
@@ -2494,13 +2699,21 @@ LockMemSize = 1M
             </note>
 
             <example>
-                <title>Установка параметра LockMemSize</title>
+                <title>Установка параметра LockAcquireSpins</title>
                 <para>
                     <programlisting>
-LockMemSize = 1M 
+LockAcquireSpins = 2 
                     </programlisting>
                 </para>
             </example>
+
+            <note>
+                <para>В залоговке лок-таблицы этот параметр отображается как <quote>Spin
+                        count</quote> в строке вида:</para>
+                <screen>
+Acquires:   2150, Acquire blocks:     14, Spin count:   0                    
+                </screen>
+            </note>
         </section>
 
         <section xml:id="config-param-LockHashSlots">
@@ -2523,9 +2736,13 @@ LockMemSize = 1M
             <para>Параметр <parameter>LockHashSlots</parameter> используется для настройки числа
                 слотов хэш таблицы блокировок. Чем больше слотов используется, тем короче получаются
                 хэш цепочки, что увеличивает производительность при повышенной нагрузке.</para>
-            <para>Параметр имеет целочисленный тип. По умолчанию значение параметра равно 8191. В
-                качестве значения рекомендуется указывать простое число, чтобы хэш-алгоритм
-                производил хорошее распределение.</para>
+            <para>Параметр имеет целочисленный тип. Максимально допустимое значение этого параметра
+                равно 65521 (значения больше этого порога игнорируются и используется всё равно
+                именно этот порог: 65521).  </para>
+            <para>Значение по умолчанию (8191) можно считать подходящим для работы 100 пользователей
+                и умалчиваемом размере страничного кеша (256).</para>
+            <para>В качестве значения рекомендуется указывать простое число, чтобы хэш-алгоритм
+                производил хорошее распределение. </para>
 
             <example>
                 <title>Установка параметра LockHashSlots</title>
@@ -2855,11 +3072,31 @@ IpcName = FIREBIRD
             </example>
 
             <note>
-                <para>Сервер может регистрировать объекты в пространстве имен Global, только если он
-                    выполняется под учетной записью с привилегией SE_CREATE_GLOBAL_NAME. Это
-                    означает, что, если вы работаете под ограниченной учетной записью в Vista, XP
-                    SP2 или 2000 SP4, возможность использования локального протокола для других
-                    сеансов будет недоступна.</para>
+                <itemizedlist>
+                    <listitem>
+                        <para>Сервер может регистрировать объекты в пространстве имен Global, только
+                            если он выполняется под учетной записью с привилегией
+                            SE_CREATE_GLOBAL_NAME. Это означает, что, если вы работаете под
+                            ограниченной учетной записью в Vista, XP SP2 или 2000 SP4, возможность
+                            использования локального протокола для других сеансов будет
+                            недоступна.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Если на одном сервере установлено несколько экземпляров Firebird, и
+                            все они содержат одно и то же значение параметра IpcName (явно заданное
+                            или умалчиваемое), то firebird.log всех запускаемых экземпляров, начиная
+                            со второго, будет при каждом (ре-)старте пополняться сообщением
+                            вида:</para>
+                        <screen>
+XNET error: XNET server initialization failed. Probably another instance 
+of server is already running. 
+operating system directive CreateMutex failed
+Невозможно создать файл, так как он уже существует.                            
+                        </screen>
+                        <para>Для каждого подключения к СУБД может быть назначено индивидуальное
+                            значение этого параметра.</para>
+                    </listitem>
+                </itemizedlist>
             </note>
         </section>
 

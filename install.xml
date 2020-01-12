@@ -16,7 +16,290 @@
         <section xml:id="install-linux-repo">
             <title>Установка из репозитория</title>
 
-            <para/>
+            <para>Репозитории — это сервера в интернете, на которых хранятся файлы пакетов
+                приложений Linux и другая сопутствующая информация.</para>
+
+            <para>Практически у каждого дистрибутива Linux есть свой репозиторий, который содержит
+                только совместимые и поддерживаемые конкретным дистрибутивом пакеты, соответственно,
+                при установке приложений из официальных репозиториев Вы всегда устанавливаете только
+                проверенные и стабильные версии программ.</para>
+
+            <para>Репозитории бывают как основные, т.е. официально поддерживаемые, так и
+                дополнительные, которые можно подключить в случае возникновения необходимости.
+                Firebird редко включён в основной репозиторий, но часто присутствует в
+                дополнительных репозиториях или в PPA (Personal Package Archive).</para>
+
+            <note>
+                <para>За актуальностью пакетов в репозиториях следят либо разработчики дистрибутивов
+                    (Linux), либо владельцы репозиториев, а не сообщество Firebird. По этой причине
+                    в репозиториях может быть не самая последняя версия Firebird. Если вас надо
+                    гарантировано установить именно последнюю версию Firebird, либо вовсе произвести
+                    обновление из снапшотов, то рекомендуем вам производить установку Firebird из
+                        <link linkend="install-linux-tar">tar-архива</link>. </para>
+            </note>
+
+            <section xml:id="install-linux-repo-ubuntu">
+                <title>Установка Firebird в Ubuntu</title>
+
+                <para>В качестве примера рассмотрим установку Firebird 3.0 в Ubuntu 18.04
+                    TLS.</para>
+
+                <para>Стабильный пакет (версия 3.0.x) для Ubuntu TLS расположен в репозитории <link
+                        xlink:href="https://launchpad.net/%7Emapopa/+archive/firebird3.0"
+                    >ppa</link>.</para>
+                <para>Данный репозиторий может быть добавлен следующим способом:</para>
+                <synopsis>
+sudo add-apt-repository ppa:mapopa/firebird3.0
+sudo apt-get update                    
+                </synopsis>
+
+                <para>Вы можете посмотреть пакеты связанный с Firebird 3.0 следующим образом:</para>
+
+                <synopsis>
+apt-cache search firebird3.0                  
+                </synopsis>
+
+                <para>Вы уведите следующий список пакетов:</para>
+                <screen>
+firebird-dev - Development files for Firebird
+firebird3.0-common - common files for firebird 3.0 server, client and utilities
+firebird3.0-common-doc - copyright, licensing and changelogs of firebird3.0
+firebird3.0-doc - Documentation files for firebird database version 3.0
+firebird3.0-examples - Examples for Firebird database
+firebird3.0-server-core - Firebird engine core
+flamerobin - graphical database administration tool for Firebird DBMS
+libib-util - Firebird UDF support library
+firebird3.0-server - Firebird Server - an RDBMS based on InterBase 6.0 code
+firebird3.0-utils - Firebird command line utilities
+libfbclient2 - Firebird client library                    
+                </screen>
+
+                <para>Для установки Firebird 3.0 в архитектуре SuperServer наберите следующую
+                    команду:</para>
+
+                <synopsis>
+sudo apt-get install firebird3.0-server                    
+                </synopsis>
+                <screen>
+The following extra packages will be installed:
+  firebird3.0-common firebird3.0-common-doc firebird3.0-utils libfbclient2 libib-util
+Suggested packages:
+  firebird3.0-doc
+The following NEW packages will be installed:
+  firebird3.0-common firebird3.0-common-doc firebird3.0-server firebird3.0-utils libfbclient2 libib-util
+0 upgraded, 6 newly installed, 0 to remove and 0 not upgraded.
+Need to get 4,889kB of archives.
+After this operation, 13.1MB of additional disk space will be used.
+Do you want to continue [Y/n]?                    
+                </screen>
+
+                <para>В процессе установки у вас спросят о пароля для пользователя SYSDBA.</para>
+
+                <figure>
+                    <title>Задание пароля SYSDBA</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="images/sysdba-password-ubuntu.png" width="450"/>
+                        </imageobject>
+                        <textobject>
+                            <phrase>Задание пароля SYSDBA</phrase>
+                        </textobject>
+                    </mediaobject>
+                </figure>
+
+                <para>Если вам необходимо изменить конфигурацию после установки воспользуйтесь
+                    командой:</para>
+                <synopsis>
+sudo dpkg-reconfigure firebird3.0-server                    
+                </synopsis>
+
+                <para>Для установки примеров и файлов для разработки наберите команду:</para>
+                <synopsis>
+sudo apt-get install firebird3.0-examples firebird-dev                    
+                </synopsis>
+
+                <para>База данных <filename>employee.fdb</filename> архивирована и находится в
+                    директории
+                        <filename>/usr/share/doc/firebird3.0-examples/examples/empbuild/</filename>
+                </para>
+                <synopsis>
+cd /usr/share/doc/firebird3.0-examples/examples/empbuild/
+sudo gunzip employee.fdb.gz
+sudo chown firebird.firebird employee.fdb
+sudo mv employee.fdb /var/lib/firebird/3.0/data/                
+                </synopsis>
+
+                <note>
+                    <para>Это описание заимствовано со следующего ресурса <link
+                            xlink:href="https://help.ubuntu.com/community/Firebird3.0"/>. Когда я
+                        пробовал проделать тоже самое, то по какой-то причине у меня не оказалось
+                        каталога
+                            <filename>/usr/share/doc/firebird3.0-examples/examples/empbuild/</filename>
+                    </para>
+                    <para>К счастью в папке
+                            <filename>/usr/share/doc/firebird3.0-examples/examples/</filename> лежал
+                        запакованный sql скрипт для создания базы данных employee.</para>
+                    <synopsis>
+cd /usr/share/doc/firebird3.0-examples/examples/
+sudo gunzip employee.sql.gz               
+                    </synopsis>
+                    <para>Полученный файл <filename>employee.sql</filename> требуется немного
+                        поправить чтобы база данных создавалась в нужном месте.</para>
+                    <programlisting>
+<![CDATA[
+-- This is a generated file
+set sql dialect 3;
+create database '/var/lib/firebird/3.0/data/employee.fdb';
+...
+]]>                        
+                    </programlisting>
+                    <para>После чего можно запустить скрипт на выполнение:</para>
+                    <synopsis>
+isql-fb -i employee.sql                        
+                    </synopsis>
+                </note>
+
+                <para>Теперь можно попробовать подключится к нашей тестовой базы данных.</para>
+                <programlisting>
+$ isql-fb
+SQL> connect localhost:/var/lib/firebird/3.0/data/employee.fdb user 'SYSDBA' password password 'Xtwe9k';                    
+                </programlisting>
+                <para>Если все в порядке, то вы получите сообщение о том, к какой базе данных
+                    подключен, какой пользователь и о готовности к использованию.</para>
+                <screen>
+Database: localhost:/var/lib/firebird/3.0/data/employee.fdb, User: SYSDBA
+SQL> 
+                </screen>
+                <para>Теперь проверим версию серверы и таблицы.</para>
+                <screen>
+SQL> show tables;
+       COUNTRY                                CUSTOMER
+       DEPARTMENT                             EMPLOYEE
+       EMPLOYEE_PROJECT                       JOB
+       PROJECT                                PROJ_DEPT_BUDGET
+       SALARY_HISTORY                         SALES
+
+SQL> show version;
+ISQL Version: LI-V3.0.5.33100 Firebird 3.0
+Server version:
+Firebird/Linux/AMD/Intel/x64 (access method), version "LI-V3.0.5.33100 Firebird 3.0"
+Firebird/Linux/AMD/Intel/x64 (remote server), version "LI-V3.0.5.33100 Firebird 3.0/tcp (fbserver)/P15:C"
+Firebird/Linux/AMD/Intel/x64 (remote interface), version "LI-V3.0.5.33100 Firebird 3.0/tcp (fbserver)/P15:C"
+on disk structure version 12.0
+                </screen>
+
+                <para>Если ваш сервер установлен с графическим окружением, то вы также можете
+                    установить GUI инструмент администрирования
+                        <application>flamerobin</application> простой командой. </para>
+                <synopsis>
+sudo apt-get install flamerobin                    
+                </synopsis>
+            </section>
+
+            <section xml:id="install-linux-repo-centos">
+                <title>Установка Firebird в CentOS</title>
+
+                <para>В качестве примера рассмотрим установку Firebird 3.0 в CentOS 8.0.</para>
+                <para>Для установки Firebird 3.0 необходимо подключить репозиторий epel. Это
+                    делается следующей командой:</para>
+
+                <synopsis>
+sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm                   
+                </synopsis>
+
+                <para>Для просмотра информации о версии Firebird доступным для установки введите
+                    команду:</para>
+                <synopsis>
+sudo yum info firebird                  
+                </synopsis>
+                <screen>
+Последняя проверка окончания срока действия метаданных: 0:01:19 назад, Ср 08 янв 2020 11:46:11.
+Имеющиеся пакеты
+Имя          : firebird
+Версия       : 3.0.4.33054
+Выпуск       : 1.el8
+Архитектура  : x86_64
+Размер       : 3.6 M
+Источник     : firebird-3.0.4.33054-1.el8.src.rpm
+Репозиторий  : epel
+Краткое опис : SQL relational database management system
+URL          : http://www.firebirdsql.org/
+Лицензия     : Interbase
+Описание     : Firebird is a relational database offering many ANSI SQL standard
+             : features that runs on Linux, Windows, and a variety of Unix
+             : platforms. Firebird offers excellent concurrency, high
+             : performance, and powerful language support for stored procedures
+             : and triggers. It has been used in production systems, under a
+             : variety of names, since 1981.                    
+                </screen>
+                <para>Как видим в репозитории доступна довольно свежая версия. Можно приступать к
+                    установке.</para>
+                <synopsis>
+sudo yum install firebird                 
+                </synopsis>
+                <screen>
+Последняя проверка окончания срока действия метаданных: 0:00:43 назад, Ср 08 янв 2020 11:51:23.
+Зависимости разрешены.
+================================================================================
+ Пакет                 Архитектура   Версия                   Репозиторий Размер
+================================================================================
+Installing:
+ firebird              x86_64        3.0.4.33054-1.el8        epel        3.6 M
+Установка зависимостей:
+ firebird-utils        x86_64        3.0.4.33054-1.el8        epel        1.1 M
+ libfbclient2          x86_64        3.0.4.33054-1.el8        epel        592 k
+ libib-util            x86_64        3.0.4.33054-1.el8        epel         18 k
+ libtommath            x86_64        1.1.0-1.el8              epel         47 k
+
+Результат транзакции
+================================================================================
+Установка  5 Пакетов
+
+Объем загрузки: 5.4 M
+Объем изменений: 23 M
+Продолжить? [д/Н]: y
+Загрузка пакетов:
+(1/5): libfbclient2-3.0.4.33054-1.el8.x86_64.rp 372 kB/s | 592 kB     00:01    
+(2/5): libib-util-3.0.4.33054-1.el8.x86_64.rpm  107 kB/s |  18 kB     00:00    
+(3/5): firebird-utils-3.0.4.33054-1.el8.x86_64. 617 kB/s | 1.1 MB     00:01    
+(4/5): libtommath-1.1.0-1.el8.x86_64.rpm        451 kB/s |  47 kB     00:00    
+(5/5): firebird-3.0.4.33054-1.el8.x86_64.rpm    1.5 MB/s | 3.6 MB     00:02    
+--------------------------------------------------------------------------------
+Общий размер                                    1.3 MB/s | 5.4 MB     00:04                     
+                </screen>
+                <para>Теперь необходимо задать пароль для пользователя SYSDBA. Я предпочитаю делать
+                    это через <application>isql</application>.</para>
+                <synopsis>
+cd /usr/bin
+sudo ./isql-fb                
+                </synopsis>
+                <screen>
+Use CONNECT or CREATE DATABASE to specify a database
+SQL> connect security.db user sysdba;
+Database: security.db, User: SYSDBA
+SQL> create user sysdba password 'xRt3sd6T';
+SQL> exit;                    
+                </screen>
+
+                <note>
+                    <para>Обратите внимание, что утилита <application>isql</application>
+                        переименована в <application>isql-fb</application>. Это сделано потому, что
+                        в Linux уже есть утилита <application>isql</application> в рамках проекта
+                        unixODBC.</para>
+                </note>
+
+                <para>Осталось включить и запустить сервис firebird-superserver.</para>
+                <synopsis>
+sudo systemctl enable firebird-superserver
+</synopsis>
+                <screen>
+Created symlink /etc/systemd/system/multi-user.target.wants/firebird-superserver.service
+  → /usr/lib/systemd/system/firebird-superserver.service.
+</screen>
+                <synopsis>
+sudo systemctl start firebird-superserver               
+                </synopsis>
+            </section>
         </section>
 
         <section xml:id="install-linux-tar">
@@ -449,7 +732,7 @@ WireCrypt = Enabled
                         Legacy_UserManager SYSDBA уже существует, причём со стандартным паролем
                         masterkey, который необходимо изменить. Сделаем это c использованием
                         инструмента isql. В операторе <code>ALTER USER</code> необходимо обязательно
-                        указать менеджер пользователей Legacy_UserManager. <programlisting>
+                        указать менеджер пользователей Legacy_UserManager. <synopsis>
             <![CDATA[
 c:\Firebird\3.0>isql
 Use CONNECT or CREATE DATABASE to specify a database
@@ -460,7 +743,7 @@ SQL> exit;
 
 c:\Firebird\3.0>
             ]]>            
-                    </programlisting>
+                    </synopsis>
                     </para>
                 </section>
 

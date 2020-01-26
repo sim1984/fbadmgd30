@@ -11,7 +11,15 @@
     <section xml:id="install-linux">
         <title>Установка на ОС Linux</title>
 
-        <para/>
+        <para>Firebird под Linux распространяется в двух вариантах через репозитории и в виде
+            tar-архивов. За репозиториями следят либо разработчики дистрибутивов Linux, либо частные
+            лица (PPA). Tar-архивы распространяет организация Firebird Foundation. Для официальных
+            релизов Firebird 3.0 они выложены на странице <link
+                xlink:href="https://firebirdsql.org/en/firebird-3-0/"
+                >https://firebirdsql.org/en/firebird-3-0/</link>. Кроме того tar-архивы
+            автоматически собираются для снапшотов, которые вы можете найти по адресу <link
+                xlink:href="http://web.firebirdsql.org/download/snapshot_builds/linux/fb3.0/"
+                >http://web.firebirdsql.org/download/snapshot_builds/linux/fb3.0/</link>.</para>
 
         <section xml:id="install-linux-repo">
             <title>Установка из репозитория</title>
@@ -194,6 +202,25 @@ on disk structure version 12.0
                 <synopsis>
 sudo apt-get install flamerobin                    
                 </synopsis>
+
+                <section xml:id="install-linux-repo-ubuntu-client">
+                    <title>Установка только клиента Firebird</title>
+
+                    <para>Если необходимо установить только клиента Firebird без сервера, то
+                        процедура немного сокращается.</para>
+                    <para>Первым делом добавьте репозиторий ppa:mapopa/firebird3.0
+                        <synopsis>
+sudo add-apt-repository ppa:mapopa/firebird3.0
+sudo apt-get update                    
+                </synopsis>
+                    </para>
+                    
+                    <para>Теперь устанавливаем сам клиент:
+                        <synopsis>
+sudo apt-get install libfbclient2                   
+                </synopsis>
+                    </para>
+                </section>
             </section>
 
             <section xml:id="install-linux-repo-centos">
@@ -293,20 +320,211 @@ SQL> exit;
 sudo systemctl enable firebird-superserver
 </synopsis>
                 <screen>
-Created symlink /etc/systemd/system/multi-user.target.wants/firebird-superserver.service
-  → /usr/lib/systemd/system/firebird-superserver.service.
+Created symlink /etc/systemd/system/multi-user.target.wants/firebird-superserver.
+service  → /usr/lib/systemd/system/firebird-superserver.service.
 </screen>
                 <synopsis>
 sudo systemctl start firebird-superserver               
                 </synopsis>
+                <section xml:id="install-linux-repo-centos-client">
+                    <title>Установка только клиента Firebird</title>
+                    
+                    <para>Если необходимо установить только клиента Firebird без сервера, то
+                        процедура немного сокращается.</para>
+                    <para>Первым делом добавьте репозиторий EPEL
+                        <synopsis>
+sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm 
+sudo dnf update
+                </synopsis>
+                    </para>
+                    
+                    <para>Теперь устанавливаем сам клиент:
+                        <synopsis>
+sudo dnf install libfbclient2                   
+                </synopsis>
+                    </para>
+                </section>
             </section>
         </section>
 
         <section xml:id="install-linux-tar">
             <title>Ручная установка из tar архива</title>
 
-            <para/>
+            <para>Tar-архивы распространяет организация Firebird Foundation. Для официальных релизов
+                Firebird 3.0 они выложены на странице https://firebirdsql.org/en/firebird-3-0/.
+                Кроме того tar-архивы автоматически собираются для снапшотов, которые вы можете
+                найти по адресу
+                http://web.firebirdsql.org/download/snapshot_builds/linux/fb3.0/.</para>
+
+            <para>Стоит отметить что процедура установки из tar-архивов одинаковая для всех
+                дистрибутивов Linux. Нюансы возникают только при разрешении зависимостей от
+                некоторых библиотек.</para>
+
+            <note>
+                <para>При установке из tar-архива сервер будет установлен в директорию
+                        <filename>/opt/firebird</filename></para>
+
+                <para>В отличие от установке из репозиториев утилита <application>isql</application>
+                    не переименована и расположена в <filename>/opt/firebird/bin</filename>.</para>
+            </note>
+
+            <section xml:id="install-linux-tar-ubuntu">
+                <title>Установка Firebird в Ubuntu</title>
+
+                <para>В качестве примера рассмотрим установку Firebird 3.0 в Ubuntu 18.04.</para>
+
+                <para>Перед установкой Firebird необходимо установить следующие пакеты
+                    <synopsis>
+sudo apt-get install libtommath1                 
+                </synopsis>
+                </para>
+
+
+                <para>Для библиотеки libtommath необходимо также создать символическую ссылку:
+                    <synopsis>
+sudo ln -sf /usr/lib/x86_64-linux-gnu/libtommath.so 
+/usr/lib/x86_64-linux-gnu/libtommath.so.0              
+                </synopsis>
+                </para>
+
+                <para>Скачиваем и распаковываем tar-архив текущей версии Firebird
+                    <synopsis>
+wget https://github.com/FirebirdSQL/firebird/releases/download/R3_0_5/Firebird-
+3.0.5.33220-0.amd64.tar.gz
+tar xvf Firebird-3.0.5.33220-0.amd64.tar.gz
+cd Firebird-3.0.5.33220-0.amd64             
+                </synopsis>
+                </para>
+                <para>Теперь можно запускать скрипт установки
+                    <synopsis>
+sudo ./install.sh            
+                </synopsis>
+                </para>
+                <para>В процессе инсталляции у вас спросят пароль для пользователя SYSDBA.</para>
+                <para>Обычно после этого служба Firebird стразу же установлена и запущена, вы можете
+                    проверить это командой: <synopsis>
+systemctl status firebird-superserver
+                    </synopsis>
+                    <screen>
+systemctl status firebird-superserver
+● firebird-superserver.service - Firebird Database Server ( SuperServer )
+   Loaded: loaded (/lib/systemd/system/firebird-superserver.service; enabled; ve
+   Active: active (running) since Sun 2020-01-26 15:18:24 UTC; 8min ago
+  Process: 6921 ExecStart=/opt/firebird/bin/fbguard -pidfile /var/run/firebird/f
+ Main PID: 6923 (firebird)
+    Tasks: 4 (limit: 4614)
+   CGroup: /system.slice/firebird-superserver.service
+           ├─6922 /opt/firebird/bin/fbguard -pidfile /var/run/firebird/firebird.
+           └─6923 /opt/firebird/bin/firebird
+
+янв 26 15:18:24 dbserver systemd[1]: Starting Firebird Database Server ( SuperSe
+янв 26 15:18:24 dbserver systemd[1]: firebird-superserver.service: Can't open PI
+янв 26 15:18:24 dbserver systemd[1]: firebird-superserver.service: Supervising p
+янв 26 15:18:24 dbserver systemd[1]: Started Firebird Database Server ( SuperSer                        
+                    </screen>
+                </para>
+                <para>Если это не так выполните
+                    <synopsis>
+sudo systemctl enable firebird-superserver  
+sudo systemctl start firebird-superserver   
+                </synopsis>
+                </para>
+            </section>
+
+            <section xml:id="install-linux-tar-centos">
+                <title>Установка Firebird в CentOS</title>
+
+                <para>В качестве примера рассмотрим установку Firebird 3.0 в CentOS 8.0.</para>
+                <para>Для установки Firebird 3.0 необходимо подключить репозиторий epel. Это
+                    делается следующей командой:</para>
+
+                <synopsis>
+sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.
+noarch.rpm                   
+                </synopsis>
+
+                <para>Перед установкой Firebird необходимо установить следующие пакеты
+                    <synopsis>
+sudo dnf -y install libtommath
+sudo dnf -y install libicu-devel
+sudo dnf -y install libncurses*                  
+                </synopsis>
+                </para>
+
+                <para>Для библиотеки libtommath необходимо также создать символическую ссылку:
+                    <synopsis>
+sudo ln -sf /usr/lib64/libtommath.so.1 /usr/lib64/libtommath.so.0                
+                </synopsis>
+                </para>
+
+                <para>Скачиваем и распаковываем tar-архив текущей версии Firebird
+                    <synopsis>
+wget https://github.com/FirebirdSQL/firebird/releases/download/R3_0_5/Firebird-
+3.0.5.33220-0.amd64.tar.gz
+tar xvf Firebird-3.0.5.33220-0.amd64.tar.gz
+cd Firebird-3.0.5.33220-0.amd64             
+                </synopsis>
+                </para>
+                <para>Теперь можно запускать скрипт установки
+                    <synopsis>
+sudo ./install.sh            
+                </synopsis>
+                </para>
+                <para>В процессе инсталляции у вас спросят пароль для пользователя SYSDBA.</para>
+                <para>Обычно после этого служба Firebird стразу же установлена и запущена, вы можете
+                    проверить это командой: <synopsis>
+systemctl status firebird-superserver
+                    </synopsis>
+                    <screen>
+● firebird-superserver.service - Firebird Database Server ( SuperServer )
+   Loaded: loaded (/usr/lib/systemd/system/firebird-superserver.service; enable>
+   Active: active (running) since Sun 2020-01-26 18:41:14 MSK; 2h 24min left
+  Process: 1105 ExecStart=/opt/firebird/bin/fbguard -pidfile /var/run/firebird/>
+ Main PID: 1143 (firebird)
+    Tasks: 5 (limit: 17728)
+   Memory: 18.5M
+   CGroup: /system.slice/firebird-superserver.service
+           ├─1132 /opt/firebird/bin/fbguard -pidfile /var/run/firebird/firebird>
+           └─1143 /opt/firebird/bin/firebird
+
+янв 26 18:41:13 localhost.localdomain systemd[1]: Starting Firebird Database Se>
+янв 26 18:41:13 localhost.localdomain systemd[1]: firebird-superserver.service:>
+янв 26 18:41:14 localhost.localdomain systemd[1]: firebird-superserver.service:>
+янв 26 18:41:14 localhost.localdomain systemd[1]: Started Firebird Database Ser>
+                    </screen>
+                </para>
+                <para>Если это не так выполните
+                    <synopsis>
+sudo systemctl enable firebird-superserver  
+sudo systemctl start firebird-superserver   
+                </synopsis>
+                </para>
+            </section>
+
+            <section>
+                <title>Изменение режима работы Firebird</title>
+
+                <para>При установки сервера из tar-архива Firebird по умолчанию устанавливается в
+                    архитектуре SuperServer. Если вам необходимо изменить режим работы сервера, то
+                    сделать это можно при помощи скрита
+                        <filename>/opt/firebird/bin/changeServerMode.sh</filename>
+                    <synopsis>
+sudo /opt/firebird/bin/changeServerMode.sh                        
+                    </synopsis>
+                    <screen>
+Firebird server may run in 2 different modes - super and classic.
+Super server provides better performance, classic - better availability.
+
+Which option would you like to choose: (super|classic) [super] classic
+Stopping currently running engine...
+Starting firebird in classic server mode...
+Updated /opt/firebird/firebird.conf
+Done.                        
+                    </screen>
+                </para>
+            </section>
         </section>
+
 
         <section xml:id="install-linux-client">
             <title>Ручная установка клиента</title>

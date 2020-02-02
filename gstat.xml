@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.1/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.1/sch/docbook.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="5.1" xml:id="gstat" xml:lang="ru">
+    <info>
+        <title>Утилита GSTAT</title>
+    </info>
+
+    <indexterm>
+        <primary>GSTAT</primary>
+    </indexterm>
+
+    <para><application>gstat</application> — это одна из утилит базы данных, поставляемых с
+        Firebird. Она используется для отображения статистических данных о содержимом базы данных.
+        Утилита <application>gstat</application> не подключается к базе данных, как это делают
+        другие утилиты, вместо этого она открывает файлы базы данных напрямую и считывает
+            <quote>сырые</quote> данные. Из-за этого <application>gstat</application> не использует
+        транзакции, и некоторая статистика, которую он собирает, может включать данные, которые были
+        удалены, например, обычными транзакциями базы данных.</para>
+
+    <para>Утилита <application>gstat</application> возвращает информацию о дате создания базы
+        данных, размере страниц базы данных, количестве теневых копий, таблицах, индексах и
+        другую.</para>
+
+    <para>Запуск <application>gstat</application> осуществляется следующим образом:
+        <synopsis>
+gstat [<replaceable>&lt;options&gt;</replaceable>] <replaceable>&lt;database&gt;</replaceable>            
+        </synopsis>
+        или
+        <synopsis>
+gstat <replaceable>&lt;database&gt;</replaceable> [<replaceable>&lt;options&gt;</replaceable>]           
+        </synopsis>
+    </para>
+
+    <note>
+        <para>Утилита <application>gstat</application> должна запускаться от имени пользователя
+                <emphasis>root</emphasis> или пользователя <emphasis>firebird</emphasis>. Это
+            связано с тем, что разрешения операционной системы по умолчанию при создании новой базы
+            данных таковы, что только владелец — <emphasis>firebird</emphasis> — имеет доступ к
+            файлам базы данных. Даже члены группы <emphasis>firebird</emphasis> по умолчанию не
+            имеют доступа для чтения.</para>
+    </note>
+
+    <para>Имя базы данных <replaceable>&lt;database&gt;</replaceable> не может быть удаленной базой
+        данных, оно должно быть локальным, но это может быть псевдоним для локальной базы данных.
+        Причина, по которой оно должно быть локальным, заключается в том, что
+            <application>gstat</application> работает на физическом уровне файлов, а не
+        устанавливает соединение сервером базы данных — она читает файл базы данных напрямую.</para>
+
+    <note>
+        <para>Вы всё же можете получать статистику базы данных удалено, используя Service API. В
+            Firebird существует консольная утилита FBSVCMGR для доступа к различным службам,
+            использующим Service API.</para>
+    </note>
+
+    <para>Если <application>gstat</application> вызывается с неверным переключателем или с
+        переключателем <code>-?</code>, то будет отображена справка по существующим переключателям.
+        К сожалению, отображается только краткая форма переключателей.</para>
+    <synopsis>
+gstat -?        
+    </synopsis>
+    <screen>
+<![CDATA[        
+usage:   gstat [options] <database> or gstat <database> [options]
+Available switches:
+    -a      analyze data and index pages
+    -d      analyze data pages
+    -e      analyze database encryption
+    -h      analyze header page ONLY
+    -i      analyze index leaf pages
+    -s      analyze system relations in addition to user tables
+    -u      username
+    -p      password
+    -fetch  fetch password from file
+    -r      analyze average record and version length
+    -t      tablename <tablename2...> (case sensitive)
+    -role   SQL role name
+    -z      display version number
+option -t accepts several table names only if used after <database>  
+]]>
+    </screen>
+    <table frame="topbot">
+        <title>Переключатели командной строки</title>
+        <tgroup cols="2">
+            <colspec colname="c1" colnum="1" colwidth="0.65*"/>
+            <colspec colname="c2" colnum="2" colwidth="1.35*"/>
+            <thead>
+                <row>
+                    <entry>Опция</entry>
+                    <entry>Описание</entry>
+                </row>
+            </thead>
+            <tbody>
+                <row>
+                    <entry><code>-a[ll]</code></entry>
+                    <entry><para>Это переключатель по умолчанию, он эквивалентен <code>-h[eader]
+                                -d[ata] -i[ndex]</code>.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-d[ata]</code></entry>
+                    <entry><para>Получение статистики о данных всех или только указанных таблиц.
+                            Пользовательские индексы, системные таблицы и системные индексы не
+                            анализируются. Версии записей не анализируются.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-e[cryption]</code></entry>
+                    <entry><para>Анализ шифрования базы данных.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-h[eader]</code></entry>
+                    <entry>
+                        <para>Этот переключатель отображает статистику о самой базе данных, а затем
+                            завершает работу. Информация заголовка также отображается при
+                            использовании любого другого переключателя, поэтому вы всегда получаете
+                            подробные данные заголовка базы данных в своем выводе.</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry><code>-i[ndex]</code></entry>
+                    <entry>
+                        <para>Указание этого параметра заставляет gstat анализировать каждый
+                            пользовательский индекс в указанной базе данных. Пользовательские
+                            таблицы, системные индексы и системные таблицы не анализируются. Если
+                            указан переключатель <code>-t</code>, то анализируются только индексы
+                            указанных таблиц.</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry><code>-s[ystem]</code></entry>
+                    <entry>
+                        <para>Этот переключатель является модификатором и изменяет выходные данные
+                            переключателей <code>-d[ata]</code> или <code>-i[ndex]</code>, включая
+                            системные таблицы (или индексы) в дополнение к пользовательским таблицам
+                            (или индексам). Использование этого переключателя само по себе
+                            эквивалентно вызову <application>gstat</application> с указанным
+                            параметром <code>-a[ll] -s[ystem]</code>.</para>
+                        <para>При запуске этот переключатель отображает статистику для различных
+                            таблиц и индексов RDB$ и MON$.</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry><code>-u[sername]
+                        <replaceable>&lt;username&gt;</replaceable></code></entry>
+                    <entry><para>Позволяет указать имя пользователя: SYSDBA или пользователя
+                            владельца базы данных. Его не нужно указывать, если переменная среды
+                            ISC_USER существует и имеет правильное значение, или если вы вошли на
+                            сервер под привилегированной учетной записью (root,
+                        firebird).</para></entry>
+                </row>
+                <row>
+                    <entry><code>-p[assword]
+                        <replaceable>&lt;password&gt;</replaceable></code></entry>
+                    <entry><para>Предоставляет пароль для имени пользователя, указанного
+                            выше.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-fetch
+                            {<replaceable>&lt;filename&gt;</replaceable>|stdin|/dev/tty}</code></entry>
+                    <entry><para>Этот переключатель заставляет читать пароль из файла, а не
+                            использовать тот, что указан в командной строке. Указанное имя файла не
+                            должно быть в кавычках и должно быть доступно для чтения пользователю,
+                            выполняющему <application>gstat</application>. Если имя файла указано
+                            как stdin, то пользователю будет предложено ввести пароль. В системах
+                            POSIX имя файла <filename>/dev/tty</filename> также приведет к запросу
+                            пароля.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-r[ecord]</code></entry>
+                    <entry>
+                        <para>Ключ <code>-r[ecord]</code> является модификатором для ключей
+                                <code>-d[ata]</code> и <code>-s[ystem]</code>. Он добавляет данные о
+                            средней длине записи и версии для любых проанализированных таблиц данных
+                            (пользовательских и/или системных). Этот ключ не влияет на ключ
+                                <code>-i[ndex]</code>.</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry><code>-t[able] <replaceable>&lt;tablename&gt;</replaceable> [...
+                                <replaceable>&lt;tablename&gt;</replaceable>]</code></entry>
+                    <entry>
+                        <para>Этот переключатель позволяет анализировать таблицу или список таблиц,
+                            а также любые индексы, принадлежащие указанным таблицам. Посмотрите
+                            раздел предостережений ниже для некоторых потенциальных проблем с этим
+                            переключателем и примером того, как его следует использовать.</para>
+                        <para>За переключателем <code>-t[able]</code> должен следовать список имен
+                            таблиц, которые вы хотите проанализировать. Список должен быть в верхнем
+                            регистре, и каждая таблица разделена пробелом. Также можно использовать
+                            двойные кавычки, чтобы <application>gstat</application> анализировал
+                            таблицу, имя которой не указано в верхнем регистре.</para>
+                        <para>Нет необходимости указывать ключ <code>-i[ndex]</code>, так как любые
+                            индексы в указанных таблицах будут проанализированы. Информация
+                            заголовка базы данных также отображается.</para>
+                    </entry>
+                </row>
+                <row>
+                    <entry><code>-role <replaceable>&lt;rolename&gt;</replaceable></code></entry>
+                    <entry><para>Позволяет указать имя роли. Роль должна быть выдана пользователю
+                            указанному в переключателей <code>-u[sername]</code>.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-tr</code></entry>
+                    <entry><para>Использовать доверительную аутентификацию</para></entry>
+                </row>
+                <row>
+                    <entry><code>-z</code></entry>
+                    <entry><para>Это переключатель модификатор. Использование <code>-z</code>
+                            отображает номер версии утилиты <application>gstat</application> и
+                            сервера Firebird. Вы должны указать правильное имя базы данных и,
+                            возможно, другой параметр. Этот переключатель добавляет информацию о
+                            версии <application>gstat</application> и Firebird к выводу другого
+                            переключателя, который вы указали, или по умолчанию, если вы его не
+                            указали. Если все, что вам нужно, это информация о версии, то самый
+                            короткий вывод будет если указать в переключателе <code>-t</code> не
+                            существующую таблицу.</para>
+                    </entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </table>
+    <section>
+        <title>gstat примеры и интерпретация</title>
+
+        <para>В этом разделе обсуждаются частые примеры использования сбора статистики и объясняется
+            вывод утилиты.</para>
+        
+        <section>
+            <title>Статистика заголовочной страницы</title>
+            
+            <para></para>
+        </section>
+        
+        <section>
+            <title>Анализ всей базы данных</title>
+            
+            <para></para>
+        </section>
+        
+        <section>
+            <title>Анализ только страниц с данным</title>
+            
+            <para></para>
+        </section>
+        
+        <section>
+            <title>Анализ только индексов</title>
+            
+            <para></para>
+        </section>
+        
+        <section>
+            <title>Выбор таблиц для анализа</title>
+            
+            <para></para>
+        </section>
+        
+        <section>
+            <title>Включение в статистику системных таблиц и индексов</title>
+            
+            <para></para>
+        </section>
+        
+        <section>
+            <title>Включение в статистику системных таблиц и индексов</title>
+            
+            <para></para>
+        </section>
+        
+        <section>
+            <title>Статистика размеров записей и версий</title>
+            
+            <para></para>
+        </section>
+    </section>
+
+</chapter>

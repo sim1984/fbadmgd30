@@ -4,7 +4,7 @@
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
     version="5.1" xml:id="isql" xml:lang="ru">
     <info>
-        <title>ISQL. Интерактивные запросы</title>
+        <title>Утилита ISQL</title>
     </info>
 
     <indexterm>
@@ -220,7 +220,7 @@ usage:    isql [options] [<database>]
                     <colspec colname="c2" colnum="2" colwidth="1.4*"/>
                     <thead>
                         <row>
-                            <entry>Опции</entry>
+                            <entry>Опция</entry>
                             <entry>Описание</entry>
                         </row>
                     </thead>

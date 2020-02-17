@@ -223,53 +223,306 @@ option -t accepts several table names only if used after <database>
 
         <para>В этом разделе обсуждаются частые примеры использования сбора статистики и объясняется
             вывод утилиты.</para>
-        
+
         <section>
             <title>Статистика заголовочной страницы</title>
-            
-            <para></para>
+
+            <para>Запустив утилиту gstat с ключом -h[eader] можно получить статистические данные о
+                заголовочной странице указанной базы данных. Часть информации является статичной,
+                часть — меняется в зависимости от происходящих в базе данных изменений. Пример
+                информации с заголовочной страницы приводится ниже:</para>
+            <synopsis>
+gstat employee -header                
+            </synopsis>
+            <screen>
+Database "C:\Firebird\3.0\examples\empbuild\employee.fdb"
+Gstat execution time Sun Feb  9 12:45:13 2020
+
+Database header page information:
+        Flags                   0
+        Generation              183
+        System Change Number    3
+        Page size               8192
+        ODS version             12.0
+        Oldest transaction      161
+        Oldest active           162
+        Oldest snapshot         162
+        Next transaction        165
+        Sequence number         0
+        Next attachment ID      25
+        Implementation          HW=AMD/Intel/x64 little-endian OS=Windows CC=MSVC
+        Shadow count            0
+        Page buffers            0
+        Next header page        0
+        Database dialect        3
+        Creation date           Jan 31, 2020 12:42:02
+        Attributes              force write
+
+    Variable header data:
+        Database backup GUID:   {B71E712F-377B-4526-5AB2-2B21879F2097}
+        Sweep interval:         20000
+        *END*
+Gstat completion time Sun Feb  9 12:45:13 2020               
+            </screen>
+            <para> Первая строка вывода отображает имя файла(ов) и путь к базе данных. Это может
+                быть полезно, если задан псевдоним базы данных, и необходимо точно определить, где
+                находится база данных. Поскольку база данных сотрудников является однофайловой,
+                отображается только один файл. Если бы это была многофайловая база данных, конец
+                перечисленного выше выглядел бы следующим образом:</para>
+            <screen>
+...
+    Variable header data:
+        Continuation file:       C:\Firebird\3.0\examples\empbuild\employee_multy.fdb1
+        Last logical page:       162                
+            </screen>
+            <para>Описание различных полей заголовка описаны ниже.</para>
+            <para><emphasis role="bold">Flags</emphasis> — это набор флагов, определяющий важные
+                особенности поведения базы данных. Флаги устанавливаются только с помощью
+                специальных инструментов вроде <application>gfix</application>, изменять флаги с
+                помощью других инструментов опасно — это может привести к порче базы данных. </para>
+            <para>Надо сказать, что при получении статистики показывается, что значение параметра
+                    <emphasis role="bold">Flags</emphasis> всегда равно нулю, вне зависимости от
+                установленных флагов.</para>
+            <para><emphasis role="bold">Generation</emphasis> — это счетчик, который увеличивается
+                на единицу всякий раз, когда заголовочная страница записывается на диск.</para>
+            <para><emphasis role="bold">System Change Number</emphasis> — маркер (число от 0 до 3),
+                которым помечаются страницы базы данных при создании инкрементных копий с помощью
+                утилиты nbackup. Nbackup выполняет резервное копирование страниц базы данных,
+                копируя страницы, которые были изменены с момента последней резервной копии
+                непосредственно предшествующего уровня. Если делается резервная копия уровня 0,
+                копируются все страницы, а если уровня 1 — копируются только те страницы, которые
+                были изменены после последнего уровня 0. Чтобы иметь возможность находить измененные
+                страницы, Firebird использует маркер, который называется SCN. Это число
+                увеличивается при каждом изменении состояния резервной копии и не зависит от уровня
+                резервного копирования.</para>
+            <itemizedlist>
+                <listitem>
+                    <para>0 — страницы перед резервным копированием; </para>
+                </listitem>
+                <listitem>
+                    <para>1 — страницы, записанные в дельта-файл во время резервного копирования;
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>2 — страницы, записанные во время слияния дельта-файла с основной
+                        резервной копией;</para>
+                </listitem>
+                <listitem>
+                    <para>3 — страницы, записанные после окончания первого бэкапа и слияния. </para>
+                </listitem>
+            </itemizedlist>
+            <para>Резервное копирование и восстановление с помощью <application>gbak</application>
+                не восстанавливает содержимое таблицы <database>RDB$BACKUP_HISTORY</database> и
+                сбрасывает SCN всех страниц обратно на 0. Таким образом, восстановление с помощью
+                    <application>gbak</application> перепишет всю базу данных (и может даже изменить
+                размер страницы). Это делает предыдущие резервные копии с помощью
+                    <application>nbackup</application> бессмысленными в качестве отправной точки для
+                последующих резервных копий: нужно начать заново с уровня 0.</para>
+            <para><emphasis role="bold">Page size</emphasis> — размер страницы базы данных,
+                исчисляется в байтах. Все файлы одной базы данных состоят из страниц одинакового
+                размера, который устанавливается при создании базы данных и при восстановлении базы
+                данных из резервной копии. Множество важнейших параметров сервера зависят от размера
+                страницы — например, кеш базы данных. Рекомендуют создавать базу данных с размером
+                страниц не менее 4096 байт, а лучше 8192 или 16384 байта.</para>
+            <para><emphasis role="bold">ODS version</emphasis> – версия структуры базы данных на
+                диске (On-Disk Structure). Представляет собой два числа, разделенные точкой. "Целая"
+                часть — это основная версия ODS, которая зависит от версии сервера, создавшего
+                данную базу данных. Главная версия определяет основные возможности работы с базой
+                данных, и ее значение присваивается при создании (восстановлении) базы данных.
+                "Дробная" часть (после точки) — это минорная версия ODS.</para>
+            <para>Значения, которые вы можете увидеть здесь:</para>
+            <para>
+                <itemizedlist spacing="compact">
+                    <listitem>
+                        <para>10.0 — Firebird 1.0;</para>
+                    </listitem>
+                    <listitem>
+                        <para>10.1 — Firebird 1.5;</para>
+                    </listitem>
+                    <listitem>
+                        <para>11.0 — Firebird 2.0;</para>
+                    </listitem>
+                    <listitem>
+                        <para>11.1 — Firebird 2.1;</para>
+                    </listitem>
+                    <listitem>
+                        <para>11.2 — Firebird 2.5;</para>
+                    </listitem>
+                    <listitem>
+                        <para>12.0 — Firebird 3.0;</para>
+                    </listitem>
+                    <listitem>
+                        <para>13.0 — Firebird 4.0.</para>
+                    </listitem>
+                </itemizedlist>
+            </para>
+            <para><emphasis role="bold">Детали транзакций</emphasis>: <itemizedlist>
+                    <listitem>
+                        <para><emphasis role="bold">Oldest transaction</emphasis> — идентификатор
+                            старейшей заинтересованной транзакции в базе данных (Oldest Interesting
+                            Transaction или OIT). Первая транзакция с состоянием, отличным от
+                            commit. На практике это: <itemizedlist>
+                                <listitem>
+                                    <para>Oldest Active Transaction;</para>
+                                </listitem>
+                                <listitem>
+                                    <para>номер самой старой транзакции, завершенной "настоящим"
+                                        rollback (выполняется если пользователь в одной транзакции
+                                        модифицировал более 100000 записей); </para>
+                                </listitem>
+                                <listitem>
+                                    <para>транзакция в состоянии in-limbo (полузавершенная)
+                                        двухфазного commit. </para>
+                                </listitem>
+                            </itemizedlist></para>
+                        <para>Значение этого параметра часто сравнивается с Oldest active. Разница
+                            этих параметров влияет на автоматический запуск sweep.</para>
+                    </listitem>
+                    <listitem>
+                        <para><emphasis role="bold">Oldest active</emphasis> — старейшая транзакция,
+                            которую пользователь стартовал, и до сих пор не завершил по commit или
+                            rollback (Oldest Active Transaction или OAT). </para>
+                    </listitem>
+                    <listitem>
+                        <para><emphasis role="bold">Oldest snapshot</emphasis> — номер последней
+                            транзакции snapshot, которая влияет на процесс сборки мусора (Oldest
+                            Snapshot Transaction или OST). OST — это старейший <quote>номер
+                                snapshot</quote> для всех активных транзакций. Транзакция
+                                <emphasis>read-only, read committed</emphasis> не имеет
+                                <quote>номера snapshot</quote>. Транзакция <emphasis>read-write,
+                                read committed</emphasis> имеет <quote>номер snapshot</quote> равный
+                            своему собственному номеру. Для транзакции snapshot <quote>номер
+                                snapshot</quote> — это номер Oldest Active Transaction на момент ее
+                            старта. Номер Oldest Snapshot Transaction обновляется, когда стартует
+                            новая транзакция (или выполняется commit retaining) или когда стартует
+                            sweep. Транзакции с таким или большим номер не подлежат сборке
+                            мусора.</para>
+                    </listitem>
+                    <listitem>
+                        <para><emphasis role="bold">Next transaction</emphasis> — это просто номер,
+                            который будет присвоен следующей транзакции при её старте.</para>
+                    </listitem>
+                </itemizedlist></para>
+            <para>Если вы заметили, что разница между OAT и Next transaction постоянно
+                увеличивается, значит какие-то транзакции не подтверждаются должным образом и
+                следовательно может накапливаться все большее число мусорных записей. В конце концов
+                вы увидите, что время запуска базы данных увеличивается, а производительность
+                падает. Если разница между OIT и OAT велика, значит sweep не запускался в
+                автоматическом или ручном режиме. В таком случае возможно следует запустить
+                    <application>gfix</application> для сборки мусора вручную.</para>
+            <para>
+                <emphasis role="bold">Sequence number</emphasis> — порядковый номер файла базы
+                данных. Для базы данных, состоящей из одного файла, он всегда равен нулю. Второй
+                файл в базе данных будет иметь номер 1 и так далее. </para>
+            <para><emphasis role="bold">Next attachment ID</emphasis> — номер следующего соединения
+                к этой базе данных. Каждый раз, когда приложение подключается к базе данных, это
+                число увеличивается на один. Запуск и завершение работы базы данных также
+                увеличивает этот номер. Запуск <application>gstat</application> не изменяет этот
+                идентификатор.</para>
+            <para>
+                <emphasis role="bold">Implementation</emphasis> — аппаратная архитектура, на которой
+                была создана база данных.</para>
+            <para><emphasis role="bold">Shadow count</emphasis> — количество файлов теневых копий,
+                которые определены для данной базы данных.</para>
+            <para><emphasis role="bold">Page buffers</emphasis> — размер кэша базы данных в
+                страницах. Ноль означает, что база данных использует значение параметра
+                    <parameter>DefaultDbCachePages</parameter> из файла конфигурации
+                    (<filename>firebird.conf</filename> или
+                <filename>databases.conf</filename>).</para>
+            <para><emphasis role="bold">Next header page</emphasis> — номер следующей заголовочной
+                страницы. Всегда равен нулю. Собственно говоря, любая страница в базе данных имеет
+                ссылку на номер следующей страницы такого же типа,но так как заголовочная страница
+                всегда единственная в каждом файле базы данных, то у нее эта ссылка обнулена.</para>
+            <para><emphasis role="bold">Database dialect</emphasis> — диалект SQL базы
+                данных.</para>
+            <para><emphasis role="bold">Creation date</emphasis> — дата создания базы данных или
+                последнего восстановления из резервной копии.</para>
+            <para><emphasis role="bold">Attributes</emphasis> — различные атрибуты базы данных.
+                Возможны следующий значения: <itemizedlist spacing="compact">
+                    <listitem>
+                        <para>forced write — режим принудительной записи включен (forced write
+                            on).</para>
+                    </listitem>
+                    <listitem>
+                        <para>no reserve — указывает, что на страницах не резервируется место для
+                            старых версий данных. Это позволяет более плотно упаковывать данные на
+                            каждой странице, в силу чего база данных занимает меньше дискового
+                            пространства. Это хорошо для баз данных только для чтения, однако
+                            негативно отражается на базах данных в которых необходимо производить
+                            обновления или удаление записей.</para>
+                    </listitem>
+                    <listitem>
+                        <para>read only — база данных работает в режиме Read Only. Если флаг не
+                            установлен, то допустимы как чтение, так и запись.</para>
+                    </listitem>
+                    <listitem>
+                        <para>multi-user maintenance — база данных блокирована в режиме multi.
+                            Множество соединений разрешены только для SYSDBA или владельца базы
+                            данных.</para>
+                    </listitem>
+                    <listitem>
+                        <para>single-user maintenance — база данных блокирована в режиме single.
+                            Только одно соединение разрешено для SYSDBA или владельца базы
+                            данных.</para>
+                    </listitem>
+                    <listitem>
+                        <para>full shutdown — база данных блокирована в режиме full.</para>
+                    </listitem>
+                    <listitem>
+                        <para>backup lock — Основной файл базы данных временно заблокирован.
+                            Изменения фиксируются во временном файле дельты.</para>
+                    </listitem>
+                    <listitem>
+                        <para>backup merge — Объединение файла дельты с основным файлом базы
+                            данных.</para>
+                    </listitem>
+                </itemizedlist></para>
+            <para><emphasis role="bold">Variable header data</emphasis> — переменные данные
+                заголовочной страницы. Эта часть отчета охватывает информацию, которой нет в
+                фиксированной части заголовка базы данных. Например, интервал очистки (sweep
+                interval), GUID базы даных, GUID последней резервной копии и другое.</para>
         </section>
-        
+
         <section>
             <title>Анализ всей базы данных</title>
-            
-            <para></para>
+
+            <para/>
         </section>
-        
+
         <section>
             <title>Анализ только страниц с данным</title>
-            
-            <para></para>
+
+            <para/>
         </section>
-        
+
         <section>
             <title>Анализ только индексов</title>
-            
-            <para></para>
+
+            <para/>
         </section>
-        
+
         <section>
             <title>Выбор таблиц для анализа</title>
-            
-            <para></para>
+
+            <para/>
         </section>
-        
+
         <section>
             <title>Включение в статистику системных таблиц и индексов</title>
-            
-            <para></para>
+
+            <para/>
         </section>
-        
+
         <section>
             <title>Включение в статистику системных таблиц и индексов</title>
-            
-            <para></para>
+
+            <para/>
         </section>
-        
+
         <section>
             <title>Статистика размеров записей и версий</title>
-            
-            <para></para>
+
+            <para/>
         </section>
     </section>
 

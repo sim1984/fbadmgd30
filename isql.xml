@@ -1380,8 +1380,8 @@ CON>
             и являются частью метаданных базы данных. Их можно создавать, изменять и удалять, как и
             все другие объекты Firebird, используя <application>isql</application>.</para>
         <para>В <application>isql</application> сообщения об ошибках содержат переменную SQLSTATE и
-            статус вектор Firebird. Расшифровку кодов ошибок SQLSTATE вы можете найти в "Руководстве
-            по языку SQL СУБД Firebird".</para>
+            статус вектор Firebird. Расшифровку кодов ошибок SQLSTATE вы можете найти в <quote>Руководстве
+            по языку SQL СУБД Firebird</quote>.</para>
         <example>
             <title>Сообщение об ошибке в isql</title>
 
@@ -1394,7 +1394,8 @@ SQL> select 1/0 from rdb$database;
 =====================
 Statement failed, SQLSTATE = 22012
 arithmetic exception, numeric overflow, or string truncation
--Integer divide by zero.  The code attempted to divide an integer value by an integer divisor of zero.
+-Integer divide by zero.  The code attempted to divide an integer value by an 
+integer divisor of zero.
 ]]>                    
                 </programlisting>
             </para>
@@ -1461,6 +1462,37 @@ SET TRANSACTION WAIT READ COMMITTED LOCK TIMEOUT 10;
                 собственной командой <application>isql</application>, то информация о нём
                 отсутствует в справке выдаваемой оператором <code>HELP SET</code>.</para>
         </note>
+
+        <para>После выполнения COMMIT или ROLLBACK, новая DML команда стартует транзакцию с
+            параметрами по умолчанию. Если необходимо, чтобы новая транзакция стартовала с
+            параметрами, которые были указаны для предыдущей транзакции, то необходимо включить
+            режим сохранения параметров транзакции с помощью команды <code>SET
+                KEEP_TRAN_PARAMS</code> (может быть сокращена до SET KEEP_TRAN).</para>
+
+        <para>Если режим KEEP_TRAN_PARAMS установлен в: <itemizedlist>
+                <listitem>
+                    <para>ON, то <application>isql</application> сохраняет текст следующего
+                        успешного оператора SET TRANSACTION, и новые транзакции DML запускаются с
+                        использованием того же SQL (вместо режима по умолчанию CONCURRENCY
+                        WAIT);</para>
+                </listitem>
+                <listitem>
+                    <para>OFF, то <application>isql</application> начинает новую транзакцию DML как
+                        обычно.</para>
+                </listitem>
+            </itemizedlist></para>
+
+        <note>
+            <para>Режим сохранения параметров транзакции появился в Firebird 3.0.6. Ранее невозможно
+                было включить режим сохранения параметров транзакции. После команд COMMIT и ROLLBACK
+                необходимо было каждый раз выполнять команду SET TRANSACTION с необходимыми
+                параметрами.</para>
+        </note>
+
+        <formalpara>
+            <title>См. также:</title>
+            <para><link xlink:href="#isql-commands_set-set_keep_tran">SET KEEP_TRAN</link></para>
+        </formalpara>
     </section>
 
     <section xml:id="isql-script_handling">
@@ -2458,7 +2490,7 @@ Terminator:              ;
 Time:                    OFF
 Warnings:                ON
 Bail on error:           OFF
-Local statement timeout: 0
+Keep transaction params: OFF
 
 SQL>
 ]]>                       
@@ -2699,6 +2731,7 @@ Terminator:              ;
 Time:                    OFF
 Warnings:                ON
 Bail on error:           OFF
+Keep transaction params: OFF
 
 SQL>
 ]]>                       
@@ -3281,6 +3314,122 @@ SQL> select count(*) from employee;
             </example>
         </section>
 
+        <section xml:id="isql-commands_set-set_keep_tran">
+            <title>SET KEEP_TRAN_PARAMS</title>
+
+            <indexterm>
+                <primary>ISQL</primary>
+                <secondary>SET KEEP_TRAN_PARAMS</secondary>
+            </indexterm>
+
+            <formalpara>
+                <title>Назначение:</title>
+
+                <para>Включение или выключение сохранения параметров транзакции.</para>
+            </formalpara>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+SET KEEP_TRAN[_PARAMS] [ON|OFF]                                            
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Операторы DML для выборки или изменения данных стартуют новую транзакцию с уровнем
+                изоляции SNAPSHOT с разрешением блокировки в режиме WAIT, если она не была начата
+                ранее. Такая транзакция будет активной до тех пор, пока не будет вручную
+                подтверждена оператором COMMIT или отменена оператором ROLLBACK. </para>
+
+            <para>Пользователи могут указать уровень изоляции и другие параметры для следующей
+                транзакции с помощью оператора SET TRANSACTION. Он может быть выполнен только тогда,
+                когда не активна другая транзакция. В противном случае будет задан вопрос:
+                подтвердить или откатить активную транзакцию.</para>
+
+            <para>После выполнения COMMIT или ROLLBACK, новая DML команда стартует транзакцию с
+                параметрами по умолчанию. Если необходимо, чтобы новая транзакция стартовала с
+                параметрами, которые были указаны для предыдущей транзакции, то необходимо включить
+                режим сохранения параметров транзакции с помощью команды <code>SET
+                    KEEP_TRAN_PARAMS</code> (может быть сокращена до SET KEEP_TRAN).</para>
+
+            <para>Если режим KEEP_TRAN_PARAMS установлен в: <itemizedlist>
+                    <listitem>
+                        <para>ON, то isql сохраняет текст следующего успешного оператора SET
+                            TRANSACTION, и новые транзакции DML запускаются с использованием того же
+                            SQL (вместо режима по умолчанию CONCURRENCY WAIT);</para>
+                    </listitem>
+                    <listitem>
+                        <para>OFF, то isql начинает новую транзакцию DML как обычно.</para>
+                    </listitem>
+                </itemizedlist></para>
+
+            <example>
+                <title>Использование SET KEEP_TRAN_PARAMS</title>
+
+                <programlisting>
+SQL> SET;                        
+                    </programlisting>
+                <screen>
+...
+Keep transaction params: OFF
+                    </screen>
+                <programlisting>
+SQL> SET TRANSACTION READ COMMITTED WAIT;
+Commit current transaction (y/n)?y
+Committing.
+
+SQL> SELECT RDB$GET_CONTEXT('SYSTEM', 'ISOLATION_LEVEL') FROM RDB$DATABASE;
+
+RDB$GET_CONTEXT                                                                                                                                                                                                                                 
+===============================================================================
+READ COMMITTED                                                                                                                                                                                                                                  
+
+SQL> commit;
+SQL> SELECT RDB$GET_CONTEXT('SYSTEM', 'ISOLATION_LEVEL') FROM RDB$DATABASE;
+
+RDB$GET_CONTEXT                                                                                                                                                                                                                                 
+===============================================================================
+SNAPSHOT                                                                                                
+                    </programlisting>
+
+                <para>Как видите после COMMIT новая транзакция стартует с параметрами по умолчанию.
+                    Теперь установим режим сохранения параметров транзакции.</para>
+                <programlisting>
+SQL> SET KEEP_TRAN_PARAMS ON; 
+SQL> SET;
+                    </programlisting>
+                <screen>
+...
+Keep transaction params: ON
+                    </screen>
+                <programlisting>
+SQL> SET TRANSACTION READ COMMITTED WAIT;
+Commit current transaction (y/n)?y
+Committing.
+SQL> SELECT RDB$GET_CONTEXT('SYSTEM', 'ISOLATION_LEVEL') FROM RDB$DATABASE;
+
+RDB$GET_CONTEXT                                                                                                                                                                                                                                 
+===============================================================================
+READ COMMITTED                                                                                                                                                                                                                                  
+
+SQL> commit;
+SQL> SELECT RDB$GET_CONTEXT('SYSTEM', 'ISOLATION_LEVEL') FROM RDB$DATABASE;
+
+RDB$GET_CONTEXT                                                                                                                                                                                                                                 
+===============================================================================
+READ COMMITTED                                                                                                                                                                   
+                    </programlisting>
+            </example>
+
+            <note>
+                <para>Данная функциональность была введена в Firebird 3.0.6. Ранее невозможно было
+                    включить режим сохранения параметров транзакции. После команд COMMIT и ROLLBACK
+                    необходимо было каждый раз выполнять команду SET TRANSACTION с необходимыми
+                    параметрами.</para>
+            </note>
+        </section>
+
         <section xml:id="isql-commands_set-set_list">
             <title>SET LIST</title>
 
@@ -3851,6 +4000,30 @@ SET TIME [ON | OFF]
                 приводит к тому, что часть времени отображается или нет, когда выбираются данные с
                 типом данных DATE. Команда не имеет действия с базами данных в других
                 диалектах.</para>
+
+            <example>
+                <title>Использовании команды SET TIME</title>
+                <para>
+                    <programlisting>
+<![CDATA[
+SQL> select localtimestamp from rdb$database;
+
+LOCALTIMESTAMP
+==============
+23-FEB-2020
+
+SQL> set time on;
+SQL> select localtimestamp from rdb$database;
+
+           LOCALTIMESTAMP
+=========================
+23-FEB-2020 13:25:30.7800
+
+SQL>
+]]>                        
+                    </programlisting>
+                </para>
+            </example>
         </section>
 
         <section xml:id="isql-commands_set-set_term">
@@ -5292,10 +5465,10 @@ SHOW {MAPping | MAPping <replaceable>&lt;mapping_name&gt;</replaceable> }
             <para>Команда SHOW MAPPING выводит информацию обо всех отображениях (локальных и
                 глобальных) для объектов безопасности. Если указано имя отображения, то будет
                 выведена информация только он нём.</para>
-            
+
             <example>
                 <title>Использование команды SHOW MAPPING</title>
-                
+
                 <para>
                     <programlisting>
 <![CDATA[
@@ -5446,12 +5619,12 @@ END
                     </programlisting>
                 </para>
             </example>
-            
+
             <formalpara>
                 <title>Смотри также:</title>
-                
+
                 <para><link linkend="isql-commands_show-show_function">SHOW FUNCTION</link>, <link
-                    linkend="isql-commands_show-show_trigger">SHOW TRIGGER</link>, <link
+                        linkend="isql-commands_show-show_trigger">SHOW TRIGGER</link>, <link
                         linkend="isql-commands_show-show_procedure">SHOW PROCEDURE</link>.</para>
             </formalpara>
         </section>
@@ -6172,12 +6345,12 @@ END
                     </programlisting>
                 </para>
             </example>
-            
+
             <formalpara>
                 <title>Смотри также:</title>
-                
+
                 <para><link linkend="isql-commands_show-show_function">SHOW FUNCTION</link>, <link
-                    linkend="isql-commands_show-show_procedure">SHOW PROCEDURE</link>, <link
+                        linkend="isql-commands_show-show_procedure">SHOW PROCEDURE</link>, <link
                         linkend="isql-commands_show-show_package">SHOW PACKAGE</link>.</para>
             </formalpara>
         </section>

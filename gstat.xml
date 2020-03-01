@@ -865,7 +865,124 @@ gstat employee -user sysdba -system > d:\mydb_idx.txt
         <section>
             <title>Статистика размеров записей и версий</title>
 
-            <para/>
+            <para>Когда вы запускаете <application>gstat</application> с ключами по умолчанию или с
+                    <code>-d[ata]</code> или <code>-t[able]</code> и добавляете ключ
+                    <code>-r[ecord]</code>, вы получаете в отчете дополнительную информацию, которая
+                показывает среднюю длину записи и усредненную информацию о версиях таблицы. Кроме
+                того в статистику будет включена информация о BLOB столбцах.</para>
+            <synopsis>            
+gstat mydb -u sysdba -r -t TEST
+</synopsis>
+            <screen>
+...
+TEST (151)
+    Primary pointer page: 546, Index root page: 547
+    Total formats: 2, used formats: 1
+    Average record length: 135.33, total records: 446205
+    Average version length: 0.00, total versions: 0, max versions: 0
+    Average fragment length: 0.00, total fragments: 0, max fragments: 0
+    Average unpacked length: 492.00, compression ratio: 3.64
+    Pointer pages: 2, data page slots: 5128
+    Data pages: 5128, average fill: 87%
+    Primary pages: 4820, secondary pages: 308, swept pages: 0
+    Empty pages: 5, full pages: 5121
+    Blobs: 51316, total length: 3198656, blob pages: 0
+        Level 0: 51316, Level 1: 0, Level 2: 0
+    Fill distribution:
+         0 - 19% = 5
+        20 - 39% = 0
+        40 - 59% = 1
+        60 - 79% = 0
+        80 - 99% = 5122
+...        
+            </screen>
+
+            <table frame="topbot">
+                <title>Описание вывода gstat -r</title>
+                <tgroup cols="2">
+                    <colspec colname="c1" colnum="1" colwidth="0.65*"/>
+                    <colspec colname="c2" colnum="2" colwidth="1.35*"/>
+                    <thead>
+                        <row>
+                            <entry>Элемент</entry>
+                            <entry>Описание</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry><emphasis role="bold">Total formats</emphasis></entry>
+                            <entry><para>Общее количество форматов для таблицы</para></entry>
+                        </row>
+                        <row>
+                            <entry><emphasis role="bold">used formats</emphasis></entry>
+                            <entry><para>Количество используемых форматов</para></entry>
+                        </row>
+                        <row>
+                            <entry><emphasis role="bold">Average record length</emphasis></entry>
+                            <entry><para>Средний размер сжатой записи в байтах</para></entry>
+                        </row>
+                        <row>
+                            <entry><emphasis role="bold">total records</emphasis></entry>
+                            <entry><para>Общее количество записей в таблице Это значение может включать записи добавленные в
+                                    неподтвержденных транзакциях или удалённые записи не вычищенные
+                                    сборкой мусора.</para></entry>
+                        </row>
+                        <row>
+                            <entry><emphasis role="bold">Average version length</emphasis></entry>
+                            <entry><para>Среднее значение длины версий в байтах</para></entry>
+                        </row>
+                        <row>
+                            <entry><emphasis role="bold">total versions</emphasis></entry>
+                            <entry><para>Общее количество старых версий. Если значение равно 0, то в таблице нет версий записей. Либо в
+                                    таблице не было обновлений или удалений записей, либо сборка
+                                    мусора удалила старые версии записей.</para></entry>
+                        </row>
+                        <row>
+                            <entry><emphasis role="bold">max versions</emphasis></entry>
+                            <entry><para>Максимальная длина цепочки старых версий
+                                записи</para></entry>
+                        </row>
+                        <row>
+                            <entry><emphasis role="bold">Average fragment length</emphasis></entry>
+                            <entry><para>Средний размер фрагмента записи в байтах</para></entry>
+                        </row>
+                        <row>
+                            <entry><emphasis role="bold">total fragments</emphasis></entry>
+                            <entry><para>Общее количество фрагментов всех записей</para></entry>
+                        </row>
+                        <row>
+                            <entry><emphasis role="bold">max fragments</emphasis></entry>
+                            <entry><para>Максимальное количество фрагментов для одной
+                                записи</para></entry>
+                        </row>
+                        <row>
+                            <entry><emphasis role="bold">Average unpacked length</emphasis></entry>
+                            <entry><para>Средний размер не сжатой записи в байтах </para></entry>
+                        </row>
+                        <row>
+                            <entry><emphasis role="bold">compression ratio</emphasis></entry>
+                            <entry><para>Отношение размера несжатых записей к сжатым</para></entry>
+                        </row>
+                        <row>
+                            <entry><emphasis role="bold">Blobs</emphasis></entry>
+                            <entry><para>Общее количество BLOB 0, 1 и 2 уровней</para></entry>
+                        </row>
+                        <row>
+                            <entry><emphasis role="bold">total length</emphasis></entry>
+                            <entry><para>Размер занимаемый BLOB полями</para></entry>
+                        </row>
+                        <row>
+                            <entry><emphasis role="bold">blob pages</emphasis></entry>
+                            <entry><para>Количество страниц с BLOB</para></entry>
+                        </row>
+                        <row>
+                            <entry><emphasis role="bold">Level
+                                    <replaceable>&lt;n&gt;</replaceable></emphasis></entry>
+                            <entry><para>Количество BLOB каждого уровня</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
         </section>
     </section>
 

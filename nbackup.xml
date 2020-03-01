@@ -1,0 +1,1274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.1/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.1/sch/docbook.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="5.1" xml:id="nbackup" xml:lang="ru">
+    <info>
+        <title>Утилита NBACKUP</title>
+    </info>
+
+    <indexterm>
+        <primary>NBACKUP</primary>
+    </indexterm>
+
+    <para><application>Nbackup</application> — утилита резервного копирования, включенная в Firebird
+        начиная с версии 2.0. Она предоставляет возможности, отсутствующие у
+            <application>gbak</application> (штатной утилиты резервного копирования Firebird), но не
+        заменяет <application>gbak</application>. Обе утилиты имеют свои достоинства и недостатки, и
+        их вполне можно использовать совместно.</para>
+
+    <section xml:id="nbackup-common">
+        <title>Обзор возможностей Nbackup</title>
+
+        <para>backup позволяет выполнять два типа задач: <orderedlist>
+                <listitem>
+                    <para>Делать полные и инкрементные копии. Инкрементные копии содержат только
+                        изменения относительно предыдущей резервной копии.</para>
+                </listitem>
+                <listitem>
+                    <para>Блокировать базу данных для ее онлайн-копирования средствами операционной
+                        системы или другими утилитами. В этом режиме
+                            <application>nbackup</application> ничего не сохраняет и не копирует. Он
+                        просто создает условия, при которых копирование файла базы данных является
+                        безопасным. </para>
+                </listitem>
+            </orderedlist></para>
+        <para>Обе этих задачи могут выполняться над активной базой данных, без необходимости
+            отключения пользователей. Результирующий бэкап (или копия файла базы данных) будет
+            содержать базу данных на момент начала копирования. Только SYSDBA и владелец базы данных
+            (или администраторы операционной системы) могут делать бэкап, но при этом любой
+            пользователь может восстановить базу данных из такого бэкапа. В этом плане
+                <application>nbackup</application> не отличается от
+            <application>gbak</application>.</para>
+    </section>
+
+    <section xml:id="nbackup-advantage">
+        <title>Преимущества nbackup</title>
+        <itemizedlist>
+            <listitem>
+                <para><emphasis>В обоих режимах</emphasis>: высокая скорость (насколько позволяет
+                    оборудование и операционная система), поскольку nbackup оперирует страницами БД,
+                    а не записями, и не проверяет данные на страницах.</para>
+            </listitem>
+            <listitem>
+                <para>
+                    <emphasis>В режиме копирования/восстановления</emphasis>: экономия времени и
+                    дискового пространства, поскольку нет необходимости делать полную копию каждый
+                    раз. Это позволяет сильно упростить задачу резервного копирования
+                    много-гигабайтных баз данных. </para>
+            </listitem>
+            <listitem>
+                <para>
+                    <emphasis>В режиме блокировки</emphasis>: полная свобода выбора способа
+                    копирования файла БД. </para>
+            </listitem>
+        </itemizedlist>
+
+        <section xml:id="nbackup-limitations">
+            <title>Недостатки nbackup</title>
+            <itemizedlist>
+                <listitem>
+                    <para>Nbackup не будет чистить мусор, освобождать место в базе данных, сжимать
+                        бэкап, и так далее </para>
+                </listitem>
+                <listitem>
+                    <para>Вы не можете поменять владельца БД через резервное копирование и
+                        восстановление,как это может gbak </para>
+                </listitem>
+                <listitem>
+                    <para>Nbackup не делает <quote>transportable backup</quote>, то есть, полученная
+                        копия базы данных может быть несовместима с Firebird на другом аппаратном
+                        обеспечении (kdv: имеются в виду платформы с разным порядком байт в integer
+                        — big-endian и little-endian. К разным ОС на одной платформе это не имеет
+                        никакого отношения) </para>
+                </listitem>
+                <listitem>
+                    <para>В настоящий момент nbackup не работает с много-файловыми базами данных
+                        (которые являются атавизмом и практически не используются) </para>
+                </listitem>
+                <listitem>
+                    <para>Nbackup может оперировать только с локальными файлами баз данных. Nbackup
+                        можно запускать удаленно, но сами базы и их копии все равно должны быть
+                        локальными по отношению к серверу Firebird </para>
+                </listitem>
+            </itemizedlist>
+
+        </section>
+    </section>
+    <section xml:id="nbackup-params">
+        <title>Функции и параметры</title>
+
+        <para>В таблице перечислены параметры nbackup с общим описанием их назначения. </para>
+
+        <table frame="topbot">
+            <title>Описание параметров nbackup</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="0.65*"/>
+                <colspec colname="c2" colnum="2" colwidth="1.35*"/>
+                <thead>
+                    <row>
+                        <entry>Опция</entry>
+                        <entry>Описание</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry><code>-B <replaceable>n</replaceable>
+                                <replaceable>&lt;database&gt;</replaceable>
+                                    [<replaceable>&lt;filename&gt;</replaceable>]</code></entry>
+                        <entry><para>Сделать бэкап уровня n в указанный файл.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-R <replaceable>&lt;database&gt;</replaceable>
+                                    [<replaceable>&lt;filename&gt;</replaceable> ...]</code></entry>
+                        <entry><para>Восстановить базу данных из указанных файлов.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-L <replaceable>&lt;database&gt;</replaceable></code></entry>
+                        <entry><para>Заблокировать базу данных.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-N <replaceable>&lt;database&gt;</replaceable></code></entry>
+                        <entry><para>Разблокировать восстановленную базу данных.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-F <replaceable>&lt;database&gt;</replaceable></code></entry>
+                        <entry><para>Разблокировать заблокированную базу данных.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-S</code></entry>
+                        <entry><para>Показать размер базы данных в страницах после блокирования
+                                (совместно с –L).</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-T</code></entry>
+                        <entry><para>Игнорировать триггеры уровня базы данных (совместно с –B, -L,
+                                -N).</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-D on|off</code></entry>
+                        <entry><para>Прямой ввод-вывод включить (on) или выключить (off) (совместно
+                                с -B).</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-U <replaceable>&lt;username&gt;</replaceable></code></entry>
+                        <entry><para>Имя пользователя (совместно с -B, -L, -N).</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-P <replaceable>&lt;password&gt;</replaceable></code></entry>
+                        <entry><para>Пароль пользователя (совместно с -B, -L, -N).</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-FE <replaceable>&lt;filename&gt;</replaceable></code></entry>
+                        <entry><para>Взять пароль из файла (совместно с –B, -L, -N).</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-DE <replaceable>&lt;command&gt;</replaceable></code></entry>
+                        <entry><para>Распаковка сжатых бекапов перед их восстановлением. В качестве
+                                аргумента принимает командную строку, которая должна распаковать
+                                архив и передать в stdout распакованный файл бэкапа.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-Z</code></entry>
+                        <entry><para>Вывести версию (отдельно или совместно с -B, - R, -L, -N,
+                                -F).</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-?</code></entry>
+                        <entry><para>Вывод справки по всем параметрам.</para></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+        <para>В зависимости от выбранной основной функции (-B, -L, -N, -R или -F) nbackup может
+            требовать определенный уровень доступа к базе данных: соединение с сервером Firebird,
+            прямой доступ к файлам, или и то и другое. Следующая таблица показывает детали:
+                <informaltable frame="topbot">
+                <tgroup cols="3">
+                    <colspec colname="c1" colnum="1" colwidth="0.65*"/>
+                    <colspec colname="c2" colnum="2" colwidth="0.65*"/>
+                    <colspec colname="c3" colnum="3" colwidth="0.65*"/>
+                    <thead>
+                        <row>
+                            <entry>Параметр</entry>
+                            <entry>Назначение</entry>
+                            <entry>Доступ</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry><code>-B</code></entry>
+                            <entry>Резервная копия</entry>
+                            <entry>Сервер и файл</entry>
+                        </row>
+                        <row>
+                            <entry><code>-R</code></entry>
+                            <entry>Восстановление</entry>
+                            <entry>Файл</entry>
+                        </row>
+                        <row>
+                            <entry><code>-L</code></entry>
+                            <entry>Блокирование</entry>
+                            <entry>Сервер</entry>
+                        </row>
+                        <row>
+                            <entry><code>-N</code></entry>
+                            <entry>Разблокирование</entry>
+                            <entry>Сервер</entry>
+                        </row>
+                        <row>
+                            <entry><code>-F</code></entry>
+                            <entry>Разблокирование после восстановления</entry>
+                            <entry>Файл</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </informaltable>
+        </para>
+        <note>
+            <para>Регистр параметров не имеет значения, может быть указано –B или –b, и так далее.
+                Параметры приведены в верхнем регистре как минимум потому, что один из параметров –
+                L в нижнем регистре –l выглядит как -1 в большинстве шрифтов.</para>
+        </note>
+
+        <para>Когда требуется доступ к серверу (с параметрами –B, -L и –N), пользователь должен
+            указать имя пользователя и пароль (параметрами –U и –P|-FE, или через переменные
+            пользователя <envar>ISC_USER</envar> и <envar>ISC_PASSWORD</envar>), или быть root на
+            Unix или доверенным пользователем на Windows.</para>
+
+        <para>Когда требуется доступ к файловой системе (с –B, -R и –F), пользователь должен иметь
+            достаточные привилегии к файлу базы данных для чтения и записи.</para>
+
+        <para>Когда требуется исключительный доступ к файлу (с –R и –F), пользователю не нужен логин
+            к Firebird, и сервер Firebird может быть не запущен или отсутствовать.</para>
+
+        <note>
+            <para>В приведенных таблицах и тексте имеется в виду доступ к базе данных. Доступ к
+                файлам бэкапов — всегда на уровне файловой системы.</para>
+        </note>
+    </section>
+    <section xml:id="nbackup-backup_and_restore">
+        <title>Создание резервных копий и восстановление</title>
+
+        <para>Утилита <application>nbackup</application> находится там же, где и другие утилиты
+            Firebird (<application>gbak</application>, <application>gstat</application> ...), то
+            есть в корневом каталоге установки.</para>
+
+        <para>Как и другие утилиты Firebird, <application>nbackup</application> не имеет
+            графического интерфейса. Вы запускаете его из командной строки, или из командного файла,
+            или из приложения.</para>
+
+        <section xml:id="nbackup-full-backup">
+            <title>Полные резервные копии</title>
+
+            <para>Чтобы сделать полный бэкап базы данных, выполните команду
+                <synopsis>
+nbackup –B 0 <replaceable>&lt;database&gt;</replaceable> [<replaceable>&lt;filename&gt;</replaceable>] -U <replaceable>&lt;user&gt;</replaceable> - P <replaceable>&lt;password&gt;</replaceable>                
+            </synopsis>
+            </para>
+            <para> Например
+                <synopsis>
+C:\Data>nbackup –B 0 inventory.fdb inventory_2019-Aug-01.nbk
+                </synopsis>
+            </para>
+            <para>
+                <itemizedlist>
+                    <listitem>
+                        <para>Параметр –B означает «бэкап». Уровень бэкапа 0 производит полный
+                            бэкап, т.е. полную копию базы данных. Уровни бэкапа выше 0 используются
+                            для инкрементных бэкапов, которые описаны дальше. </para>
+                    </listitem>
+                    <listitem>
+                        <para>Вместо имени базы данных можно указать ее алиас </para>
+                    </listitem>
+                    <listitem>
+                        <para>Вместо имени файла бэкапа можно указать stdout. В этом случае вывод
+                            можно перенаправить, например, в архиватор. </para>
+                    </listitem>
+                    <listitem>
+                        <para>Параметры –U и –P можно не указывать при следующих условиях:<itemizedlist>
+                                <listitem>
+                                    <para>Установлены корректные значения в переменных среды
+                                        ISC_USER и ISC_PASSWORD, это SYSDBA или владелец БД и
+                                        пароль. </para>
+                                </listitem>
+                                <listitem>
+                                    <para>Вы вошли на Linux как root, это эквивалентно SYSDBA.
+                                    </para>
+                                </listitem>
+                                <listitem>
+                                    <para>На Windows: В <filename>firebird.conf</filename>
+                                            (<filename>databases.conf</filename>) включена
+                                        доверенная аутентификация (trusted authentification), и вы
+                                        вошли в Windows с правами администратора, которому доступен
+                                        файл базы данных. Для получения прав SYSDBA должен быть
+                                        установлен AUTO ADMIN MAPPING.</para>
+                                </listitem>
+                            </itemizedlist>
+                        </para>
+                    </listitem>
+                </itemizedlist>
+            </para>
+            <note>
+                <para>Для упрощения, в дальнейшем параметры –U и –P не указываются в
+                    примерах.</para>
+            </note>
+
+            <para>
+                <itemizedlist>
+                    <listitem>
+                        <para>Начиная с Firebird 2.5 вместо <code>–P &lt;password&gt;</code> можно
+                            указывать <code>–FE &lt;filename&gt;</code>. В этом случае
+                                <filename>nbackup</filename> прочитает пароль из указанного файла. В
+                            случае –FE пароль не указывается в командной строек, и это позволяет
+                            исключить доступ к паролю людей, которые могут посмотреть историю команд
+                            в командной строке (например, командой w на Unix или в скрипте).</para>
+                    </listitem>
+                    <listitem>
+                        <para>Параметр –T отключает триггеры базы данных. Подробнее см. раздел
+                                    <quote><link xlink:href="#nbackup-nodbtriggers">Отключение
+                                    триггеров БД</link></quote>.</para>
+                    </listitem>
+                    <listitem>
+                        <para>В Firebird 2.1.4 и выше возможно отключить кэширование БД файловой
+                            системой (включить прямой ввод-вывод) параметром <code>–D on</code> (или
+                            выключить прямой ввод-вывод <code>–D off</code>). Подробности см. далее
+                            в <link xlink:href="#nbackup-direct_io">соответствующем
+                            разделе</link>.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Разные параметры (<code>-B</code>, <code>-U</code> и др.) могут быть
+                            указаны в любом порядке. Разумеется, за каждым параметром должен
+                            следовать его аргумент. В случае –B это три аргумента — уровень бэкапа,
+                            имя базы данных, и имя файла бэкапа — именно в таком порядке.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Если параметр <code>–B</code> указан последним, вы можете не указывать
+                            имя файла бэкапа. В этом случае <application>nbackup</application> сам
+                            сгенерирует имя вида
+                                <filename>database.fdb-0-20190807-2105.nbk</filename>, где 0 это
+                            уровень, 20190807 – дата, 2105 — время. Но это может привести к ошибке,
+                            если бэкап одного и того же уровня делается два раза в одну и ту же
+                            минуту.</para>
+                    </listitem>
+                </itemizedlist>
+            </para>
+            <important>
+                <para>Не используйте <application>nbackup</application> на много-файловых базах
+                    данных. Это может привести к потере данных (неполный и поврежденный бэкап), при
+                    том что <application>nbackup</application> не выдаст сообщение об ошибке.</para>
+            </important>
+            <simplesect>
+                <title>Немного о том, как это устроено</title>
+
+                <orderedlist>
+                    <listitem>
+                        <para>Сначала база данных блокируется (выставляется внутренний флаг
+                            состояния). С этого момента любые изменения базы данных записываются во
+                            временный файл — так называемый <quote>дельта-файл</quote>.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Производится бэкап. Это эквивалент копирования файла, однако для
+                            приведения копии в рабочее состояние над ней нужно выполнить
+                                <code>nbackup –F</code>. </para>
+                    </listitem>
+                    <listitem>
+                        <para>По завершении бэкапа, содержимое дельта-файла записывается в базу
+                            данных. База данных разблокируется, и дельта-файл удаляется. </para>
+                    </listitem>
+                </orderedlist>
+                <para>Шаги 1 и 3 обеспечиваются новыми командами SQL — <code>ALTER DATABASE BEGIN
+                        BACKUP</code> и <code>ALTER DATABASE END BACKUP</code>. Эти команды не
+                    выполняют сам бэкап (копирование), они только создают условия, при которых база
+                    данных может быть успешно скопирована. Выполнять эти операторы самостоятельно
+                    нет необходимости (так как из SQL вы не имеете доступа к файлам),
+                        <application>nbackup</application> сделает всё за вас.</para>
+            </simplesect>
+
+        </section>
+        <section xml:id="nbackup-full-restore">
+            <title>Восстановление полных резервных копий</title>
+
+            <para>Полная резервная копия восстанавливается следующей командой
+                <synopsis>
+nbackup –R <replaceable>&lt;database&gt;</replaceable> [<replaceable>&lt;filename&gt;</replaceable>]                
+            </synopsis>
+            </para>
+            <para>Например
+                <synopsis>
+C:\Data>nbackup –R inventory.fdb inventory_2019_08_07.nbk
+                </synopsis>
+            </para>
+            <itemizedlist>
+                <listitem>
+                    <para> Не нужно указывать <quote>уровень</quote> восстановления. </para>
+                </listitem>
+                <listitem>
+                    <para> При восстановлении параметр <code>–R</code> должен быть указан последним.
+                        Причина этого будет объяснена далее. </para>
+                </listitem>
+                <listitem>
+                    <para> Вместо имени базы данных можно указать алиас. </para>
+                </listitem>
+                <listitem>
+                    <para> Если указано имя существующей базы данных, то будет выдана ошибка.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para> Здесь также можно не указывать имя бэкапа. В этом случае
+                            <application>nbackup</application> запросит имя файла. </para>
+                </listitem>
+                <listitem>
+                    <para> Восстановление полностью работает на уровне файловой системы, и может
+                        быть выполнено без работающего Firebird. Любые значения, указанные для
+                        параметров <code>–U</code> и <code>–P</code> игнорируются. То же самое в
+                        отношении опции <code>–FE</code>, однако <application>nbackup</application>
+                        все равно будет пытаться прочитать пароль из файла, и если произошла ошибка,
+                        вся операция будет отменена. </para>
+                </listitem>
+            </itemizedlist>
+        </section>
+        <section xml:id="nbackup-increment-backup">
+            <title>Инкрементные резервные копии</title>
+
+            <para>Чтобы сделать инкрементный (разностный) бэкап нужно указать уровень бэкапа больше
+                0. Инкрементный бэкап уровня 1 и выше всегда содержит только те изменения базы
+                данных, которые произошли с момента предыдущего бэкапа уровня N-1.</para>
+
+            <para>Рассмотрим пример использование инкрементной копии.</para>
+            <para>Через день после полного бэкапа (уровня 0) вы делаете один уровня 1:
+                <synopsis>
+C:\Data>nbackup –B 1 inventory.fdb inventory_20190808_1.nbk                
+            </synopsis>
+            </para>
+
+            <important>
+                <para>Рекомендуется в имени инкрементных бэкапов указывать уровень такого бэкапа,
+                    чтобы не запутаться. Также, для сортировки имен бэкапов удобно использовать
+                    формат даты yyyymmdd.</para>
+            </important>
+
+            <para>Этот бэкап будет содержать только те изменения, которые произошли в БД за
+                последний день. Еще через день, выполняете еще один бэкап уровня 1
+                <synopsis>
+C:\Data>nbackup –B 1 inventory.fdb inventory_20190809_1.nbk              
+            </synopsis>
+            </para>
+
+            <para>Этот инкремент будет содержать изменения за 2 последних дня, с момента полного
+                бэкапа (уровня 0), а не только изменения, которые произошли с момента предыдущего
+                бэкапа уровня 1.</para>
+
+            <para>Через несколько часов сделаем бэкап уровня 2:
+                <synopsis>
+C:\Data>nbackup –B 1 inventory.fdb inventory_20190809_2.nbk              
+            </synopsis>
+            </para>
+
+            <para>Этот свежий инкремент содержит изменения, начиная с самого последнего (свежего)
+                бэкапа уровня 1.</para>
+
+            <note>
+                <para>Все комментарии по поводу полного бэкапа относятся и к инкрементным
+                    бэкапам.</para>
+            </note>
+        </section>
+
+        <section xml:id="nbackup-increment-restore">
+            <title>Восстановление инкрементных бэкапов</title>
+
+            <para>При восстановлении базы данных из инкрементных бэкапов необходимо указать полную
+                цепочку файлов, начиная от уровня 0 до требуемого уровня. База данных будет
+                построена заново, шаг за шагом.</para>
+
+            <formalpara>
+                <title>Синтаксис:</title>
+                <para>
+                    <programlisting> 
+nbackup –R <replaceable>&lt;database&gt;</replaceable> [<replaceable>&lt;backup_0&gt;</replaceable> <replaceable>&lt;backup_1&gt;</replaceable> […]]              
+                    </programlisting>
+                </para>
+            </formalpara>
+
+            <para>Таким образом, восстановление из бэкапа уровня 2 по предыдущим примерам будет
+                таким:
+                <synopsis>
+C:\Data\nbackup –R inventory.fdb inventory_2019_08_07.nbk
+inventory_20190808_1.nbk inventory_20190809_2.nbk                
+            </synopsis>
+                Разумеется, строка здесь <quote>разделена</quote> на две части только из-за
+                форматирования. На самом деле это одна строка, которая завершается Enter в конце. </para>
+
+            <para>Комментарии (в дополнение к <link xlink:href="#nbackup-full-restore"
+                    >восстановлению полного бэкапа</link>): <itemizedlist>
+                    <listitem>
+                        <para>Поскольку заранее неизвестно, сколько имен файлов вы укажете после
+                            параметра –R, nbackup считает все аргументы после –R именами файлов.
+                            Поэтому никакие другие параметры не должны следовать за –R. </para>
+                    </listitem>
+                    <listitem>
+                        <para>Нет лимита для номеров инкрементных бэкапов, но на практике редко
+                            имеет смысл заходить дальше уровней 3 или 4. </para>
+                    </listitem>
+                </itemizedlist></para>
+
+            <para>Что произойдет, если вы пропустите нужный файл в аргументах <code>–R</code>, или
+                укажете некорректную цепочку файлов? В соответствии с примерами, допустим, укажете
+                бэкап 0, затем первый бэкап уровня 1, и затем бэкап уровня 2, который построен на
+                втором бэкапе уровня 1? Бэкапов уровня 1 две штуки, поэтому, казалось бы, есть
+                нормальная последовательность <quote>0, 1, 2</quote> файлов для восстановления
+                БД.</para>
+
+            <para>К счастью, такая ошибка никогда не приведет к восстановлению некорректной БД.
+                Каждый бэкап (любого уровня) имеет свой собственный идентификатор. И, например,
+                каждый бэкап уровня 1 (и выше) содержит идентификатор бэкапа уровня 0, на котором он
+                базируется. При восстановлении <application>nbackup</application> проверяет эти
+                идентификаторы. Если в цепочке <quote>родительский</quote> идентификатор <quote>не
+                    тот</quote>, то операция отменяется и вы увидите сообщение об ошибке.</para>
+        </section>
+        <section xml:id="nbackup-backup-raw_devices">
+            <title>Бэкапы баз данных на сырых устройствах (raw devices)</title>
+
+            <para>Базы Firebird не обязательно должны быть файлами, они могут располагаться на так
+                называемых сырых (raw) устройствах, не имеющих файловой системы. Здесь может
+                возникнуть вопрос, где будет в этом случае располагаться дельта-файл. Например, на
+                Posix-системах, если база данных находится в <filename>/dev/hdb5</filename>, то
+                дельта при старте <application>nbackup</application> может получить имя
+                    <filename>/dev/hdb5.delta</filename>. Понятно, что такая ситуация
+                нежелательна.</para>
+
+            <para>Начиная с Firebird 2.1 <application>nbackup</application> отказывается работать с
+                базой на сырых устройствах до тех пор, пока расположение дельта-файла не задано
+                явно. Эта тема обсуждается в разделе <quote><link xlink:href="#nbackup-tune_delta"
+                        >Настройка дельта-файла</link></quote>.</para>
+        </section>
+
+        <section xml:id="nbackup-nodbtriggers">
+            <title>Отключение триггеров базы данных</title>
+
+            <para>В Firebird 2.1 появились триггеры уровня базы данных. Некоторые типы этих
+                триггеров могут срабатывать при подключении к базе данных и отключении от нее. При
+                бэкапе <application>nbackup</application> подключается к базе данных обычным
+                способом (в некоторых версиях больше чем одним коннектом). Для предотвращения
+                срабатывания триггеров уровня базы данных введен новый параметр <code>–T</code>.
+                Помните, что аналогичный параметр у <application>gbak</application> и
+                    <application>isql</application> называется <code>–nodbtriggers</code>.</para>
+        </section>
+
+        <section xml:id="nbackup-direct_io">
+            <title>Кэширование ввода-вывода (Direct I/O)</title>
+
+            <para>Первоначально, nbackup использовал прямой ввод-вывод только под Windows NT (и
+                последующих 2000, 2003 и так далее). На других операционных системах прямой
+                ввод-вывод был выключен. Это приводило к проблемам на некоторых Linux, поэтому в
+                версиях 2.0.6 и 2.1.3 прямой ввод-вывод также был включен по умолчанию на Linux.
+                Однако, это создало определенные проблемы на некоторых конфигурациях Linux. В 2.1.4
+                и 2.5 оригинальное поведение было восстановлено, но в этот раз включить или
+                выключить прямой ввод-вывод можно параметром <code>–D</code>:
+                <synopsis>
+nbackup –B 0 cups.fdb cups.nbk –D on -- прямой ввод-вывод включен
+nbackup –B 0 mugs.fdb mugs.nbk –D off –- прямой ввод-вывод выключен               
+            </synopsis>
+            </para>
+
+            <para>Также как и параметр, аргументы on и off являются нечувствительными к
+                регистру.</para>
+
+            <para>Прямой ввод-вывод относится только к бэкапу, не к восстановлению. На Windows
+                    <code>–D on</code> реализуется использованием FILE_FLAG_NO_BUFFERING. На других
+                системах это O_DIRECT и POSIX_FADV_NOREUSE.</para>
+
+            <para>Последние два на некоторых системах могут не работать. В этом случае они (или один
+                из них) молча не используется. Даже если пользователь указал <code>–D on</code>
+                явно, это не выдаст на таких системах предупреждения или сообщения об ошибке.</para>
+
+            <note>
+                <para>Рекомендуем всегда явно указывать эту опцию (<code>-D on</code> или <code>–D
+                        off</code>).</para>
+            </note>
+
+            <tip>
+                <para><quote>Прямой ввод-вывод</quote> или Direct IO это ОТКЛЮЧЕНИЕ кэша файловой
+                    системы. То есть, <code>-D on</code> отключает кэш файловой системы, а <code>–D
+                        off</code> — включает.</para>
+
+                <para>Тут нужно заметить, что по умолчанию, если в
+                        <filename>firebird.conf</filename> значение параметра
+                        <parameter>DBDefaultCachePages</parameter> меньше
+                        <parameter>FileSystemCacheThreshold</parameter>, то файловый кэш для БД
+                    включен (на любой ОС), и это сильно помогает производительности в архитектурах
+                    Classic и SuperClassic. Однако, если на таких системах выполнить бэкап
+                        <application>nbackup</application> с опцией <code>–D on</code>, это
+                    немедленно ВЫКЛЮЧИТ файловый кэш для базы данных, и производительность может
+                    резко упасть. Восстановится она только после окончания бэкапа, пока
+                        <application>nbackup</application> не <quote>отпустит</quote> базу данных и
+                    кэширование базы файловой системой опять не заработает.</para>
+
+                <para>Наоборот, если вы используете SuperServer, и отключили файловый кэш у БД,
+                    включение файлового кэша <code>nbackup –D off</code> может привести к выпадению
+                    процессов в виртуальную память, так как операционной системе потребуется память
+                    для размещения там файлового кэша базы данных.</para>
+
+                <para>Таким образом, в обычной ситуации следует всегда использовать <code>–D
+                        off</code>, а когда вы точно знаете, что кэш БД выключен в
+                        <filename>firebird.conf</filename> — <code>-D on</code>.</para>
+            </tip>
+        </section>
+
+        <section xml:id="nbackup-decompress">
+            <title>Распаковка сжатых копий</title>
+
+            <para>Начиная с Firebird 3.0 введён дополнительный параметр <code>–DE</code>, который
+                предназначен для распаковки сжатых бэкапов на линуксе при восстановлении БД из
+                бэкапов. В качестве аргумента принимает командную строку, которая должна распаковать
+                архив и передать в stdout распакованный файл бэкапа.</para>
+
+            <para>Примеры:
+                <programlisting>
+nbackup -de bzcat -r e.fdb e.b0.bz2 e.b1.bz2
+nbackup -de 'bzip2 -d -c' -r e.fdb e.b0.bz2 e.b1.bz2
+nbackup -de 'bzip2 -d -c @' -r e.fdb e.b0.bz2 e.b1.bz                
+            </programlisting>
+            </para>
+
+            <para>Все эти 3 команды приведут к одному и тому же результату — архивы будут
+                распакованы и из них будет создана база данных e.fdb.</para>
+        </section>
+
+        <section>
+            <title>Информационные параметры</title>
+
+            <para>Кроме упомянутых ранее <code>–FE</code> и <code>–D</code>
+                <application>nbackup</application> в Firebird дополнительно имеет два параметра:
+                    <code>-Z</code> показывает информацию о версии. Этот параметр может быть
+                использован независимо, или вместе с другими параметрами, <code>-B</code>,
+                    <code>-R</code>, <code>-L</code> и т.д.</para>
+
+            <para>? показывает все возможные параметры командной строки. Если указывается
+                    <code>-?</code>, то все остальные параметры игнорируются.</para>
+        </section>
+
+        <section xml:id="nbackup-wire">
+            <title>Бэкапы по сети</title>
+
+            <para><application>nbackup</application> работает с локальными базами данных. Но в
+                Firebird 2.5 и выше, операции nbackup могут быть выполнены удаленно через Sevices
+                Manager. Для этого используется утилита fbsvcmgr. Она находится в той же папке, что
+                и <application>nbackup</application>. Первый аргумент всегда
+                        <code><replaceable>hostname</replaceable>:service_mgr</code>, где
+                    <replaceable>hostname</replaceable> это имя удаленного сервера (где работает
+                Firebird). Другие параметры: <itemizedlist spacing="compact">
+                    <listitem>
+                        <para><code>-user <replaceable>username</replaceable></code></para>
+                    </listitem>
+                    <listitem>
+                        <para><code>-password <replaceable>password</replaceable></code></para>
+                    </listitem>
+                    <listitem>
+                        <para><code>-action_nbak</code></para>
+                    </listitem>
+                    <listitem>
+                        <para><code>-action_nrest</code></para>
+                    </listitem>
+                    <listitem>
+                        <para><code>-nbk_level <replaceable>n</replaceable></code></para>
+                    </listitem>
+                    <listitem>
+                        <para><code>-dbname <replaceable>database</replaceable></code></para>
+                    </listitem>
+                    <listitem>
+                        <para><code>-nbk_file <replaceable>filename</replaceable></code></para>
+                    </listitem>
+                    <listitem>
+                        <para><code>-nbk_no_triggers</code></para>
+                    </listitem>
+                    <listitem>
+                        <para><code>-nbk_direct on|off</code></para>
+                    </listitem>
+                </itemizedlist></para>
+
+            <para>Выполнить nbackup на машине srv можно следующим образом:
+                <synopsis>
+fbsvcmgr srv:service_mgr –user SYSDBA –password masterkey 
+-action_nbak –nbk_level 0 –dbname c:\databases\countries.fdb –nbk_file
+c:\databases\countries.nbk                
+            </synopsis>
+            </para>
+
+            <para>Или инкрементный бэкап
+                <synopsis>
+fbsvcmgr srv:service_mgr –user SYSDBA –password masterkey 
+-action_nbak –nbk_level 1 –dbname c:\databases\countries.fdb –nbk_file
+c:\databases\countries_1.nbk               
+            </synopsis>
+            </para>
+
+            <para>Для восстановления базы данных
+                <synopsis>
+fbsvcmgr srv:service_mgr –user SYSDBA –password masterkey 
+-action_nrest –dbname c:\databases\countries_restored.fdb –nbk_file
+c:\databases\countries.nbk –nbk_file c:\databases\countries_1.nbk            
+            </synopsis>
+            </para>
+
+            <para>Каждая такая строка должна быть введена как единое целое, без переводов
+                строки.</para>
+
+            <para>Комментарии: <itemizedlist>
+                    <listitem>
+                        <para>Services Manager всегда требует указания имени пользователя и пароля,
+                            явного при помощи опций <parameter>–user</parameter> и
+                                <parameter>–password</parameter>, или автоматического (root или
+                            trusted authentification). Переменные <envar>isc_user</envar> и
+                                <envar>isc_password</envar> не используются. AUTO ADMIN MAPPING не
+                            действует при удаленном соединении. </para>
+                    </listitem>
+                    <listitem>
+                        <para>Восстановление (<parameter>-action_nrest</parameter>) также требует
+                            аутентификации, но она реально не используется. Поэтому не нужно быть
+                            владельцем БД, SYSDBA или суперпользователем. </para>
+                    </listitem>
+                    <listitem>
+                        <para>Services Manager может быть использован локально. В этом случае первый
+                            аргумент становится service_mgr, без имени сервера. При локальном
+                            соединении AUTO ADMIN MAPPING действует, как будто вы указали localhost
+                            в качестве имени сервера. Локальное использование Services Manager имеет
+                            смысл если вы не имеете файлового доступа к базе данных и каталогам с
+                            бэкапами, а Firebird — имеет. Если же у вас есть соответствующие права,
+                            то имеет смысл использовать непосредственно
+                                <application>nbackup</application>, а не
+                                <application>fbsvcmgr</application>. </para>
+                    </listitem>
+                    <listitem>
+                        <para>Вместо имени файла базы данных вы можете использовать алиас. </para>
+                    </listitem>
+                </itemizedlist></para>
+        </section>
+
+        <section xml:id="nbackup-practical">
+            <title>Практическое применение</title>
+
+            <para>Обычная схема использования nbackup может выглядеть так <itemizedlist
+                    spacing="compact">
+                    <listitem>
+                        <para>в начале каждого месяца выполняется полный бэкап уровня 0 </para>
+                    </listitem>
+                    <listitem>
+                        <para>каждую неделю – уровень 1 </para>
+                    </listitem>
+                    <listitem>
+                        <para>каждый день – уровень 2 </para>
+                    </listitem>
+                    <listitem>
+                        <para>каждый час – уровень 3 </para>
+                    </listitem>
+                </itemizedlist></para>
+
+            <para>Если вы сохраняете эти бэкапы, то можете восстановить базу данных на любой час
+                любого дня месяца. В этом случае используется максимум 4 уровня (от 0 до 3). Вы
+                можете использовать другие интервалы времени, в зависимости от загрузки сервера,
+                например, уровни 0 и 1 можно делать на выходных, и уровень 2 ночью.</para>
+
+            <para>Если вы не хотите хранить все бэкапы вечно, можно использовать схему:
+                    <itemizedlist spacing="compact">
+                    <listitem>
+                        <para>бэкапы уровня 3 удаляются каждый 8й день</para>
+                    </listitem>
+                    <listitem>
+                        <para>файлы уровня 2 – каждый месяц </para>
+                    </listitem>
+                    <listitem>
+                        <para>файлы уровня 1 – каждые 6 месяцев </para>
+                    </listitem>
+                    <listitem>
+                        <para>полный бэкап оставляем на 2 года, затем удаляем </para>
+                    </listitem>
+                </itemizedlist></para>
+            <para>Это просто примеры, выбирайте самостоятельно частоту бэкапов и необходимые
+                уровни.</para>
+            <note>
+                <para>Вы должны заранее оценить скорость вашей дисковой подсистемы и объемы
+                    инкрементов, чтобы бэкап самого последнего используемого вами уровня успел
+                    выполниться в назначенный интервал времени. То есть, если бэкап уровня 3
+                    делается каждый час, то он сам по себе не должен длиться больше часа ни при
+                    каких условиях (загруженности системы и скорости дисков).</para>
+            </note>
+            <note>
+                <para><application>nbackup</application> уровня 1 позволяет вам понять, какое
+                    количество изменений (страниц) происходит в вашей базе за некий интервал
+                    времени. Если вы делаете nbackup –b 1 через день после <code>nbackup –b
+                    0</code>, то размер файла уровня 1 будет как раз содержать количество измененных
+                    страниц за 1 день.</para>
+                <para>Это не эквивалентно количеству изменений за день вообще, т.к. одна страница БД
+                    может изменяться множество раз, но в бэкап уровня 1 попадет только самое
+                    последнее изменение этой страницы.</para>
+                <para>Одной из неожиданных для меня схем в одной из компаний был отказ от бэкапов
+                    уровня выше 1. То есть, после бэкапа уровня 0 весь месяц, каждый день, делаются
+                    бэкапы только уровня 1. Понятно, что каждый день файл бэкапа уровня 1 может
+                    расти, но опять же, это зависит от количества изменений разных страниц, а не
+                    одних и тех же страниц.</para>
+                <para>Для примера, база 10 гигабайт. <application>nbackup</application> уровня 0
+                    делается 1 раз в месяц. Бэкап уровня 1 делается раз в неделю, и занимает 1
+                    гигабайт, бэкапы уровня 2 каждый день по 800 мегабайт, бэкапы уровня 3 раз в час
+                    по 300 мегабайт. В итоге, если хранить все это за месяц, получается 136 гигабайт
+                    для 10гб базы данных.</para>
+                <para>Обратите внимание, что бэкапы уровня 3, которые делаются 1 раз в час, занимают
+                    по 300мб каждый, а бэкап уровня 2, который делается 1 раз в день, занимает
+                    800мб. Если умножить 300мб на 24 часа, мы получим необходимость хранения 7.2
+                    гигабайт ежечасных бэкапов вместо одного 800 мегабайтного за день. Но это цена
+                    возможности восстановления состояния базы данных на каждый час, а не на каждый
+                    день. Поэтому, при планировании бэкапов необходимо учитывать стоимость
+                    возможности восстановления на каждый час и стоимость хранения этих
+                    данных.</para>
+                <para>Другой пример — база данных 375 гигабайт, бэкап уровня 0 длится 45 минут,
+                    бэкапы уровня 1 (каждый день) длятся не более 20 минут, и занимают до 25
+                    гигабайт. В результате, объем файлов бэкапа уровня 0 плюс бэкапы уровня 1 за 30
+                    дней занимают 1.1 терабайт.</para>
+                <para>Кстати, просто для сравнения. Восстановление из
+                        <application>nbackup</application> такой БД (375 гиг) занимает 1 час, а
+                    восстановление из бэкапа <application>gbak</application> — 17 часов.</para>
+            </note>
+            <important>
+                <para>При работе с nbackup необходимо следить за двумя параметрами — как долго
+                    существует дельта-файл, и какой размер он имеет. Критическими являются
+                    существование дельта файла больше двух-трёх часов, или если размер дельта-файла
+                    превысил более трети размера БД. Оба этих критических значения указывают на то,
+                    что разблокирование БД после старта nbackup не произошло по какой-то причине, и
+                    все изменения до сих пор пишутся в дельта-файл, а не в базу данных.</para>
+
+                <para>Посмотреть состояние базы данных (и состояние бэкапа) можно командой
+                        <code>gstat –h</code> &lt;database&gt;.</para>
+            </important>
+        </section>
+        <section>
+            <title>Что дальше?</title>
+
+            <para>К этому моменту вы уже знаете всё о бэкапах и восстановлении. Далее приведена
+                информация о специфических режимах работы nbackup, которые могут быть вам
+                интересны.</para>
+        </section>
+    </section>
+    <section xml:id="nbackup-lock_and_unlock">
+        <title>Блокирование и разблокирование</title>
+
+        <para>Если вы хотите использовать собственные средства бэкапа, или просто сделать файловую
+            копию БД, то режим блокирования и разблокирования БД будет интересен для вас.
+                <quote>Блокирование</quote> означает что база данных будет <quote>заморожена</quote>
+            на некоторое время, и в ней не будут производиться никакие изменения. Изменения будут
+            записаны в дельта-файл, и при разблокировании дельта-файл будет записан обратно в базу
+            данных.</para>
+
+        <section xml:id="nbackup-lock">
+            <title>Блокирование базы данных и самостоятельное копирование</title>
+
+            <para>Типичный сеанс самостоятельного бэкапа выглядит так: <orderedlist>
+                    <listitem>
+                        <para>Блокируем базу данных параметром –L</para>
+                        <para><code>nbackup [-U <replaceable>user</replaceable> –P
+                                    <replaceable>password</replaceable>] –L
+                                    <replaceable>database</replaceable></code></para>
+                    </listitem>
+                    <listitem>
+                        <para>Теперь можно скопировать базу данных любыми утилитами. </para>
+                    </listitem>
+                    <listitem>
+                        <para>Разблокируем базу данных параметром –N </para>
+                        <para><code>nbackup [-U <replaceable>user</replaceable> –P
+                                    <replaceable>password</replaceable>] –N
+                                    <replaceable>database</replaceable></code></para>
+                    </listitem>
+                </orderedlist></para>
+
+            <para>На шаге 3 все изменения, которые происходили с базой данных во время шага 2, будут
+                записаны в БД из дельта-файла.</para>
+
+            <para>Комментарии: <itemizedlist>
+                    <listitem>
+                        <para>Вы можете указать алиас вместо имени БД </para>
+                    </listitem>
+                    <listitem>
+                        <para>Параметры <code>–U</code> и <code>–P</code> могут не указываться, если
+                            вы установили переменные <envar>ISC_USER</envar> и
+                                <envar>ISC_PASSWORD</envar>, или являетесь root, или доверенным
+                            пользователем на Windows. </para>
+                    </listitem>
+                    <listitem>
+                        <para>Начиная с Firebird 2.5 вы можете вместо <code>–P
+                                    <replaceable>&lt;password&gt;</replaceable></code> указать
+                                <code>–FE <replaceable>&lt;filename&gt;</replaceable></code>
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>Обе опции, <code>-L</code> и <code>–N</code>, производят обычный
+                            подключение к базе данных, поэтому в Firebird 2.1 и выше может быть
+                            имеет смысл дополнительно указать <code>–T</code> (<link
+                                xlink:href="#nbackup-nodbtriggers">Отключение триггеров
+                            БД</link>).</para>
+                    </listitem>
+                    <listitem>
+                        <para>Если вы делаете бэкап базы данных, расположенной на «сыром
+                            устройстве», то вероятно,вам не помешает параметр –S для получения
+                            информации о базе данных. </para>
+                    </listitem>
+                    <listitem>
+                        <para>Можно указать параметр –Z, который выводит информацию о версии.
+                        </para>
+                    </listitem>
+                </itemizedlist></para>
+
+            <note>
+                <para>Что относится к бэкапу и восстановлению, точно так же относится и к
+                    блокированию разблокированию многофайловых баз данных. Не используйте nbackup на
+                    многофайловых базах данных, совсем.</para>
+            </note>
+        </section>
+
+        <section xml:id="nbackup-unlock">
+            <title>Восстановление бэкапа после "nbackup -L"</title>
+
+            <para>Скопированная в момент блокирования база данных также является заблокированной,
+                поэтому вы не можете её использовать сразу после копирования. Корректный сценарий
+                использования копии выглядит так: <orderedlist>
+                    <listitem>
+                        <para>Копируем заблокированную БД нужными нам средствами </para>
+                    </listitem>
+                    <listitem>
+                        <para>Разблокируем БД, но не параметром <code>–N</code>, а параметром
+                                <code>–F</code> (fixup)</para>
+                        <para><code>nbackup –F
+                            <replaceable>&lt;database&gt;</replaceable></code></para>
+                    </listitem>
+                </orderedlist></para>
+            <para>Здесь можно использовать алиас вместо имени файла базы данных, и указывать
+                параметр <code>–Z</code>. Указание других параметров не имеет смысла.</para>
+
+            <para>Почему есть два параметра разблокирования, <code>-N</code> и <code>–F</code>? <itemizedlist>
+                    <listitem>
+                        <para><code>-N</code> вначале проверяет, были-ли изменения БД с момента ее
+                            блокирования <code>–L</code>. Если да, то дельта-файл применяется к БД,
+                            после чего БД разблокируется, а дельта-файл удаляется. </para>
+                    </listitem>
+                    <listitem>
+                        <para><code>-F</code> просто меняет флаг состояния БД из
+                                <quote>заблокировано</quote> в <quote>нормальный</quote>. </para>
+                    </listitem>
+                </itemizedlist></para>
+            <note>
+                <para>Опцию <code>–F</code> можно использовать вместо <code>–N</code> если в
+                    процессе <application>nbackup</application> (от момента блокирования БД)
+                    произошло повреждение дельта-файла. Разумеется, в этом случае все изменения,
+                    которые были в дельта-файле, пропадут, т.е. не будут записаны в БД.</para>
+            </note>
+
+            <para>Итак, вы используете <itemizedlist>
+                    <listitem>
+                        <para><code>-N</code> после того как сделали копию файла самостоятельно
+                            (после <code>–L</code>) </para>
+                    </listitem>
+                    <listitem>
+                        <para><code>-F</code> если хотите восстановить БД из скопированного файла.
+                        </para>
+                    </listitem>
+                </itemizedlist></para>
+        </section>
+
+        <section xml:id="nbackup-lock_unlock-how_it_works">
+            <title>Как это работает</title>
+
+            <para>Этот раздел не содержит обязательных знаний, но дает дополнительную информацию для
+                понимания работы некоторых параметров <application>nbackup</application>.</para>
+
+            <para><code>nbackup –L</code> делает следующее: <orderedlist>
+                    <listitem>
+                        <para> подсоединяется к БД </para>
+                    </listitem>
+                    <listitem>
+                        <para> стартует транзакцию </para>
+                    </listitem>
+                    <listitem>
+                        <para> выполняет ALTER DATABASE BEGIN BACKUP (этот оператор уже обсуждался в
+                            разделе <link xlink:href="#nbackup-full-restore">"Восстановление полных
+                                бэкапов"</link></para>
+                    </listitem>
+                    <listitem>
+                        <para> делает коммит транзакции </para>
+                    </listitem>
+                    <listitem>
+                        <para> отсоединяется от базы данных </para>
+                    </listitem>
+                </orderedlist></para>
+
+            <para><code>nbackup –N</code> выполняет те же самые шаги, только на шаге 3 <code>... END
+                    BACKUP</code>.</para>
+
+            <para><code>nbackup –F</code> работает так: <orderedlist>
+                    <listitem>
+                        <para> открывает файл базы данных </para>
+                    </listitem>
+                    <listitem>
+                        <para> внутри файла меняет флаг состояния nback_state_stalled на
+                            nback_state_normal </para>
+                    </listitem>
+                    <listitem>
+                        <para> закрывает файл базы данных </para>
+                    </listitem>
+                </orderedlist></para>
+
+            <para><code>nbackup –F</code> работает только с файлом, поэтому может быть выполнен без
+                работающего сервера Firebird. Любые аргументы параметров –U, -P, или –FE
+                игнорируются, так же как и для <code>nbackup –R</code>.</para>
+        </section>
+
+        <section xml:id="nbackup-lock_db-raw_devices">
+            <title>Блокирование баз на сырых устройствах</title>
+
+            <para>Как уже было упомянуто в разделе <quote><link
+                        xlink:href="#nbackup-backup-raw_devices">Бэкапы баз данных на сырых
+                        устройствах</link></quote>, проблемы могут возникнуть если дельта-файл
+                создается для базы данных, которая находится на сыром устройстве (raw device).
+                Поэтому, в Firebird 2.1 и выше <application>nbackup</application> отказывается
+                работать с базами на сырых устройствах до тех пор, пока не будет задано явное
+                расположение дельта-файла. Как это сделать, написано в<link
+                    xlink:href="#nbackup-tune_delta"> следующем разделе</link>.</para>
+
+            <para>Есть и другая проблема, если вы блокируете и пытаетесь скопировать сырое
+                устройство — вы не знаете реального размера базы данных! Само устройство может иметь
+                размер 10 гигабайт, а база данных на нем может занимать всего 200 мегабайт. Чтобы не
+                копировать всё устройство целиком, и не тратить зря время и место, в Firebird 2.1
+                введен новый параметр <code>nbackup –S</code>. Этот параметр работает только вместе
+                с параметром <code>–L</code>, и если указан, <application>nbackup</application>
+                выведет размер базы данных в страницах в stdout, после того как БД будет
+                заблокирована. Поскольку размер приведен в количестве страниц, его нужно умножить на
+                размер страницы, чтобы получить размер базы данных. Или, если вы пользуетесь
+                утилитой <application>dd</application>, можно указать размер блока параметром ibs,
+                равному размеру страницы.</para>
+        </section>
+    </section>
+
+    <section xml:id="nbackup-tune_delta">
+        <title>Настройка дельта-файла</title>
+
+        <para>По умолчанию дельта-файл располагается рядом с базой данных. Имя файла такое же, как у
+            базы данных, но к нему добавлено расширение <filename>.delta</filename>. Обычно такое
+            поведение является приемлемым, однако иногда может потребоваться указать явно
+            расположение дельта-файла, особенно если база данных находится на сыром устройстве (raw
+            device). <application>nbackup</application> не имеет возможности указать расположение
+            дельта-файла, это делается оператором SQL.</para>
+
+        <para>Подсоединитесь к базе данных, и выполните следующую команду:
+            <programlisting language="sql">
+alter database add difference file '<replaceable>path-and-filename</replaceable>'                
+            </programlisting>
+        </para>
+
+        <para>Такое расположение и имя дельта-файла будет в базе данных постоянным, оно хранится в
+            системной таблице RDB$FILES. Для возврата к поведению по умолчанию используйте следующую
+            команду:
+            <programlisting language="sql">
+alter database drop difference file              
+            </programlisting>
+        </para>
+
+        <para>Указать путь к дельта-файлу можно и при создании базы данных:
+            <programlisting language="sql">
+create database '<replaceable>path-and-dbname</replaceable>' difference file '<replaceable>path-and-deltaname</replaceable>'
+...
+            </programlisting>
+        </para>
+
+        <para>Замечания: <itemizedlist>
+                <listitem>
+                    <para>Если вы укажете только имя файла в [ADD] DIFFERENCE FILE, без пути, то
+                        дельта-файл с этим именем будет создан не рядом с базой данных, а в
+                            <quote>текущем каталоге</quote> с точки зрения сервера. На Windows это
+                        обычно системная папка (например, <filename>C:\Windows\system32</filename>).
+                        То же самое справедливо и для относительных имен каталогов. </para>
+                </listitem>
+                <listitem>
+                    <para>Указанный путь должен существовать. Firebird не будет создавать
+                        отсутствующие папки/каталоги. </para>
+                </listitem>
+                <listitem>
+                    <para>Если вы хотите поменять имя дельта-файла или путь к нему, сначала вы
+                        должны удалить(DROP) старое имя, и добавить (ADD) новое. </para>
+                </listitem>
+            </itemizedlist></para>
+    </section>
+
+    <section xml:id="nbackup-history">
+        <title>Лог истории бэкапов</title>
+
+        <para>Firebird созхраняет всю историю бэкапов nbackup в системной таблице
+            RDB$BACKUP_HISTORY. Эта информация используется nbackup для собственных нужд, но также
+            может использоваться для просмотра когда, какого уровня бэкап был сделан, и с каким
+            именем файла. Например, можно посмотреть информацию о 5ти последних бэкапах:
+            <programlisting language="sql">
+SELECT RDB$BACKUP_ID, RDB$TIMESTAMP, RDB$BACKUP_LEVEL, RDB$GUID,
+RDB$SCN, RDB$FILE_NAME
+FROM RDB$BACKUP_HISTORY
+ORDER BY RDB$TIMESTAMP DESC
+ROWS 5            
+        </programlisting>
+        </para>
+
+        <table frame="topbot">
+            <title>Столбцы таблицы RDB$BACKUP_HISTORY</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="0.65*"/>
+                <colspec colname="c2" colnum="2" colwidth="1.35*"/>
+                <thead>
+                    <row>
+                        <entry>Столбец</entry>
+                        <entry>Описание</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry><code>RDB$BACKUP_ID</code></entry>
+                        <entry><para>Первичный ключ.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>RDB$TIMESTAMP</code></entry>
+                        <entry><para>Дата и время бэкапа.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>RDB$BACKUP_LEVEL</code></entry>
+                        <entry><para>Уровень бэкапа.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>RDB$GUID</code></entry>
+                        <entry><para>GUID бэкапа (используется для проверки взаимозависимостей
+                                разных уровней).</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>RDB$SCN</code></entry>
+                        <entry><para/></entry>
+                    </row>
+                    <row>
+                        <entry><code>RDB$FILE_NAME</code></entry>
+                        <entry><para>Имя файла бэкапа.</para></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+
+        <para>Пояснения по столбцу RDB$SCN вы можете прочитать в следующем разделе.</para>
+
+        <para>Содержимое таблицы RDB$BACKUP_HISTORY не сохраняется (и не восстанавливается) gbak-ом
+            (потому что <application>gbak</application> при восстановлении создает базу данных
+            заново, и эта база данных по содержимому страниц не имеет ничего общего с базой данных,
+            бэкап которой был сделан gbak).</para>
+    </section>
+
+    <section xml:id="nbackup-technical_info">
+        <title>Техническая информация</title>
+
+        <para>nbackup делает бэкап копируя страницы базы данных, либо все (-B 0), либо те, которые
+            были изменены с момента бэкапа предыдущего уровня (-B N). Например, бэкап уровня 1
+            содержит все страницы, которые были изменены с момента создания бэкапа уровня 0. Чтобы
+            найти измененные страницы Firebird использует маркер, именуемый SCN (сокращение от
+            System Change Number). Этот номер увеличивается каждый раз при изменении состояния
+            бэкапа. Кроме того, у базы данных есть три состояния (находится в странице заголовка БД
+            и может быть просмотрено <code>gstat –h</code>).</para>
+        <itemizedlist>
+            <listitem>
+                <para> nback_state_normal — нормальное состояние БД. nbackup не работает, ввод-вывод
+                    не переадресуется,нет дельта-файла </para>
+            </listitem>
+            <listitem>
+                <para> nback_state_stalled — бэкап в процессе. Ввод-вывод перенаправляется в дельта
+                    файл: все изменения записываются только в дельта-файл, измененные страницы
+                    читаются из дельта файла, не измененные страницы читаются из БД</para>
+            </listitem>
+            <listitem>
+                <para> nback_state_merge — бэкап завершается. Изменения записываются из дельта файла
+                    в базу данных. Ввод вывод всё еще перенаправлен: изменяемые страницы
+                    записываются как в БД, таки в дельта-файл, не измененные страницы записываются
+                    из дельты в БД,измененные страницы читаются из дельты, не измененные – из БД.
+                </para>
+            </listitem>
+        </itemizedlist>
+        <para>Эти состояния меняются из одного на другое, допустимы три варианта: <orderedlist>
+                <listitem>
+                    <para> nback_state_normal (не бэкап) в nback_state_stalled (при начале бэкапа)
+                    </para>
+                </listitem>
+                <listitem>
+                    <para> nback_state_stalled в nback_state_merge (при завершении бэкапа) </para>
+                </listitem>
+                <listitem>
+                    <para> nback_state_merge в nback_state_normal (по окончании бэкапа) </para>
+                </listitem>
+            </orderedlist></para>
+
+        <para>SCN базы данных перед стартом бэкапа записывается в страницу заголовка БД, и в
+            результате также попадает в бэкап. Самый первый бэкап получает SCN = 0, второй = 3, и
+            так далее. Этот номер не зависит от уровня бэкапа. SCN используется для маркировки
+            страниц в базе данных. Например, значения SCN на страницах БД: <itemizedlist>
+                <listitem>
+                    <para> 0 – страница перед бэкапом </para>
+                </listitem>
+                <listitem>
+                    <para> 1 – страница, записанная в дельту или обновленная в ней во время бэкапа
+                    </para>
+                </listitem>
+                <listitem>
+                    <para> 2 – страница, модифицированная во время заливки дельты в базу данных
+                    </para>
+                </listitem>
+                <listitem>
+                    <para> 3 – страница, модифицированная после окончания бэкапа </para>
+                </listitem>
+            </itemizedlist></para>
+
+        <para>Дальше, при очередном инкрементном бэкапе, сервер может определить, какие страницы
+            были модифицированы после окончания предыдущего бэкапа, и какой это был уровень бэкапа.
+            Например, когда производится бэкап уровня 1, nbackup читает информацию о предыдущем
+            бэкапе (уровня 0), и сохраняет в бэкап уровня 1 только те страницы, SCN которых больше,
+            чем у бэкапа уровня 0. То же самое происходит с бэкапами уровня 2, и так далее.</para>
+
+        <para>В Firebird 3 в базе данных хранится информация о SCN всех страниц, что позволяет
+            серверу при очередном инкрементном бэкапе читать только измененные страницы. В
+            предыдущих версиях Firebird для любого инкремента приходилось каждый раз сканировать всю
+            базу данных. Таким образом, если бэкап уровня 0 базы размером 31 гигабайт проходит за 6
+            минут, то бэкап уровня 1 при отсутствии изменений в базе с момента бэкапа уровня 0 будет
+            выполнен за 14 секунд (прочитано 1984 страницы вместо чтения 3909536 страниц всей
+            базы).</para>
+
+        <section xml:id="nbackup-swept">
+            <title>Swept флаг</title>
+
+            <para>У Firebird 3 есть другая особенность – это флаг swept у страниц данных. Этот флаг
+                устанавливается в false, как только на странице появляются версии записей, и
+                устанавливается в true, когда sweep или сборщик мусора полностью очищают страницу
+                данных от мусорных версий. Главным здесь является то, что после restore, несмотря на
+                отсутствие версий на страницах данных, все страницы данных помечены как swept=false.
+                Это означает, что при очередном запуске sweep все страницы данных могут поменяться
+                (флаг swept установится в true). В результате следующая последовательность приведет
+                к максимальному размеру инкремента <orderedlist>
+                    <listitem>
+                        <para>restore</para>
+                    </listitem>
+                    <listitem>
+                        <para>nbackup –b 0</para>
+                    </listitem>
+                    <listitem>
+                        <para>sweep</para>
+                    </listitem>
+                    <listitem>
+                        <para>nbackup –b 1</para>
+                    </listitem>
+                </orderedlist></para>
+
+            <para>В пункте 4 инкремент будет содержать все страницы данных, у которых флаг swept был
+                установлен в true, то есть, этот инкремент будет максимального размера. Поэтому,
+                если это возможно, после restore нужно сразу запустить sweep, а nbackup нулевого
+                уровня делать уже после sweep (то есть, поменять местами пункты 2 и 3).</para>
+
+            <para>Далее, если sweep будет запускаться между инкрементами, это не приведет ни к каким
+                    <quote>лишним</quote> страницам в инкременте. Потому что если на странице
+                появились версии, то она изменена, а если убран мусор, то она тоже изменена, и в
+                следующий инкремент такая страница всё равно должна будет попасть.</para>
+        </section>
+    </section>
+</chapter>

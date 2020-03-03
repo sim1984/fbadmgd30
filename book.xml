@@ -5,7 +5,7 @@
     xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="ru" xml:id="fbadmgd" version="5.1">
     <info>
         <title>Руководство администратора Firebird 3.0</title>
-        <edition>1 марта 2020 — v.0000-1</edition>
+        <edition>3 марта 2020 — v.0000-1</edition>
 
         <authorgroup>
             <author>
@@ -132,11 +132,10 @@
             
             <para/>
         </chapter>
-        <chapter>
-            <title>GSEC</title>
-            
-            <para/>
-        </chapter>
+        
+        <!-- GSEC -->
+        <xi:include href="gsec.xml" xpointer="element(/1)"/>
+        
         <chapter>
             <title>FBSVCMGR</title>
             

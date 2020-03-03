@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.1/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.1/sch/docbook.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="5.1" xml:id="gsec" xml:lang="ru">
+    <title>Утилита GSEC</title>
+    
+    <indexterm>
+        <primary>GSEC</primary>
+    </indexterm>
+
+    <warning>
+        <para>Начиная с Firebird 3.0 утилита GSEC объявлена устаревшей. Язык SQL предоставляет более
+            широкие возможности по манипулированию учётными записями пользователей.</para>
+    </warning>
+
+
+
+    <para>Gsec — это утилита управления базой данных безопасности. Она позволяет SYSDBA (или любому
+        привилегированному пользователю) управлять учетными записями пользователей для различных баз
+        данных Firebird. Используя различные опции, можно добавлять, изменять или удалять учетные
+        записи пользователей из базы данных безопасности.</para>
+
+    <para>Информация о всех пользователях хранится в обычной базе данных, называемой базой данных
+        безопасности. По умолчанию база данных безопасности располагается в корневой директории
+        Firebird и называется <filename>security3.fdb</filename>.</para>
+
+    <para>GSEC может быть запущена как в интерактивном, так и в командном режиме, и может отображать
+        подсказки с перечислением всех опций.</para>
+
+    <para>Синтаксис запуска <application>gsec</application> выглядит следующим образом:
+        <synopsis>
+gsec [<replaceable>&lt;options&gt;</replaceable>] <replaceable>&lt;command&gt;</replaceable> [<replaceable>&lt;parameters&gt;</replaceable>]           
+        </synopsis>
+    </para>
+
+    <section>
+        <title>Опции командной строки</title>
+
+        <para>Независимо от режима, в котором работает <application>gsec</application>, в командной
+            строке может быть указано несколько параметров. Они перечислены ниже: <itemizedlist>
+                <listitem>
+                    <para><code>-user <replaceable>&lt;username&gt;</replaceable></code></para>
+                    <para>Позволяет указать имя пользователя. Укажите SYSDBA для возможности
+                        управления учётными записями пользователей, или обычного пользователя если
+                        необходимо просмотреть информацию о своей учётной записи. Этот параметр
+                        можно не указывать если установлена переменная среды
+                        <envar>ISC_USER</envar>.</para>
+                </listitem>
+                <listitem>
+                    <para><code>-password <replaceable>&lt;password&gt;</replaceable></code></para>
+                    <para>Предоставляет пароль для указанного пользователя. Этот параметр можно не
+                        указывать если установлена переменная среды
+                        <envar>ISC_PASSWORD</envar>.</para>
+                </listitem>
+                <listitem>
+                    <para><code>-fe[tch_password] <replaceable>&lt;password file
+                                name&gt;</replaceable> | stdin | /dev/tty</code></para>
+                    <para>Этот переключатель позволяет указать файл из которого будет прочитан
+                        пароль для указанного пользователя. Файл должен быть доступен для чтения
+                        пользователю, запустившему <application>gsec</application>. Если имя файла
+                        указано как <filename>stdin</filename>, то пользователю будет предложено
+                        ввести пароль. В системах POSIX имя файла <filename>/dev/tty</filename>
+                        также приведет к запросу пароля.</para>
+                </listitem>
+                <listitem>
+                    <para><code>-role <replaceable>&lt;SQL role name&gt;</replaceable></code></para>
+                    <para>Позволяет указать роль, чьи права будет использовать указанный
+                        пользователь. Роль должна быть выдана пользователю в текущей базе данных
+                        безопасности.</para>
+                </listitem>
+                <listitem>
+                    <para><code>-database [<replaceable>&lt;host
+                                name&gt;</replaceable>:]<replaceable>&lt;secutity database
+                                name&gt;</replaceable></code></para>
+                    <para>Вы можете указать базу данных безопасности (полный путь или алиас). Вы
+                        также можете указать имя хоста, если необходимо удаленно администрировать
+                        пользователей для указанного сервера. Весь параметр должен быть заключен в
+                        кавычки, если в пути к базе данных безопасности есть пробелы.</para>
+                </listitem>
+                <listitem>
+                    <para><code>-trusted</code></para>
+                    <para>Использовать доверительную аутентификацию.</para>
+                </listitem>
+                <listitem>
+                    <para><code>-z</code></para>
+                    <para>Отображает версию утилиты gsec.</para>
+                </listitem>
+                <listitem>
+                    <para><code>-help</code> или <code>-?</code></para>
+                    <para>Справка отображает следующий экран информации: <screen>
+<![CDATA[
+   gsec utility - maintains user password database
+
+   command line usage:
+     gsec [ <options> ... ] <command> [ <parameter> ... ]
+
+   interactive usage:
+     gsec [ <options> ... ]
+     GSEC>
+     <command> [ <parameter> ... ]
+
+   available options:
+     -user <database administrator name>
+     -password <database administrator password>
+     -fetch_password <file to fetch password from>
+     -role <database administrator SQL role name>
+     -trusted (use trusted authentication)
+     -database <database to manage>
+     -z
+
+   available commands:
+     adding a new user:
+       add <name> [ <parameter> ... ]
+     deleting a current user:
+       delete <name>
+     displaying all users:
+       display
+     displaying one user:
+       display <name>
+     modifying a user's parameters:
+       modify <name> <parameter> [ <parameter> ... ]
+     changing admins mapping to RDB$ADMIN role in security database:
+       mapping {set|drop}
+     help:
+       ? (interactive only)
+       help
+     displaying version number:
+       z (interactive only)
+     quit interactive session:
+       quit (interactive only)
+
+   available parameters:
+     -pw <password>
+     -uid <uid>
+     -gid <uid>
+     -fname <firstname>
+     -mname <middlename>
+     -lname <lastname>
+     -admin {yes|no}
+]]>                        
+                    </screen>
+                    </para>
+                </listitem>
+            </itemizedlist></para>
+    </section>
+    <section>
+        <title>Команды GSEC</title>
+
+        <para/>
+    </section>
+</chapter>

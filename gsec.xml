@@ -4,7 +4,7 @@
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
     version="5.1" xml:id="gsec" xml:lang="ru">
     <title>Утилита GSEC</title>
-    
+
     <indexterm>
         <primary>GSEC</primary>
     </indexterm>
@@ -147,6 +147,487 @@ gsec [<replaceable>&lt;options&gt;</replaceable>] <replaceable>&lt;command&gt;</
     <section>
         <title>Команды GSEC</title>
 
-        <para/>
+        <para>После различных опций идет команда, которую вы хотите запустить. Следующие команды
+            доступны как в пакетном, так и в интерактивном режимах. В пакетном режиме перед командой
+            должен следовать знак минус.</para>
+        <itemizedlist>
+            <listitem>
+                <para><code>add <replaceable>&lt;name&gt;</replaceable> [
+                            <replaceable>&lt;parameter&gt;</replaceable> ... ]</code></para>
+                <para>Эта команда добавляет нового пользователя в базу данных. При желании вы можете
+                    добавить другие данные, такие как имя, отчество и фамилия, а также пароль для
+                    нового пользователя, все в одной команде добавления. Кроме того, вы можете
+                    добавить пользователя, а затем изменить его, чтобы заполнить недостающие
+                    детали.</para>
+            </listitem>
+            <listitem>
+                <para><code>delete <replaceable>&lt;name&gt;</replaceable></code></para>
+                <para>Удаление пользователя с заданным именем.</para>
+            </listitem>
+            <listitem>
+                <para><code>display [<replaceable>&lt;name&gt;</replaceable>]</code></para>
+                <para>Эта команда отображает сведения о пользователе с заданным именем или обо всех
+                    пользователях в базе данных безопасности, если имя пользователя не задано.
+                    Пароль никогда не отображается.</para>
+            </listitem>
+            <listitem>
+                <para><code>modify <replaceable>&lt;name&gt;</replaceable>
+                        <replaceable>&lt;parameter&gt;</replaceable> [
+                            <replaceable>&lt;parameter&gt;</replaceable> ... ]</code></para>
+                <para>Изменяет информацию о пользователе с заданным именем.</para>
+            </listitem>
+            <listitem>
+                <para><code>mapping {set | drop}</code></para>
+                <para>Включает или выключает флаг AUTO ADMIN MAPPING для автоматического
+                    предоставления роли RDB$ADMIN администраторам Windows в текущей базе данных,
+                    если используется доверительная авторизация.</para>
+            </listitem>
+            <listitem>
+                <para><code>{? | help}</code></para>
+                <para>Отображает все опции и команды <application>gsec</application>.</para>
+            </listitem>
+            <listitem>
+                <para><code>z</code></para>
+                <para>Отображает версию <application>gsec</application>.</para>
+            </listitem>
+            <listitem>
+                <para><code>quit</code></para>
+                <para>Выход из интерактивного режима.</para>
+            </listitem>
+        </itemizedlist>
+        <para>Некоторые из приведенных выше команд принимают следующие параметры: <itemizedlist>
+                <listitem>
+                    <para><code>-pw <replaceable>&lt;password&gt;</replaceable></code></para>
+                    <para>Позволяет задать пароль для пользователя.</para>
+                </listitem>
+                <listitem>
+                    <para><code>-uid <replaceable>&lt;uid&gt;</replaceable></code></para>
+                    <para>Идентификатор пользователя в POSIX.</para>
+                </listitem>
+                <listitem>
+                    <para><code>-gid <replaceable>&lt;gid&gt;</replaceable></code></para>
+                    <para>Идентификатор группы в POSIX.</para>
+                </listitem>
+                <listitem>
+                    <para><code>-fname <replaceable>&lt;first name&gt;</replaceable></code></para>
+                    <para>Имя пользователя.</para>
+                </listitem>
+                <listitem>
+                    <para><code>-mname <replaceable>&lt;middle name&gt;</replaceable></code></para>
+                    <para>Отчёство пользователя.</para>
+                </listitem>
+                <listitem>
+                    <para><code>-lname <replaceable>&lt;lastname&gt;</replaceable></code></para>
+                    <para>Фамилия пользователя.</para>
+                </listitem>
+                <listitem>
+                    <para><code>-admin {yes | no}</code></para>
+                    <para>Позволяет указать, будет ли пользователю предоставлена роль
+                        RDB$ADMIN.</para>
+                </listitem>
+            </itemizedlist></para>
+    </section>
+    <section>
+        <title>Интерактивный режим</title>
+
+        <para>Чтобы запустить <application>gsec</application> в интерактивном режиме, запустите
+            утилиту с помощью командной строки:
+            <screen>
+C:\Firebird>gsec -user sysdba -password masterkey
+*** gsec is deprecated, will be removed soon ***
+
+GSEC>            
+        </screen>
+        </para>
+
+        <para>Подсказка <code>GSEC></code> показывает, что утилита ожидает команду. Опции
+                <code>-user</code> и <code>-password</code> — это параметры пользователя, который
+            хочет манипулировать базой данных безопасности. Если вы хотите управлять пользователями,
+            то в качестве имени пользователя необходимо указывать SYSDBA. Обычные пользователи могут
+            только просматривать информацию о себе и изменять собственный пароль.</para>
+
+        <para>Для выхода из <application>gsec</application> в интерактивном режиме используется
+            команда quit: <screen>
+GSEC> quit        
+C:\Firebird>
+        </screen>
+        </para>
+
+        <para>В следующих разделах показано, как выполнять различные команды в интерактивном режиме.
+            Предполагается, что вы уже запускаете утилиту как пользователь SYSDBA.</para>
+
+        <section>
+            <title>Отображение информации о пользователе</title>
+
+            <para>Для отображения информации обо всех пользователях в базе данных безопасности
+                введите следующую команду.
+                <screen>
+GSEC> display
+     user name                    uid   gid admin     full name
+------------------------------------------------------------------------------------------------
+SYSDBA                              0     0
+NORMAN                              0     0           Norman  Dunbar
+EPOCMAN                             0     0           Benoit Gilles Mascia
+BOSS                                0     0 admin
+GSEC>                
+            </screen>
+            </para>
+
+            <para>Если в столбце admin отображает текст <quote>admin</quote>, то это обозначает что
+                пользователю предоставлена роль RDB$ADMIN в базе данных безопасности. Такие
+                пользователю могут управлять другими учётными записями.</para>
+
+            <para>Чтобы отобразить сведения об одном пользователе, передайте имя пользователя в
+                качестве параметра в команду <code>display</code>.</para>
+
+            <screen>
+GSEC> display epocman
+     user name                    uid   gid admin     full name
+------------------------------------------------------------------------------------------------
+EPOCMAN                             0     0           Benoit Gilles Mascia                
+            </screen>
+
+            <para>Если вы введете имя несуществующего пользователя в качестве параметра команды
+                    <code>display</code>, ничего не отобразится и <application>gsec</application>
+                останется в интерактивном режиме.</para>
+            <screen>
+GSEC> display alison
+GSEC>
+            </screen>
+        </section>
+
+        <section>
+            <title>Добавление новых пользователей</title>
+
+            <para>При добавлении нового пользователя в интерактивном режиме ничего не отображается,
+                чтобы подтвердить, что пользователь действительно был добавлен. Вам нужно
+                использовать команды <code>display</code> или <code>display &lt;name&gt;</code>,
+                чтобы убедиться, что пользователь был успешно добавлен.</para>
+
+            <screen>
+GSEC> add newuser -pw newuser -fname New -lname User
+GSEC> display newuser
+     user name                    uid   gid admin     full name
+------------------------------------------------------------------------------------------------
+NEWUSER                             0     0           New  User               
+            </screen>
+
+            <para>Если необходимо добавить пользователя и выдать ему роль RDB$ADMIN в базе данных
+                безопасности, то добавьте опцию <code>-admin yes</code>.</para>
+            <screen>
+GSEC> add newadmin -pw secret -fname New -mname admin -lname User -admin yes
+GSEC> display newadmin
+     user name                    uid   gid admin     full name
+------------------------------------------------------------------------------------------------
+NEWADMIN                            0     0 admin     New admin User
+GSEC>
+            </screen>
+        </section>
+
+        <section>
+            <title>Удаление существующих пользователей</title>
+
+            <para>При удалении пользователя в интерактивном режиме нет подтверждения, что
+                пользователь был удален. Вы должны использовать команду <code>display</code> или
+                    <code>display &lt;name&gt;</code> для проверки.</para>
+
+            <screen>
+GSEC> delete newuser
+GSEC> display
+     user name                    uid   gid admin     full name
+------------------------------------------------------------------------------------------------
+SYSDBA                              0     0
+NORMAN                              0     0           Norman  Dunbar
+EPOCMAN                             0     0           Benoit Gilles Mascia
+BOSS                                0     0 admin
+NEWADMIN                            0     0 admin     New admin User                
+            </screen>
+
+            <para>Если вы попытаетесь удалить несуществующего пользователя
+                    <application>gsec</application> выдаст сообщение об ошибке.</para>
+
+            <screen>
+GSEC> delete newuser
+The user name specified was not found in the security database
+GSEC>                
+            </screen>
+        </section>
+
+        <section>
+            <title>Редактирование существующих пользователей</title>
+
+            <para>Для существующих пользователей можно изменить один или несколько своих атрибутов:
+                пароль, фамилия, имя, отчество и другое. После выполнения команды не выводится
+                никаких подтверждений. Вы должны использовать команду <code>display</code> или
+                    <code>display &lt;name&gt;</code> для проверки.</para>
+
+            <screen>
+GSEC> modify norman -pw newpassword
+GSEC> modify norman -mname MiddleName -fname Fred
+GSEC> display norman
+     user name                    uid   gid admin     full name
+------------------------------------------------------------------------------------------------
+NORMAN                              0     0           Fred MiddleName Dunbar                
+            </screen>
+
+            <para>Если вы хотите удалить один или несколько атрибутов пользователя, не передавайте
+                (новое) значение для этого атрибута.</para>
+            <screen>
+GSEC> modify norman -mname -fname -lname
+GSEC> display norman
+     user name                    uid   gid admin     full name
+------------------------------------------------------------------------------------------------
+NORMAN                              0     0                
+            </screen>
+            <para>Если необходимо выдать роль RDB$ADMIN указанному пользователю в базе данных
+                безопасности, то установите опцию <code>-admin</code> в зачение
+                <code>yes</code>.</para>
+            <screen>
+GSEC> modify norman -admin yes
+GSEC> display norman
+     user name                    uid   gid admin     full name
+------------------------------------------------------------------------------------------------
+NORMAN                              0     0 admin                
+            </screen>
+        </section>
+        <section>
+            <title>Отображение администраторов ОС</title>
+
+            <para>По умолчанию администраторы доменов Windows не получают привилегии администратора
+                в базе данных безопасности, поскольку отключено отображение администраторов на роль
+                RDB$ADMIN. Это можно сделать в <application>isql</application> следующим образом:
+                <screen>
+SQL> alter role rdb$admin set auto admin mapping;
+SQL> commit;              
+            </screen>
+            </para>
+            <para>Приведенная выше команда приведет к тому, что все учетные записи администраторов
+                Windows автоматически получат полный доступ к функциям управления пользователями.
+                Автоматическое отображение может быть отменено следующим образом:
+                <screen>
+SQL> alter role rdb$admin drop auto admin mapping;
+SQL> commit;                
+            </screen>
+            </para>
+            <para>Функциональность вышеупомянутых команд <application>isql</application> также можно
+                установить с помощью <application>gsec</application>, как описано ниже, с помощью
+                команды <code>mapping</code>. Команда принимает параметр set или drop
+                соответственно.</para>
+            <screen>GSEC> mapping set</screen>
+            <para>или</para>
+            <screen>GSEC> mapping drop</screen>
+        </section>
+        <section>
+            <title>Справка</title>
+
+            <para>Команда <code>help</code> в интерактивном режиме отображает тот же экран справки,
+                как показано выше. Она может быть сокращена до одного знака вопроса.</para>
+        </section>
+        <section>
+            <title>Информация о версии</title>
+
+            <para>Версию <application>gsec</application> можно получить с помощью команды z.</para>
+            <screen>
+GSEC> z
+gsec version WI-V3.0.6.33254 Firebird 3.0                
+            </screen>
+        </section>
+    </section>
+    <section>
+        <title>Пакетный режим</title>
+
+        <note>
+            <para>При описании пакетного режима будем считать что я установил переменные среды
+                    <envar>ISC_USER</envar> и <envar>ISC_PASSWORD</envar>. Это позволяет запускать
+                    <application>gsec</application> без необходимости указывать ключи
+                    <code>-user</code> и <code>-password</code>. Это, в свою очередь, уменьшает
+                объем кода в командной строке, а это означает, что вся командная строка помещается
+                по ширине страницы A4.</para>
+            <para>Эти переменные не всегда безопасны, поэтому не делайте этого! </para>
+        </note>
+
+        <para>В пакетном режиме командная строка для запуска gsec выглядит следующим образом:
+            <synopsis>
+gsec [<replaceable>&lt;options&gt;</replaceable>] <replaceable>&lt;command&gt;</replaceable> [<replaceable>&lt;parameters&gt;</replaceable>]            
+        </synopsis>
+        </para>
+
+        <section>
+            <title>Отображение информации о пользователе</title>
+
+            <para>Команда <code>display</code> отображает всех пользователей в базе данных
+                безопасности:
+                <screen>
+C:\Firebird\3.0>gsec -display
+     user name                    uid   gid admin     full name
+------------------------------------------------------------------------------------------------
+SYSDBA                              0     0
+NORMAN                              0     0 
+EPOCMAN                             0     0           Benoit Gilles Mascia
+BOSS                                0     0 admin              
+            </screen>
+            </para>
+
+            <para>Чтобы отобразить сведения об одном пользователе, передайте имя пользователя в
+                качестве параметра в команду <code>display</code>:
+                <screen>
+C:\Firebird\3.0>gsec -display epocman
+     user name                    uid   gid admin     full name
+------------------------------------------------------------------------------------------------
+EPOCMAN                             0     0           Benoit Gilles Mascia                
+            </screen>
+            </para>
+        </section>
+        <section>
+            <title>Добавление новых пользователей</title>
+
+            <para>При добавлении пользователя в пакетном режиме нет подтверждения, что пользователь
+                был добавлен. Вы должны использовать команду <code>-display</code> или
+                    <code>-display &lt;name&gt;</code> для проверки.</para>
+            <screen>
+C:\Firebird\3.0>gsec -add newuser -pw newuser -fname New -lname User
+
+C:\Firebird\3.0>gsec -display
+     user name                    uid   gid admin     full name
+------------------------------------------------------------------------------------------------
+SYSDBA                              0     0
+NORMAN                              0     0 
+EPOCMAN                             0     0           Benoit Gilles Mascia
+BOSS                                0     0 admin
+NEWUSER                             0     0           New  User                
+            </screen>
+            <para>Если необходимо добавить пользователя и выдать ему роль RDB$ADMIN в базе данных
+                безопасности, то добавьте опцию <code>-admin yes</code>.</para>
+
+            <screen>
+C:\Firebird\3.0>gsec -add newadmin -pw ignoreit -fname New -mname Admin -lname User -admin yes
+
+C:\Firebird\3.0>gsec -display newadmin
+     user name                    uid   gid admin     full name
+------------------------------------------------------------------------------------------------
+NEWADMIN                            0     0 admin     New Admin User                
+            </screen>
+        </section>
+        <section>
+            <title>Удаление существующего пользователя</title>
+
+            <para>При удалении пользователя в пакетном режиме нет подтверждения, что пользователь
+                был удален. Вы должны использовать команду <code>-display</code> или <code>-display
+                    &lt;name&gt;</code> для проверки.</para>
+            <screen>
+C:\Firebird\3.0>gsec -delete newuser
+
+C:\Firebird\3.0>gsec -display
+     user name                    uid   gid admin     full name
+------------------------------------------------------------------------------------------------
+SYSDBA                              0     0
+NORMAN                              0     0 
+EPOCMAN                             0     0           Benoit Gilles Mascia
+BOSS                                0     0 admin            
+            </screen>
+        </section>
+        <section>
+            <title>Изменение существующего пользователя</title>
+            <para>Для существующих пользователей можно изменить один или несколько своих атрибутов:
+                пароль, фамилия, имя, отчество и наличие прав администратора. </para>
+            <screen>
+C:\Firebird\3.0>gsec -modify norman -pw newpassword
+
+C:\Firebird\3.0>gsec -modify norman -mname MiddleName -fname Fred
+
+C:\Firebird\3.0>gsec -display norman
+     user name                    uid   gid admin     full name
+------------------------------------------------------------------------------------------------
+NORMAN                              0     0           Fred MiddleName Dunbar
+
+            </screen>
+            <para>Если вы хотите удалить один или несколько атрибутов пользователя, не передавайте
+                (новое) значение для этого атрибута.</para>
+            <screen>
+C:\Firebird\3.0>gsec -modify norman -mname -fname -lname
+
+C:\Firebird\3.0>gsec -display norman
+     user name                    uid   gid admin     full name
+------------------------------------------------------------------------------------------------
+NORMAN                              0     0                
+            </screen>
+        </section>
+        <section>
+            <title>Информация о версии</title>
+
+            <para>Версию <application>gsec</application> можно получить с помощью команды
+                    <command>-z</command>. Тем не менее, обратите внимание, что он оставляет вас в
+                интерактивном режиме по завершении. Он не завершает работу, как другие команды
+                пакетного режима, поэтому для выхода необходимо использовать интерактивную команду
+                    <command>quit</command>. Существует способ обойти эту проблему, как показано
+                ниже.</para>
+            <screen>
+C:\Firebird\3.0>gsec -z
+gsec version WI-V3.0.6.33254 Firebird 3.0
+*** gsec is deprecated, will be removed soon ***
+
+GSEC>                
+            </screen>
+            <para>Решение состоит в том, чтобы иметь небольшой файл, содержащий команду
+                    <command>quit</command>, и заставить <application>gsec</application> прочитать
+                этот файл, когда ему потребуется ввод пользователя, следующим образом.</para>
+            <screen>
+C:\Firebird\3.0>copy con fred
+quit
+^Z
+        1 file(s) copied.
+            </screen>
+            <screen>
+C:\Firebird\3.0>gsec -z &lt;fred
+gsec version WI-V3.0.6.33254 Firebird 3.0
+*** gsec is deprecated, will be removed soon ***
+
+GSEC>
+C:\Firebird\3.0>                
+            </screen>
+            <para>Это может быть хорошим решением для любой из команд, которые оставляют вас
+                    <quote>застрявшими</quote> в интерактивном режиме, когда вы думаете, что
+                работаете в пакетном режиме. Перенаправляя ввод из командного файла,
+                    <application>gsec</application> будет читать строку текста из этого файла каждый
+                раз, когда требуется ввод пользователя. Принудительно прочитав команду
+                    <code>quit</code>, вы заставляете его завершиться.</para>
+        </section>
+        <section>
+            <title>Отображение администраторов ОС</title>
+
+            <para>По умолчанию администраторы доменов Windows не получают привилегии администратора
+                в базе данных безопасности, поскольку отключено отображение администраторов на роль
+                RDB$ADMIN. Это можно сделать с помощью команды <code>mapping</code>. Команда
+                принимает параметр set или drop соответственно. Выполнение команды <code>mapping
+                    set</code> приведет к тому, что все учетные записи администраторов Windows
+                автоматически получат полный доступ к функциям управления пользователями.</para>
+            <screen>GSEC> mapping set</screen>
+            <para>или</para>
+            <screen>GSEC> mapping drop</screen>
+        </section>
+    </section>
+    <section>
+        <title>Удаленный запуск gsec</title>
+
+        <para>Gsec может использоваться для администрирования базы данных безопасности на удаленном
+            сервере. Для этого вы должны указать имя удаленной базы данных безопасности в командной
+            строке, как показано в следующем примере.</para>
+
+        <screen>
+C:\Firebird\3.0>gsec -database myserver/3053:security.db -user sysdba -password masterkey
+*** gsec is deprecated, will be removed soon ***
+
+GSEC>            
+        </screen>
+
+        <para>После подключения к удаленной базе данных безопасности вы можете работать с
+            пользователями обычным способом в интерактивном или пакетном режимах, как описано
+            выше.</para>
+
+        <note>
+            <para>По умолчанию в Firebird 3.0 удалённое администрирование базы данных безопасности
+                отключено (смотри настройку RemoteAccess в
+                <filename>databases.conf</filename>).</para>
+        </note>
     </section>
 </chapter>

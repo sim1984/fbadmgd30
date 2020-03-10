@@ -5,7 +5,7 @@
     xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="ru" xml:id="fbadmgd" version="5.1">
     <info>
         <title>Руководство администратора Firebird 3.0</title>
-        <edition>8 марта 2020 — v.0000-1</edition>
+        <edition>10 марта 2020 — v.0000-1</edition>
 
         <authorgroup>
             <author>
@@ -113,11 +113,8 @@
         <!-- NBACKUP -->
         <xi:include href="nbackup.xml" xpointer="element(/1)"/>
         
-        <chapter xml:id="gfix" xml:lang="ru">
-            <title>GFIX</title>
-            
-            <para/>
-        </chapter>
+        <!-- GFIX -->
+        <xi:include href="gfix.xml" xpointer="element(/1)"/>
         
         <!-- GSTAT -->
         <xi:include href="gstat.xml" xpointer="element(/1)"/>

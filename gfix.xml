@@ -1,0 +1,735 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.1/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.1/sch/docbook.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="5.1" xml:id="gfix" xml:lang="ru">
+    <info>
+        <title>Утилита GFIX</title>
+    </info>
+
+    <indexterm>
+        <primary>GFIX</primary>
+    </indexterm>
+
+    <para>Утилита <application>GFIX</application> является одним из основных инструментов
+        администратора БД. Она позволяет: <itemizedlist>
+            <listitem>
+                <para>Выполнять принудительную чистку (sweep) базы данных; </para>
+            </listitem>
+            <listitem>
+                <para>Изменять интервал автоматической чистки (sweep interval); </para>
+            </listitem>
+            <listitem>
+                <para>Закрывать (shutdown) базу данных для получения монопольного доступа, и затем
+                    снова открывать ее; </para>
+            </listitem>
+            <listitem>
+                <para>Переводить базу в режимы «чтение/запись» или «только чтение»; </para>
+            </listitem>
+            <listitem>
+                <para>Переключаться между синхронным и асинхронным вводом (Forced Writes); </para>
+            </listitem>
+            <listitem>
+                <para>Изменять диалект БД; </para>
+            </listitem>
+            <listitem>
+                <para>Устанавливать размер кэша для БД; </para>
+            </listitem>
+            <listitem>
+                <para>Отыскивать повисшие транзакции и отменять или подтверждать их; </para>
+            </listitem>
+            <listitem>
+                <para>Активировать или удалять теневые копии; </para>
+            </listitem>
+            <listitem>
+                <para>Производить ремонт поврежденных баз данных. </para>
+            </listitem>
+        </itemizedlist></para>
+
+    <para>Запуск GFIX осуществляется следующим образом:
+        <synopsis>
+gfix [<replaceable>&lt;commands and parameters&gt;</replaceable>] <replaceable>database_name</replaceable>        
+    </synopsis>
+    </para>
+
+    <para>Если база данных состоит из нескольких файлов, то при запуске
+            <application>gfix</application> необходимо указать первичный файл.</para>
+    <para>Для того, чтобы выполнить любую операцию над базой данных с помощью gfix, необходимо
+        пройти процедуру идентификации и аутентификации — указать имя и пароль пользователя, который
+        имеет право на запуск сервиса gfix. Для указания имени и пароля пользователя используются
+        переключатели <code>-user</code> и <code>-pa[ssword]</code>, соответственно, например:
+        <synopsis>
+gfix -user testuser -pa pass -role rdb$admin [<replaceable>&lt;commands&gt;</replaceable>] <replaceable>database_name</replaceable>         
+    </synopsis>
+    </para>
+    <para>Необязательный переключатель <code>-role</code> задаёт имя роли, права которой будут
+        учитываться при выполнении каких-либо действий утилиты.</para>
+    <para>Имя пользователя и пароль можно не указывать, если в системе установлены контекстные
+        переменные <envar>ISC_USER</envar> и <envar>ISC_PASSWORD</envar>. А также если используется
+        доверительная аутентификация Windows (Win_Sspi), и пользователь системы, от имени которого
+        запускается утилита, является членом группы администраторов.</para>
+
+    <para>Запуск gfix без команды (или с неверной командой) или с переключателем -? приводит к
+        отображению следующего экрана справочной информации: <screen>
+<![CDATA[        
+usage: gfix [options] <database>
+plausible options are:
+   -ac(tivate_shadow)   activate shadow file for database usage
+   -at(tach)            shutdown new database attachments
+   -b(uffers)           set page buffers <n>
+   -co(mmit)            commit transaction <tr / all>
+   -ca(che)             shutdown cache manager
+   -fu(ll)              validate record fragments (-v)
+   -fo(rce_shutdown)    force database shutdown
+   -fe(tch_password)    fetch password from file
+   -h(ousekeeping)      set sweep interval <n>
+   -i(gnore)            ignore checksum errors
+   -icu                 fix database to be usable with present ICU version
+   -k(ill_shadow)       kill all unavailable shadow files
+   -l(ist)              show limbo transactions
+   -me(nd)              prepare corrupt database for backup
+   -mo(de)              read_only or read_write database
+   -nol(inger)          close database ignoring linger setting for it
+   -n(o_update)         read-only validation (-v)
+   -o(nline)            database online <single / multi / normal>
+   -pr(ompt)            prompt for commit/rollback (-l)
+   -pa(ssword)          default password
+   -role                set SQL role name
+   -r(ollback)          rollback transaction <tr / all>
+   -sq(l_dialect)       set database dialect n
+   -sw(eep)             force garbage collection
+   -sh(utdown)          shutdown <full / single / multi>
+   -tw(o_phase)         perform automated two-phase recovery
+   -tra(nsaction)       shutdown transaction startup
+   -tru(sted)           use trusted authentication
+   -u(se)               use full or reserve space for versions
+   -user                default user name
+   -v(alidate)          validate database structure
+   -w(rite)             write synchronously or asynchronously
+   -z                   print software version number
+
+    Options can be abbreviated to the unparenthesized characters  
+]]>    
+    </screen>
+    </para>
+    <para>Набор всех возможных опций утилиты GFIX, представлен ниже.</para>
+    <table frame="topbot">
+        <title>Команды и опции утилиты GFIX</title>
+        <tgroup cols="2">
+            <colspec colname="c1" colnum="1" colwidth="0.65*"/>
+            <colspec colname="c2" colnum="2" colwidth="1.35*"/>
+            <thead>
+                <row>
+                    <entry>Опция</entry>
+                    <entry>Описание</entry>
+                </row>
+            </thead>
+            <tbody>
+                <row>
+                    <entry><code>-ac[tivate_shadow] <replaceable>&lt;shadow
+                            copy&gt;</replaceable></code></entry>
+                    <entry><para>Параметр предназначен для активации теневой копии.
+                                    <code><replaceable>&lt;shadow copy&gt;</replaceable></code> —
+                            адрес и имя файла теневой копии (или первого из файлов).</para></entry>
+                </row>
+                <row>
+                    <entry><code>-at[tach] <replaceable>&lt;n&gt;</replaceable></code></entry>
+                    <entry><para>Дополнительный параметр к <code>-shut</code>. Предназначен для
+                            запрета новых соединений с БД.
+                                    <code><replaceable>&lt;n&gt;</replaceable></code> указывает
+                            количество секунд, через которое произойдет отключение БД. Отключение
+                            отменится, если к этому времени еще останутся активные
+                            соединения.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-b[uffers] <replaceable>&lt;n&gt;</replaceable></code></entry>
+                    <entry><para>Устанавливает новый размер кэша (буфера) БД в страницах.
+                                    <code><replaceable>&lt;n&gt;</replaceable></code> — количество
+                            страниц.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-co[mmit] {<replaceable>&lt;ID&gt;</replaceable> |
+                        all}</code></entry>
+                    <entry><para>Завершает подтверждением зависшую транзакцию с идентификатором
+                                    <code><replaceable>&lt;ID&gt;</replaceable></code>, или все
+                            зависшие транзакции <code>all</code>.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-ca[che]</code></entry>
+                    <entry><para>Не используется.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-fu[ll]</code></entry>
+                    <entry><para>Используется вместе с <code>-v[alidate]</code> для проверки
+                            структур записей и таблиц; освобождает неназначенные фрагменты
+                            записей.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-fo[rce_shutdown]
+                        <replaceable>&lt;n&gt;</replaceable></code></entry>
+                    <entry><para>Дополнительный параметр к <code>-shut</code>. Предназначен для
+                            принудительного закрытия базы данных.
+                                    <code><replaceable>&lt;n&gt;</replaceable></code> указывает
+                            количество секунд, через которое произойдет закрытие. Если остались
+                            активные пользователи, они отключатся, последние результаты их работы
+                            будут потеряны. Такое средство нужно применять с осторожностью, как
+                            последнюю возможность.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-fe[tch_password] {<replaceable>&lt;password file
+                                name&gt;</replaceable> | stdin | /dev/tty}</code></entry>
+                    <entry><para>Извлекает пароль из файла. Если имя файла указано как stdin, то
+                            пользователю будет предложено ввести пароль. В системах POSIX имя файла
+                                <filename>/dev/tty</filename> также приведет к запросу
+                            пароля.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-h[ousekeeping] <replaceable>&lt;n&gt;</replaceable></code></entry>
+                    <entry><para>Изменяет интервал транзакций для автоматической чистки sweep.
+                                    <code><replaceable>&lt;n&gt;</replaceable></code> устанавливает
+                            новый интервал. Если <code>n = 0</code>, автоматическая чистка
+                            запрещена.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-i[gnore]</code></entry>
+                    <entry><para>Игнорировать ошибки контрольных сумм при проверке или
+                            чистке.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-icu</code></entry>
+                    <entry><para>Исправляет базу данных для работы с текущей версией
+                        ICU.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-k[ill_shadow]
+                        <replaceable>&lt;database&gt;</replaceable></code></entry>
+                    <entry><para>Удаляет все неиспользуемые теневые копии базы данных</para></entry>
+                </row>
+                <row>
+                    <entry><code>-l[ist]</code></entry>
+                    <entry><para>Показывает некоторые сведения (в том числе ID) о всех зависших
+                            транзакциях.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-me[nd]</code></entry>
+                    <entry><para>Подготавливает испорченную базу данных для резервного копирования.
+                            Помечает разрушенные записи как неиспользуемые.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-mo[de] {read_write | read_only}</code></entry>
+                    <entry><para>Устанавливает режим записи для базы данных — только для чтения или
+                            чтение/запись. Этот параметр может принимать два
+                        значения.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-nol[inger]</code></entry>
+                    <entry><para>Закрывает указанную базу данных, после того как последнего
+                            соединения не стало, независимо от установок LINGER в базе
+                            данных.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-n[o_update]</code></entry>
+                    <entry><para>Используется вместе с <code>-v[alidate]</code> для проверки
+                            разрушенных или неразмещенных структур. Если таковые есть, они
+                            отобразятся в сообщении, но не будут исправлены.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-o[nline] {single | multi | normal}</code></entry>
+                    <entry><para>Открывает закрытую после <code>-shut</code> базу данных. Опция
+                            normal позволяет устанавливать соединение с БД любым авторизованным
+                            пользователям, а не только SYSDBA и владельцем БД. Опция multi позволяет
+                            устанавливать соединение с БД только SYSDBA и владельцем БД. Опция
+                            single похожа на multi, за тем исключением, что только один из
+                            пользователей — SYSDBA или владелец БД — может
+                        соединиться.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-pr[ompt]</code></entry>
+                    <entry><para>Используется вместе с <code>-l[ist]</code>. Выводит подсказки при
+                            восстановлении транзакций.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-pa[ssword]
+                        <replaceable>&lt;password&gt;</replaceable></code></entry>
+                    <entry><para>Пароль пользователя для работы с gfix.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-role</code></entry>
+                    <entry><para>Роль пользователя для работы с gfix.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-r[ollback] {<replaceable>&lt;ID&gt;</replaceable> |
+                        all}</code></entry>
+                    <entry><para>Завершает откатом зависшую транзакцию с идентификатором
+                                <replaceable>&lt;ID&gt;</replaceable>, или все зависшие транзакции
+                            (all).</para></entry>
+                </row>
+                <row>
+                    <entry><code>-sq[l_dialect] <replaceable>&lt;n&gt;</replaceable></code></entry>
+                    <entry><para>Изменяет диалект базы данных. <replaceable>&lt;n&gt;</replaceable>
+                            может быть 1 или 3.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-sw[eep]</code></entry>
+                    <entry><para>Запускает принудительную чистку БД.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-sh[utdown] {full | single | multi}</code></entry>
+                    <entry><para>Закрывает базу данных. Используется с одним из дополнительных
+                            параметров <code>-attach</code>, <code>-force</code> или
+                                <code>-tran</code>. Опция multi позволяет устанавливать соединение с
+                            БД только SYSDBA и владельцем БД. Опция single похожа на multi, за тем
+                            исключением, что только один из пользователей — SYSDBA или владелец БД —
+                            может соединиться. Опция full не позволяет соединиться с БД никому, даже
+                            SYSDBA и владельцу БД.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-sw[o_phase] {<replaceable>&lt;ID&gt;</replaceable> |
+                        all}</code></entry>
+                    <entry><para>Автоматическое двухфазное восстановление limbo транзакции с номером
+                                <replaceable>&lt;ID&gt;</replaceable>, или всех транзакций
+                            (all).</para></entry>
+                </row>
+                <row>
+                    <entry><code>-tra[nsaction] <replaceable>&lt;n&gt;</replaceable></code></entry>
+                    <entry><para>Дополнительный параметр к <code>-shut</code>. Предназначен для
+                            запрета запуска новых транзакций. <replaceable>&lt;n&gt;</replaceable>
+                            указывает количество секунд, через которое произойдет отключение БД.
+                            Отключение отменится, если к этому времени еще останутся активные
+                            транзакции.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-tru[sted]</code></entry>
+                    <entry>Используется trusted авторизацию.</entry>
+                </row>
+                <row>
+                    <entry><code>-u[se] {full | reserve}</code></entry>
+                    <entry><para>Включает 100% заполнение страниц БД (full) или 80% заполнение по
+                            умолчанию (reserve). 100%-е заполнение имеет смысл для баз только для
+                            чтения.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-user</code></entry>
+                    <entry><para>Имя пользователя для работы с gfix.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-v[alidate]</code></entry>
+                    <entry><para>Определяет и показывает неназначенные страницы БД. То есть,
+                            созданные, но не назначенные для каких либо структур
+                        данных.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-w[rite] {sync|async}</code></entry>
+                    <entry><para>Переключает режимы синхронной/асинхронной записи Forced
+                            Writes.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-z</code></entry>
+                    <entry><para>Выводит версию Firebird и утилиты gfix.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-?</code></entry>
+                    <entry><para>Вывод экрана справочной информации.</para></entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </table>
+
+    <section>
+        <title>Теневые копии</title>
+
+        <para>Файл теневой копии является дополнительной копией первичного файла(ов) базы данных.
+            Для любой данной базы данных может существовать несколько теневых копий, которые могут
+            быть активированы и деактивированы по умолчанию с помощью утилиты
+                <application>gfix</application>.</para>
+
+        <para>Далее описании при активации и деактивации теневых файлов предполагается, что теневой
+            файл уже существует для базы данных. Для этого была создана тень:
+            <screen>
+isql my_employee;
+SQL> create shadow 1 manual '/home/norman/firebird/shadow/my_employee.shd1';
+SQL> create shadow 2 manual '/home/norman/firebird/shadow/my_employee.shd2';
+SQL> commit;
+SQL> show database;
+Database: my_employee
+ Owner: SYSDBA
+ Shadow 1: "/home/norman/firebird/shadow/my_employee.shd1" manual
+ Shadow 2: "/home/norman/firebird/shadow/my_employee.shd2" manual
+...
+SQL> quit;            
+        </screen>
+        </para>
+        <para>Можно видеть, что в базе данных теперь есть два отдельных теневых файла, но поскольку
+            они являются ручными (manual), то они не были активированы. Мы можем увидеть их наличие
+            запустив gstat следующим образом:
+            <screen>
+norman> gstat -header my_employee | grep -i shadow
+Shadow count 2            
+        </screen>
+        </para>
+        <section>
+            <title>Активация теневой копии</title>
+
+            <para>Для активации теневой копии используется команда <code>-ac[tivate]</code>:
+                <synopsis>
+gfix -ac[tivate] <replaceable>&lt;shadow_file_name&gt;</replaceable>                
+            </synopsis>
+            </para>
+
+            <para>Эта команда делает файл теневой копии новым файлом базы данных, и пользователи
+                могут продолжать нормальную обработку данных и без потерь.</para>
+
+            <para>В случае, если ваш основной файл(ы) базы данных поврежден или нечитабелен,
+                администратор базы данных может активировать теневой файл. После активации файл
+                больше не является теневым файлом, и для его замены необходимо создать новый. Кроме
+                того, теневой файл должен быть переименован на имя старого файла базы данных,
+                который он заменяет.</para>
+
+            <warning>
+                <para>Следует отметить, что активация теневой копии, в то время как сама база данных
+                    активна, может привести к повреждению тени. Перед ее активацией убедитесь, что
+                    файл базы данных действительно недоступен.</para>
+            </warning>
+
+            <para>Как только файл теней был активирован, вы можете увидеть факт наличия активных
+                теней в выводе gstat:
+                <screen>
+linux> gstat -header my_employee | grep -i shadow
+Shadow count 2
+Attributes   active shadow, multi-user maintenance                
+            </screen>
+            </para>
+
+            <note>
+                <para>Администратор базы данных может настроить базу данных для автоматического
+                    создания нового теневого файла в случае активации текущей тени. Это позволяет
+                    обеспечить непрерывную поставку теневых файлов и предотвращает работу базы
+                    данных без нее.</para>
+            </note>
+        </section>
+
+
+        <section>
+            <title>Удаление теневых копий</title>
+
+            <para>Удаление всех недоступных теневых копий конкретной базы данных производится
+                командой:
+                <synopsis>
+gfix -k[ill] <replaceable>&lt;database_name&gt;</replaceable>                
+            </synopsis>
+            </para>
+
+            <para>В случае, если база данных, работающая с теневыми файлами, теряет тень, или по
+                какой-либо причине тень становится непригодной, база данных перестанет принимать
+                новые соединения до тех пор, пока администратор базы не уничтожит поврежденную тень
+                и, в идеале, создаст новую тень для замены сломанной.</para>
+
+            <para>В следующем (надуманном) примере показано, что происходит, когда база данных
+                теряет теневой файл и предпринимается попытка подключиться к этой базе данных. В
+                следующем примере есть два сеанса, один из которых подключен к базе данных, а второй
+                удаляет теневой файл, а затем пытается подключиться к базе данных.</para>
+
+            <para>Сначала начальный сеанс подключается к базе данных и видит, что к нему прикреплены
+                два теневых файла:
+                <screen>
+linux_1>isql my_employee
+Database: my_employee
+SQL> show database;
+Database: my_employee
+   Owner: SYSDBA
+Shadow 1: "/home/norman/firebird/shadow/my_employee.shd1" manual
+Shadow 2: "/home/norman/firebird/shadow/my_employee.shd2" manual
+ ...                
+            </screen>
+            </para>
+            <para>Во втором сеансе мы удаляем один из теневых файлов, а затем пытаемся подключиться
+                к базе данных.
+                <screen>
+linux_2> rm /home/norman/firebird/shadow/my_employee.shd2
+linux_2> isql_my_employee
+Statement failed, SQLCODE = -901
+lock conflict on no wait transaction
+-I/O error for file "/home/norman/firebird/shadow/my_employee.shd2"
+-Error while trying to open file
+-No such file or directory
+-a file in manual shadow 2 in unavailable
+Use CONNECT or CREATE DATABASE to specify a database
+SQL> quit;                 
+            </screen>
+            </para>
+            <para>Второй сеанс не может подключиться к базе данных, пока проблема не будет
+                устранена. Администратор баз данных может использовать команду <code>gfix
+                    -k[ill]</code> для удаления недоступного файла теневой копии из базы данных,
+                после чего второй (и последующие) сеансы смогут подключиться.
+                <screen>
+linux_2> gfix -kill my_employee
+ 
+linux_2> isql my_employee
+Database: my_employee
+SQL> show database;
+Database: my_employee
+   Owner: SYSDBA
+Shadow 1: "/home/norman/firebird/shadow/my_employee.shd1" manual
+...                
+            </screen>
+            </para>
+
+            <para>База данных теперь имеет один теневой файл вместо двух. Следует отметить, однако,
+                что <application>gstat</application> по-прежнему показывает базу данных как имеющую
+                две тени, даже если одна была удалена.</para>
+
+            <screen>
+linux> gstat -header my_employee | grep -i shadow
+Shadow count 2
+Attributes   active shadow, multi-user maintenance                
+            </screen>
+
+            <note>
+                <para>При соединении с локальной базой данных пользователь может не обладать правом
+                    на запуск сервиса <application>gfix</application>. Однако он сможет выполнить ту
+                    или иную операцию, только если у него есть соответствующие права. Например, для
+                    удаления теневой копии пользователь должен обладать правом на DDL-операцию DROP
+                    SHADOW.</para>
+            </note>
+        </section>
+    </section>
+
+    <section>
+        <title>Установка размера кэша базы данных</title>
+
+        <para>Кэш базы данных — это область оперативной памяти, выделенная для хранения
+            (кэширования) страниц базы данных в памяти, чтобы повысить эффективность работы с базо1
+            данных. Операции в оперативной памяти происходят гораздо быстрее, чем если данные
+            постоянно считываются с диска.</para>
+
+        <para>Размер кэша базы данных зависит от размера страницы базы данных и количества
+            выделенных буферов, размер буфера такой же, как у страницы базы данных.</para>
+
+        <para>В различных архитектурах сервера страничный кэш используется по разному. При установке
+            Classic Server каждое соединение с базой данных получает свой собственный относительно
+            небольшой кэш размером 256-2048 страниц, в то время как Super Server использует общий
+            страничный кэш для всех соединений, который может быть достаточно большим 2048 страниц и
+            выше.</para>
+
+        <para>Изменить размер кэша для базы данных можно командой:
+            <synopsis>
+gfix -b[uffers] <replaceable>&lt;n&gt;</replaceable> <replaceable>database_name</replaceable>            
+        </synopsis>
+        </para>
+
+        <para>Данная команда прописывает размер страничного кеша на заголовочную страницы базы
+            данных. Значение на заголовочной странице перекрывает значение параметра
+                <parameter>DefaultDbCachePages</parameter> в конфигурационных файла
+                <filename>databases.conf</filename> и <filename>firebird.conf</filename>.</para>
+
+        <para>Минимально допустимое значение равняется 50 страницам, максимальное в 32 разрядной
+            версии Firebird равен 128000 страниц, в 64 разрядной —
+                    <code>2<superscript>31</superscript> - 1</code>. Если размер страничного кеша на
+            заголовочной странице установлен в 0, то страничный кеш будет размером равным значению
+            параметра <parameter>DefaultDbCachePages</parameter> из
+                <filename>databases.conf</filename> и <filename>firebird.conf</filename>.</para>
+
+        <para>Это действие применяется только к указанной вами базе данных. На другие базы данных,
+            работающие на том же сервере, это изменение не повлияет.</para>
+
+        <para>В следующем примере показано использование <application>gstat</application> для чтения
+            текущего количества буферов, утилита <application>gfix</application> используется для
+            установки буферов на 4000 страниц, а <application>gstat</application> используется для
+            подтверждения настройки. Нулевое значение для буферов страниц указывает, что
+            используется значение параметра <parameter>DefaultDbCachePages</parameter> из
+                <filename>databases.conf</filename> и <filename>firebird.conf</filename>.</para>
+
+        <screen>
+linux> gstat -header my_employee | grep -i "page buffers"
+Page buffers    0
+    
+linux> gfix -buffers 4000 my_employee
+    
+linux> gstat -header my_employee | grep -i "page buffers"
+Page buffers 4000            
+        </screen>
+    </section>
+
+    <section>
+        <title>Управление limbo транзакциями</title>
+
+        <para><quote>Застрявшей</quote> (<quote>зависшей</quote>) транзакцией (limbo) называют
+            транзакцию, которая работает одновременно с двумя или более базами данных. При
+            завершении такой транзакции, Firebird совершает двухфазное подтверждение Commit,
+            гарантируя, что изменения будут внесены либо во все БД, либо ни в одну. При этом
+            подтверждения в базах данных будут даваться по очереди. Если в это время возникнет сбой
+            системы, то может получиться, что в каких то БД изменения были сделаны, а в каких то
+            нет. При этом транзакция переходит в неопределенное состояние, когда сервер не знает,
+            следует ли подтвердить эту транзакцию, или откатить.</para>
+
+        <para>Gfix предоставляет несколько команд, позволяющих управлять limbo транзакциями.</para>
+
+        <section xml:id="gfix-limbo-list">
+            <title>Список limbo транзакций</title>
+
+            <para>Команда <code>gfix -l[ist]</code> будет отображать сведения о limbo транзакциях.
+                Если команда не выдала результата, то зависших транзакций нет, и дальнейшие действия
+                не требуются. Команда выглядит следующим образом:
+                <synopsis>
+gfix -l[ist] <replaceable>database_name</replaceable>                
+            </synopsis>
+            </para>
+
+            <para>Пример перечисления неопределенных транзакций показан ниже. Эта команда
+                выполняется для локальной базы данных на сервере с именем linux, где была выполнена
+                транзакция с несколькими базами данных, подключенная к базам данных
+                    <code>linux@my_employee</code> и <code>remote:testlimbo</code>. Обе эти имени
+                базы данных имеют псевдонимы в <filename>databases.conf</filename>.</para>
+
+            <screen>
+linux> gfix -list my_employee
+Transaction 67 is in limbo.
+  Multidatabase transaction:
+  Host Site: linux
+  Transaction 67
+has been prepared.
+  Remote Site: remote
+  Database path: /opt/firebird/examples/testlimbo.fdb                
+            </screen>
+
+            <para>Если команда выполняется для удаленной базы данных, то ничего не будет выведено,
+                потому что в этой базе нет никаких limbo транзакций — транзакция, которая перешла в
+                неопределенное (limbo) состояние, например, когда произошел сбой сети, была
+                инициирована в локальной базе данных.</para>
+
+            <para>Эту команду можно дополнить ключом <code>-pr[ompt]</code>, и тогда вам будет
+                предложено выполнить Commit или Rollback для каждой обнаруженной транзакции limbo. В
+                этом случае команда будет такой:
+                <synopsis>
+gfix -l[ist] -p[rompt] <replaceable>database_name</replaceable>                
+            </synopsis>
+            </para>
+
+            <para>Пример вывода с дополнительным ключом <code>-pr[ompt]</code>
+                <screen>
+linux> gfix -list -prompt my_employee
+Transaction 67 is in limbo.
+  Multidatabase transaction:
+  Host Site: linux
+  Transaction 67
+has been prepared.
+  Remote Site: remote
+  Database path: /opt/firebird/examples/testlimbo.fdb
+Commit, rollback or neither (c, r, or n)?                
+            </screen>
+            </para>
+        </section>
+        <section>
+            <title>Подтверждение или откат</title>
+
+            <para>При обнаружении limbo транзакции администратор базы данных имеет возможность
+                зафиксировать или откатить limbo транзакцию. Если обнаружено больше одной транзакции
+                в состоянии in-limbo, то администратор может подтвердить (или откатить) все limbo
+                транзакции или какую-то одну, по идентификатору.
+                <synopsis>
+gfix -commit {all | <replaceable>&lt;ID&gt;</replaceable>} <replaceable>database_name</replaceable>
+                
+gfix -rollback {all | <replaceable>&lt;ID&gt;</replaceable>} <replaceable>database_name</replaceable>                
+            </synopsis>
+            </para>
+
+            <para>После работы этих команд <application>gfix</application> не выводит никаких
+                сообщений о том, что эти команды отработали. Вам нужно будет повторно запустить
+                команду <code>gfix -list</code>, чтобы убедиться, что limbo транзакций больше
+                нет.</para>
+
+            <para>Вы не можете зафиксировать или откатить транзакцию, которая не находится в
+                подвешенном состоянии. Если вы попытаетесь, произойдет следующее:
+                <screen>
+linux> gfix -commit 388 my_employee
+failed to reconnect to a transaction in database my_employee
+transaction is not in limbo
+-transaction 388 is active
+unknown ISC error 0             
+            </screen>
+            </para>
+
+            <para>При фиксации или откате всех limbo транзакций можно указать опцию
+                    <code>-p[rompt]</code>. Однако это не разрешено при обработке одной транзакции.
+                Пример использования опции <code>-p[rompt]</code> был показан выше в главе <link
+                    xlink:href="#gfix-limbo-list">Список limbo транзакций</link>.</para>
+        </section>
+
+        <section>
+            <title>Автоматическое двухфазное восстановление</title>
+
+            <para>Gfix можно использовать для автоматического двухфазного восстановления limbo
+                транзакции с идентификатором, или всех транзакций:
+                <synopsis>
+gfix -t[wo_phase] {all | <replaceable>&lt;ID&gt;</replaceable>} <replaceable>database_name</replaceable>               
+            </synopsis>
+            </para>
+
+            <para>При автоматическом восстановлении всех limbo транзакций можно указать опцию
+                    <code>-p[rompt]</code>. Однако это не разрешено при обработке одной
+                транзакции.</para>
+
+            <note>
+                <para>Так как при запуске <application>gfix</application> можно указать только одну
+                    пару имя пользователя/пароль, то при восстановлении зависших двухфазных
+                    транзакций, которые работали с базами данных на разных серверах, логин и пароль
+                    пользователя, выполняющего восстановление, должны совпадать на всех
+                    серверах.</para>
+            </note>
+        </section>
+    </section>
+
+    <section>
+        <title>Установка режима доступа для базы данных</title>
+
+        <para/>
+    </section>
+
+    <section>
+        <title>Изменение SQL диалекта</title>
+
+        <para/>
+    </section>
+
+    <section>
+        <title>Чистка (sweep) базы данных</title>
+
+        <para/>
+    </section>
+
+    <section>
+        <title>Открытие и закрытие базы данных</title>
+
+        <para/>
+    </section>
+
+    <section>
+        <title>Использование пространства страниц базы данных</title>
+
+        <para/>
+    </section>
+
+    <section>
+        <title>Проверка и исправление базы данных</title>
+
+        <para/>
+    </section>
+
+    <section>
+        <title>Изменение режима записи на диск</title>
+
+        <para/>
+    </section>
+
+    <section>
+        <title>Исправляет базу данных для работы с текущей версией ICU</title>
+
+        <para/>
+    </section>
+
+    <section>
+        <title>Информация о версии</title>
+
+        <para/>
+    </section>
+</chapter>

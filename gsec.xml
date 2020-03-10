@@ -630,4 +630,95 @@ GSEC>
                 <filename>databases.conf</filename>).</para>
         </note>
     </section>
+    <section>
+        <title>Особенности работы с GSEC</title>
+
+        <para>Ниже представлены некоторые особенности, выявленные при практическом использовании
+            утилиты <application>GSEC</application>. Некоторые из них упомянуты выше, а некоторые,
+            быть может, нет. Просматривая все это в одном месте, вы, скорее всего, сможете
+            определить причину возникновения вашей конкретной проблемы при работе с
+                <application>GSEC</application>.</para>
+
+        <section>
+            <title>Обычные и привилегированные пользователи</title>
+
+            <para>Вносить изменения в базу данных безопасности могут только администраторы в этой
+                базе данных: пользователи с ролью RDB$ADMIN, владелец БД безопасности и пользователь
+                sysdba. Обычный пользователь может запустить <application>GSEC</application> только
+                для просмотра информации. Начиная с СУБД Firebird 2 пользователь может изменить
+                любую информацию о себе. Вот пример того, что происходит, когда обычный пользователь
+                пытается добавить нового пользователя в базу данных безопасности:
+                <screen>
+C:\Firebird\3.0>gsec -user norman -password norman
+*** gsec is deprecated, will be removed soon ***
+
+GSEC> add myuser -pw mypassword
+An error occurred while attempting to add the user.
+no permission for INSERT access to TABLE PLG$SRP_VIEW
+GSEC>                
+            </screen>
+            </para>
+
+            <para>Обычный пользователь может только просматривать и изменять информацию о
+                себе.</para>
+            <screen>
+C:\Firebird\3.0>gsec -user norman -password norman -display
+     user name                    uid   gid admin     full name
+------------------------------------------------------------------------------------------------
+NORMAN                              0     0                
+            </screen>
+        </section>
+
+        <section>
+            <title>Отличия интерактивного и пакетного режимов</title>
+
+            <para>Команды <application>GSEC</application> применимы к обоим режимам, но при работе в
+                пакетном режиме вы должны использовать для них префикс <quote>знак минус</quote>
+                (-), иначе получите нижеследующее сообщение об ошибке:
+                <screen>
+C:\Firebird\3.0>gsec -user sysdba -password masterkey display
+invalid parameter, no switch defined
+error in switch specifications
+*** gsec is deprecated, will be removed soon ***
+
+GSEC>                
+            </screen>
+            </para>
+            <para>Заметьте, что <application>GSEC</application> оставляет вас в интерактивном режиме
+                в случае возникновения ошибки. Чтобы этого избежать, достаточно поставить минус
+                перед командой <code>display</code>:
+                <screen>
+C:\Firebird\3.0>gsec -user sysdba -password masterkey -display
+     user name                    uid   gid admin     full name
+------------------------------------------------------------------------------------------------
+SYSDBA                              0     0
+NORMAN                              0     0
+EPOCMAN                             0     0           Benoit Gilles Mascia
+BOSS                                0     0 admin              
+            </screen>
+            </para>
+            <para>Теперь <application>GSEC</application> выполняет то, что от него требуют —
+                отображает список пользователей, и завершает работу.</para>
+        </section>
+        <section>
+            <title>Коды завершения в пакетном режиме</title>
+
+            <para>Запуская утилиту <application>GSEC</application> в ОС windows, вы можете
+                проанализировать код завершения через значение переменной
+                    <envar>%ERRORLEVEL%</envar> и определить, удачно завершилась
+                    <application>GSEC</application> или возникла ошибка при выполнении требуемой
+                задачи.</para>
+
+            <para>В случае с ОС Unix любой разновидности код завершения можно оценить по значению
+                переменной $?.</para>
+        </section>
+        <section>
+            <title>Ошибки в пакетном режиме переводят GSEC в интерактивный режим</title>
+
+            <para>Как уже говорилось ранее, в некоторых ситуациях ошибка пакетного режима может
+                привести к тому, что утилита <application>GSEC</application> перейдет в
+                интерактивный режим, и скрипт прервет выполнение, ожидая клавиатурного ввода
+                пользователя. Путь решения данной проблемы был описан выше.</para>
+        </section>
+    </section>
 </chapter>

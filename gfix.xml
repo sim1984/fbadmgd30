@@ -682,19 +682,384 @@ gfix -t[wo_phase] {all | <replaceable>&lt;ID&gt;</replaceable>} <replaceable>dat
     <section>
         <title>Установка режима доступа для базы данных</title>
 
-        <para/>
+        <para>База данных может работать в одном из двух режимов доступа: только для чтения, или для
+            чтения/записи (по умолчанию).</para>
+
+        <para>Например, если вы хотите разместить базу данных на CD диске, у вас не получится это
+            сделать в режиме <quote>чтения-записи</quote>. После того, как база данных будет
+            заполнена данными, ее следует изменить в режим только для чтения, а затем использовать
+            на CD диске (или других файловых системах только для чтения) без проблем.</para>
+
+        <note>
+            <para>Firebird записывает информацию о транзакциях в базу данных, поэтому даже если вы
+                выполняете операторы SELECT, всё равно требуется чтобы базы данных была размещена в
+                файловой системе позволяющей чтение и запись.</para>
+        </note>
+
+        <para>Для изменения режима доступа к базе данных, выполните команду:
+            <synopsis>
+gfix -mo[de] {read_only | read_write} <replaceable>database</replaceable>            
+        </synopsis>
+        </para>
+
+        <para>В следующем примере показано, как перевести базу данных в режим только для чтения, а
+            затем снова изменить ее. В примере также показано, что происходит, когда вы пытаетесь
+            обновить базу данных, работая в режиме только для чтения.</para>
+
+        <screen>
+linux> gfix -mode read_only my_employee
+
+linux> isql my_employee
+Database: my_employee
+
+SQL> create table test(stuff integer);
+Statement failed, SQLSTATE = 42000
+Dynamic SQL Error
+-attempted update on read-only database
+
+SQL> quit;
+
+linux> gfix -mode read_write my_employee
+
+linux> isql my_employee
+Database: my_employee
+
+SQL> create table test(stuff integer);
+
+SQL> show table test;
+STUFF      INTEGER Nullable
+
+SQL> quit;            
+        </screen>
+
+        <para>Если есть какие-либо подключения к базе данных в режиме чтения/записи, то при попытке
+            преобразовать базу данных в режим только для чтения, будет выдана следующая
+            ошибка.</para>
+
+        <screen>
+linux> gfix -mode read_only my_employee
+lock time-out on wait transaction
+-object /opt/firebird/databases/my_employee.fdb is in use
+
+linux> echo $?
+0            
+        </screen>
     </section>
 
     <section>
         <title>Изменение SQL диалекта</title>
 
-        <para/>
+        <para>Диалект базы данных — это просто термин, который определяет специфические особенности
+            языка SQL, доступные при доступе к этой базе данных. В настоящее время существует три
+            диалекта: </para>
+        <itemizedlist>
+            <listitem>
+                <para>Диалект 1 хранит информацию о дате и времени в типе данных DATE и имеет тип
+                    данных TIMESTAMP, который идентичен типу DATE. Двойные кавычки используются для
+                    разделения строковых данных. Точность для типов данных NUMERIC и DECIMAL меньше,
+                    чем для базы данных диалекта 3, а если точность больше 9, Firebird сохраняет их
+                    как DOUBLE PRECISION. INT64 не разрешен в качестве типа данных.</para>
+            </listitem>
+            <listitem>
+                <para>Диалект 2 доступен только при подключении клиента Firebird и не может быть
+                    установлен в базе данных. Он предназначен для отладки возможных проблем с
+                    устаревшими данными при переносе базы данных с диалекта 1 на 3. Этот диалект не
+                    может быть установлен для базы данных с использованием
+                        <application>gfix</application>. </para>
+            </listitem>
+            <listitem>
+                <para>Базы данных диалекта 3 позволяют сохранять числа (типы данных DECIMAL и
+                    NUMERIC) как INT64, если точность больше 9. Тип данных TIME может использоваться
+                    и хранить только данные времени. Тип данных DATE хранит информацию о дате.
+                    Двойные кавычки могут использоваться, но только для идентификаторов, которые
+                    зависят от регистра, но не для строковых данных, которые должны использовать
+                    одинарные кавычки.</para>
+            </listitem>
+        </itemizedlist>
+        <para>Для изменения диалекта SQL для базы данных используется следующая команда:
+            <synopsis>
+gfix -s[ql_dialect] <replaceable>&lt;dialect&gt;</replaceable> <replaceable>&lt;databasee&gt;</replaceable>            
+        </synopsis>
+        </para>
+
+        <para>Параметр <code><replaceable>&lt;dialect&gt;</replaceable></code> должен быть 1 или
+            3.</para>
+
+        <para>В следующем примере изменяется диалект базы данных на 3, что позволит использовать
+            многие новые функции SQL 92.</para>
+
+        <screen>
+linux> gfix -sql_dialect 3 my_employee
+
+linux> gstat -header my_employee | grep dialect
+Database dialect    3
+
+linux> gfix -sql_dialect 1 my_employee
+
+linux> gstat -header my_employee | grep dialect
+Database dialect    1            
+        </screen>
+
+        <para>Вы можете использовать команду <application>isql</application>
+            <code>SHOW SQL DIALECT</code>, чтобы увидеть, какой диалект используют ваш клиент и база
+            данных, как показано ниже:
+            <screen>
+linux> isql employee -user sysdba
+Database: employee, User: SYSDBA
+SQL> show sql dialect;
+        Client SQL dialect is set to: 3 and database SQL dialect is: 3            
+        </screen>
+        </para>
+
+        <para>Хотя использование диалект 2 возможно на клиенте, попытка установить диалект 2 на
+            сервере не удастся. Это показано в следующем примере.</para>
+
+        <screen>
+linux> gfix -sql_dialect 2 my_employee
+Database dialect 2 is not a valid dialect.
+-Valid database dialects are 1 and 3.
+-Database dialect not changed.            
+        </screen>
+
+        <para>Чтобы установить диалект 2 для использовании в клиентском приложении
+                <application>isql</application> выполните:
+            <screen>
+linux> isql my_employee
+Database: my_employee
+
+SQL> set sql dialect 2;
+WARNING: Client SQL dialect has been set to 2 when connecting to Database SQL dialect 3 
+database.
+
+SQL> show sql dialect;
+        Client SQL dialect is set to: 2 and database SQL dialect is: 3
+        </screen>
+        </para>
     </section>
 
     <section>
         <title>Чистка (sweep) базы данных</title>
 
-        <para/>
+        <section>
+            <title>Сборка мусора и sweep</title>
+
+            <para>Многоверсионная архитектура Firebird порождает ситуацию, когда множество версий
+                строк данных хранится непосредственно на страницах базы данных. Firebird сохраняет
+                старые версии при изменении или удалении записи. Версии записей, которые не нужны ни
+                одной активной транзакции называются мусорными версиями. При нормальном ходе событий
+                устаревшие версии записей, созданные изменёнными данными, вычищаются фоновой или
+                кооперативной сборкой мусора.</para>
+
+            <para><emphasis>Кооперативная сборка</emphasis> мусора возможна в любой архитектуре
+                сервера. Кооперативность сборки мусора проявляется в том, что "мусорные" версии
+                детектируются только при чтении этих самых версий. То есть до тех пор, пока запись с
+                версиями не прочитана ни в одной транзакции, ее версии остаются на диске и как мусор
+                не собираются (если, конечно, в данный момент они неактуальны, и действительно
+                являются мусором).</para>
+            <para><emphasis>Фоновая сборка</emphasis> мусора возможна только в архитектуре
+                SuperServer. При обнаружении мусорных версий на странице (при чтении и обновлении)
+                об этом сигнализируется потоку (thread) сборщика мусора. Сборщик мусора периодически
+                собирает мусор на помеченных страницах.</para>
+
+            <para>В Firebird можно управлять стратегией сборки мусора. Для этого в конфигурации
+                    (<filename>firebird.conf</filename> и <filename>databases.conf</filename>) есть
+                параметр <parameter>GCPolicy</parameter>, который имеет 3 варианта: <itemizedlist>
+                    <listitem>
+                        <para>background – сборщик мусора работает как фоновый, собирая мусор
+                            отдельным потоком (thread);</para>
+                    </listitem>
+                    <listitem>
+                        <para>cooperative – сборщик мусора работает в кооперативном режиме, собирая
+                            мусор немедленно при чтении "мусорных" версий;</para>
+                    </listitem>
+                    <listitem>
+                        <para>combined – сборщик мусора работает в кооперативном режиме, но если
+                            мусор собрать не удается, то о "замусоренных" страницах сигнализируется
+                            фоновому сборщику мусора.</para>
+                    </listitem>
+                </itemizedlist></para>
+
+            <para>Чистка базы данных (sweep) является способом систематического удаления устаревших
+                строк из базы данных. При старте sweep он просматривает все страницы данных и
+                индексов в базе данных, и убрать все мусорные версии, существующие на текущий
+                момент. А также, попытаться подвинуть <quote>вверх</quote> застрявшую OIT (Oldest
+                Interesting Transaction, OIT — находится в любом состоянии, кроме подтвержденного.
+                Возможна эта транзакция всё ещё активная или в состоянии Limbo, либо отменена). То
+                есть, если кооперативная сборка мусора возникает только при чтении конкретных
+                записей, то sweep — это принудительная сборка мусора во всех таблицах базы данных
+                (то есть, грубо говоря, sweep это принудительное чтение всего файла БД с
+                вероятностью операций записи — собственно сборки мусора).</para>
+
+            <para>Для чего sweep пытается собрать мусор во всей базе данных? Для того, чтобы
+                подвинуть "вверх" номер Oldest Interesting Transaction (Oldest transaction в
+                    <code>gstat -h</code>). Дело в том, что единственные транзакции, которые
+                приводят к "залипанию" Oldest на месте, это транзакции, которые завершились
+                Rollback, и для которых сервер не смог отменить все изменения по сохраненным в
+                памяти savepoints (это либо dead транзакции обнаруженные после аварийного завершения
+                сервера, либо объём изменений превышает ~50000 записей). То есть, пока все версии,
+                созданные этой транзакцией не будут отменены, ее состояние нельзя изменить в
+                committed. А транзакции snapshot оценивают состояния конкурирующих транзакций и
+                возможность модификации записей именно от Oldest transaction до Next transaction.
+                Собственно, при чтении версий, номер транзакций которых меньше Oldest transaction,
+                сервер даже не проверяет наличие версий, потому что таковых нет и быть не может, а
+                кроме того, все транзакции меньше Oldest обязательно находятся в состоянии committed
+                (т. е. их версии можно читать).</para>
+
+            <para>Таким образом, если у нас в БД возникает транзакция, отмененная по rollback (опять
+                же, для которой сервер не смог отменить изменения по savepoints), то это означает,
+                что каждая следующая транзакция будет проверять версии на состояние транзакций от
+                Next до Oldest. И чем больше этот интервал, тем больше страниц Transaction Inventory
+                Page (хранящих состояния транзакций) будет считываться в кэш, и тем больше этих
+                страниц будут запоминать в "локальной памяти" для транзакции snapshot.
+                Соответственно, просто с ростом числа транзакций производительность будет
+                деградировать.</para>
+
+            <para>Для уменьшения объёма чтения при выполнении чистки начиная с ODS 12.0 (Firebird
+                3.0) на страницах DP (Data Page) и PP (Pointer Page) был введён swept флаг. Этот
+                флаг выставляется на странице при посещении сборщиком мусора или sweep, если на ней
+                вычищены все мусорные версии. Если на такой странице будет создана новая версия, то
+                флаг сбрасывается. При выполнении sweep проверяет значение swept флага, и если он
+                истинен (на странице нет мусора), то sweep может не посещать данную страницу. Это
+                позволяет значительно уменьшить объём физического чтения с диска при повторном
+                выполнении sweep, если конечно вы не изменяете все страницы базы данных.</para>
+
+            <warning>
+                <para>Восстановление базы данных с помощью gbak приведёт к тому, что все страницы
+                    новой базы данных будут со сброшенным swept флагом. Поэтому первая же чиста
+                    (sweep) базы данных прочитает и модифицирует абсолютно все страницы (будет
+                    долгой).</para>
+            </warning>
+
+            <para>Чистка может производится в ручном и автоматическом режиме. В автоматическом
+                режиме чистка запускается при достижении так называемого интервала чистки (sweep
+                interval).</para>
+
+
+            <para>Интервал чистки (sweep interval) — разница между Oldest Transaction (или Oldest
+                Interesting Transaction, OIT) и Oldest Active Transaction (OAT). По умолчанию для
+                новых баз данных интервал чистки (sweep interval) равен 20000 транзакций.</para>
+        </section>
+
+        <section>
+            <title>Изменение sweep interval</title>
+
+            <para>Изменить интервал чистки для конкретной базы данных можно с помощью опции
+                    <code>-h[ouskeeping]</code>:
+                <synopsis>
+gfix -h[ousekeeping] <replaceable>&lt;interfval&gt;</replaceable> <replaceable>&lt;database&gt;</replaceable>                
+            </synopsis>
+            </para>
+
+            <para>Параметр <replaceable>&lt;interfval&gt;</replaceable> — это новое значение
+                интервала чистки. В следующем примере показано изменение параметра со значения по
+                умолчанию на новое значение 30000.</para>
+            <synopsis>
+linux> gfix -h 30000 my_employee                
+            </synopsis>
+            <screen>
+linux> gstat -header my_employee | grep Sweep
+Sweep interval:     30000                
+            </screen>
+        </section>
+
+        <section>
+            <title>Отмена автоматического sweep</title>
+
+            <para>Если установить интервал чистки в 0, то в этом случае автоматическая чистка
+                выполняться будет.</para>
+
+            <para>Автоматический sweep базы данных приходит в непредсказуемые моменты. Поскольку при
+                выполнении sweep будет прочитано значительное количество страниц (или даже все
+                страницы) базы данных, то это может приводить к резкой просадки производительности
+                при работе с базой данных во время sweep. Если вы наблюдаете подобные симптомы, то
+                рекомендуем вам отключить автоматический sweep и выполнять ручной sweep по
+                расписанию в период наименьшей активности базы данных.</para>
+        </section>
+
+        <section>
+            <title>Выполнение ручного sweep</title>
+
+            <para>Администратор может запустить чистку (sweep) вручную с помощью следующей команды:
+                <synopsis>
+ gfix -s[weep] [-i[gnore]] <replaceable>&lt;database&gt;</replaceable>                
+            </synopsis>
+            </para>
+
+            <para>Ключ <code>-i[gnore]</code> заставляет Firebird игнорировать ошибки контрольной
+                суммы на страницах базы данных. Лучше не использовать эту опцию, однако, если в
+                вашей базе данных возникли некоторые проблемы, возможно, эта опция станет
+                необходимой.</para>
+
+            <para>В следующем прмере показан запуск sweep вручную:
+                <screen>
+linux> gfix -sweep my_employee                
+            </screen>
+            </para>
+        </section>
+
+        <section>
+            <title>Отслеживание запусков sweep</title>
+
+            <para>В файл <filename>firebird.log</filename> пишутся события начала и окончания sweep,
+                а так же ошибки которые возникли во время sweep, помешавшие его выполнению. Для
+                событий начала и окончания sweep в журнал пишутся также значения счётчиков
+                транзакций которые были на этот момент.</para>
+
+            <para>Это позволяет отследить успешно ли выполнена чистка (sweep), а так же сопоставлять
+                связаны ли проблемы производительности с процедурой начала sweep.</para>
+
+            <para>Для события начала sweep запись в <filename>firebird.log</filename> выглядит
+                следующим образом:
+                <programlisting>
+<![CDATA[
+     Sweep is started by <user name>
+     Database <database name>
+     OIT <n>, OAT <n>, OST <n>, Next <n>
+]]>                    
+                </programlisting>
+            </para>
+            <para>Для события успешного окончания sweep запись в <filename>firebird.log</filename> выглядит
+                следующим образом:
+                <programlisting>
+<![CDATA[
+     Sweep is finished
+     Database <database name>
+     OIT <n>, OAT <n>, OST <n>, Next <n>
+]]>                    
+                </programlisting>
+            </para>
+            <para>Если во время sweep произошла ошибка, в <filename>firebird.log</filename> будет записано:
+                <programlisting>
+<![CDATA[
+     Error during sweep:
+     <error details>
+]]>                    
+                </programlisting> 
+            </para>
+            <para>Ниже приведён пример записей в <filename>firebird.log</filename> о различных событиях связанных со sweep:
+           <screen>
+               
+
+BIGSRV (Server) Wed Dec 12 15:22:05 2019
+Error during sweep:deadlock
+
+....
+
+BIGSRV (Server)	Wed Dec 12 19:30:16 2019
+	Sweep is started by SWEEPER
+	Database "D:\RTDATACOLLECTOR\DATABASE\DATABASE.FDB" 
+	OIT 3086403, OAT 4338117, OST 4337973, Next 4338183
+
+.....
+
+BIGSRV (Server)	Wed Dec 12 20:23:27 2019
+	Sweep is finished
+	Database "D:\RTDATACOLLECTOR\DATABASE\DATABASE.FDB" 
+	OIT 4337972, OAT 4572476, OST 4572408, Next 4572596
+         
+           </screen> 
+            </para>
+        </section>
     </section>
 
     <section>

@@ -98,7 +98,10 @@
                     <para/>
                 </section>
             </section>
+                       
         </chapter>
+        
+        <xi:include href="config.xml" xpointer="element(/1)"/>
     </part>
     <part xml:id="command-line-tools">
         <title>Утилиты командной строки</title> 
@@ -138,15 +141,10 @@
             
             <para/>
         </chapter>
-        <chapter>
-            <title>GSPLIT</title>
-            
-            <para/>
-        </chapter>
     </part>
 
     <part xml:id="tasks">
-        <title/> 
+        <title>Практические задачи</title> 
 
         <chapter>
             <title>Типичные проблемы с установкой</title>
@@ -171,7 +169,6 @@
             <para/>
         </chapter>
 
-        <xi:include href="config.xml" xpointer="element(/1)"/>
         <xi:include href="hardware.xml" xpointer="element(/1)"/>
 
         <chapter>

@@ -1009,8 +1009,7 @@ linux> gfix -sweep my_employee
                 связаны ли проблемы производительности с процедурой начала sweep.</para>
 
             <para>Для события начала sweep запись в <filename>firebird.log</filename> выглядит
-                следующим образом:
-                <programlisting>
+                следующим образом: <programlisting>
 <![CDATA[
      Sweep is started by <user name>
      Database <database name>
@@ -1018,9 +1017,8 @@ linux> gfix -sweep my_employee
 ]]>                    
                 </programlisting>
             </para>
-            <para>Для события успешного окончания sweep запись в <filename>firebird.log</filename> выглядит
-                следующим образом:
-                <programlisting>
+            <para>Для события успешного окончания sweep запись в <filename>firebird.log</filename>
+                выглядит следующим образом: <programlisting>
 <![CDATA[
      Sweep is finished
      Database <database name>
@@ -1028,16 +1026,17 @@ linux> gfix -sweep my_employee
 ]]>                    
                 </programlisting>
             </para>
-            <para>Если во время sweep произошла ошибка, в <filename>firebird.log</filename> будет записано:
-                <programlisting>
+            <para>Если во время sweep произошла ошибка, в <filename>firebird.log</filename> будет
+                записано: <programlisting>
 <![CDATA[
      Error during sweep:
      <error details>
 ]]>                    
-                </programlisting> 
+                </programlisting>
             </para>
-            <para>Ниже приведён пример записей в <filename>firebird.log</filename> о различных событиях связанных со sweep:
-           <screen>
+            <para>Ниже приведён пример записей в <filename>firebird.log</filename> о различных
+                событиях связанных со sweep:
+                <screen>
                
 
 BIGSRV (Server) Wed Dec 12 15:22:05 2019
@@ -1057,21 +1056,181 @@ BIGSRV (Server)	Wed Dec 12 20:23:27 2019
 	Database "D:\RTDATACOLLECTOR\DATABASE\DATABASE.FDB" 
 	OIT 4337972, OAT 4572476, OST 4572408, Next 4572596
          
-           </screen> 
+           </screen>
             </para>
         </section>
     </section>
 
     <section>
-        <title>Открытие и закрытие базы данных</title>
+        <title>Открытие и закрытие (блокировка) базы данных</title>
 
-        <para/>
+        <section>
+            <title>Закрытие (блокировка) базы данных</title>
+
+            <para>Закрытие базы данных означает, что база данных переводится в особый режим, в
+                котором к ней запрещены некоторые подключения, в зависимости от указанного
+                состояния. Полноценная работа с закрытой базой данных возможна только после
+                обратного ее перевода в открытый режим.</para>
+            <para>Закрытие базы данных может быть необходимо для получения монопольного доступа к
+                ней и проведения действий по восстановлению структуры базы и/или хранящихся в ней
+                данных.</para>
+            <para>Для закрытия базы данных используется команда <code>-sh[ut]</code>. Совместно с
+                этой командой указывается режим отключения существующих соединений и время ожидания
+                (в секундах) до полной блокировки:
+                <synopsis>
+gfix -sh[ut] <replaceable>&lt;state&gt;</replaceable> <replaceable>&lt;mode&gt;</replaceable> <replaceable>timeout</replaceable> <replaceable>database</replaceable>   
+                
+<replaceable>&lt;state&gt;</replaceable> ::= {full | single | multi}         
+                
+<replaceable>&lt;mode&gt;</replaceable> ::= { -at[tach] | -tr[аn] | -f[orce] }                   
+            </synopsis>
+            </para>
+
+            <para>После закрытия база данных переводится в одно из следующих состояний: <itemizedlist>
+                    <listitem>
+                        <para>full — в этом состоянии запрещены любые подключения, даже SYSDBA и
+                            владельца базы данных; </para>
+                    </listitem>
+                    <listitem>
+                        <para>multi — в этом состоянии пользователи SYSDBA и владелец базы данных
+                            могут неограниченно подключаться к базе данных. Все остальные соединения
+                            запрещены. Это состояние используется по умолчанию при блокировке базы
+                            данных; </para>
+                    </listitem>
+                    <listitem>
+                        <para>single — в этом состоянии пользователю SYSDBA или владельцу базы
+                            данных позволено одно подключение к базе данных. Все остальные
+                            соединения запрещены. </para>
+                    </listitem>
+                </itemizedlist></para>
+
+            <para>Закрытие базы данных может происходить в одном из следующих режимов: <itemizedlist>
+                    <listitem>
+                        <para><code>-at[tach]</code> — предотвращение новых соединений;</para>
+                    </listitem>
+                    <listitem>
+                        <para><code>-tr[an]</code> — предотвращение старта новых транзакций;</para>
+                    </listitem>
+                    <listitem>
+                        <para><code>-f[orce]</code> — принудительной закрытие базы данных.</para>
+                    </listitem>
+                </itemizedlist>
+            </para>
+            <para>Далее рассмотрим эти режимы подробнее.</para>
+
+            <section>
+                <title>Предотвращение новых соединений</title>
+
+                <para>Закрытие базы данных в режиме <code>-at[tach]</code> означает, что все новые
+                    соединения к базе данных запрещены. Существующие соединения при этом не
+                    разрываются. Число <replaceable>timeout</replaceable> определяет количество
+                    секунд, которое сервер будет ждать до завершения всех активных соединений к базе
+                    данных. Если после этого не останется ни одного активного соединения, то база
+                    данных будет закрыта. В противном случае, закрытие базы данных будет
+                    отменено.</para>
+                <screen>
+linux> gfix -shut full -attach 5 my_employee
+-database shutdown unsuccessful                   
+                </screen>
+                <para>Если закрытие базы данных произойдет успешно, то никаких сообщений не будет
+                    выведено.</para>
+            </section>
+
+            <section>
+                <title>Предотвращение новых транзакций</title>
+
+                <para>При указании режима <code>-tra[nsaction]</code> сервер заблокирует запуск
+                    новых транзакций в закрываемой базе данных. Если по истечении
+                        <replaceable>timeout</replaceable> секунд к базе не останется ни одного
+                    активного подключения, то база данных будет закрыта. В противном случае закрытие
+                    базы данных будет отменено.</para>
+                <screen>
+linux> gfix -shut full -tran 5 my_employee
+-database shutdown unsuccessful                      
+                </screen>
+            </section>
+
+            <section>
+                <title>Принудительное закрытие базы данных</title>
+
+                <para>При закрытии базы данных в режиме <code>-fo[rce_shutdown]</code> сервер будет
+                    ждать завершения всех активных соединений к базе данных. По истечении времени
+                        <replaceable>timeout</replaceable> база будет закрыта вне зависимости от
+                    того, есть ли еще к ней активные соединения. В этом режиме возможна потеря
+                    данных, но он гарантирует, в отличие от двух предыдущих, что база будет
+                    переведена в закрытое состояние.</para>
+            </section>
+        </section>
+        <section>
+            <title>Открытие базы данных</title>
+
+            <para>После выполнения всех работ по обслуживанию, необходимых для базы данных, вам
+                необходимо открыть базу данных, чтобы снова разрешить ее нормальное использование.
+                Перевести закрытую базу снова в открытое состояние можно только с помощью команды
+                    <code>-on[line]</code></para>
+
+            <synopsis>
+gfix -on[line] <replaceable>&lt;state&gt;</replaceable> <replaceable>database</replaceable>   
+  
+<replaceable>&lt;state&gt;</replaceable> ::= {normal | single | multi}   
+            </synopsis>
+
+            <para>После открытия база данных переводится в одно из следующих состояний: <itemizedlist>
+                    <listitem>
+                        <para>normal — к базе данных могут подключаться любые авторизованные
+                            пользователи. Этот режим используется по умолчанию при открытии базы
+                            данных; </para>
+                    </listitem>
+                    <listitem>
+                        <para>multi — в этом состоянии пользователи SYSDBA и владелец базы данных
+                            могут неограниченно подключаться к базе данных. Все остальные соединения
+                            запрещены; </para>
+                    </listitem>
+                    <listitem>
+                        <para>single — в этом состоянии пользователю SYSDBA или владельцу базы
+                            данных позволено одно подключение к базе данных. Все остальные
+                            соединения запрещены. </para>
+                    </listitem>
+                </itemizedlist></para>
+        </section>
     </section>
 
     <section>
         <title>Использование пространства страниц базы данных</title>
 
-        <para/>
+        <para>Обычно Firebird резервирует на страницах данных (DP — Data Page) 20% свободного
+            пространства для версий и фрагментов записей. Это оптимальный режим для баз данных в
+            которых происходят модификации записей.</para>
+
+        <para>Для использования всего доступного пространства страницы базы данных вы можете
+            использовать команду <code>-use full</code>. Если впоследствии вы захотите вернуться к
+            режиму по умолчанию, введите команду <code>-use reserve</code>, чтобы использовать
+            только 80% каждой страницы.</para>
+
+        <synopsis>
+gfix -use {full|reserve} <replaceable>database</replaceable>             
+        </synopsis>
+
+        <para>В следующем примере база данных переводится в режим использования всего доступного
+            пространства на каждой странице данных базы данных:
+            <screen>
+linux> gfix -use full my_employee
+linux> gstat -header my_employee | grep Attributes
+Attributes no reserve            
+        </screen>
+        </para>
+        <para>В следующем примере возвращается использование пространства для страниц данных по
+            умолчанию:
+            <screen>
+linux> gfix -use reserve my_employee
+linux> gstat -header my_employee | grep Attributes
+Attributes          
+        </screen>
+        </para>
+
+        <para>Если база данных находится в режиме полного использования пространства страниц, то в
+            Attributes это будет отображено текстом <quote>no reserve</quote>. Этот текст не
+            отображается для обычного режима использования 80%.</para>
     </section>
 
     <section>
@@ -1095,6 +1254,13 @@ BIGSRV (Server)	Wed Dec 12 20:23:27 2019
     <section>
         <title>Информация о версии</title>
 
-        <para/>
+        <para>Опция <code>-z</code> для <application>gfix</application> просто выводит версию
+            программного обеспечения Firebird, которое вы используете. Она не принимает параметров,
+            как показано в следующем примере
+        <screen>
+C:\Firebird\3.0>gfix -z
+gfix version WI-V3.0.6.33254 Firebird 3.0            
+        </screen>
+        </para>
     </section>
 </chapter>

@@ -936,7 +936,7 @@ SQL> show sql dialect;
 
 
             <para>Интервал чистки (sweep interval) — разница между Oldest Transaction (или Oldest
-                Interesting Transaction, OIT) и Oldest Active Transaction (OAT). По умолчанию для
+                Interesting Transaction, OIT) и Oldest Snapshot Transaction (OST). По умолчанию для
                 новых баз данных интервал чистки (sweep interval) равен 20000 транзакций.</para>
         </section>
 
@@ -1418,13 +1418,54 @@ gfix -m[end] <replaceable>database</replaceable>
     <section>
         <title>Изменение режима записи на диск</title>
 
-        <para/>
+        <para>Многие операционные системы применяют кеширование операций ввода-вывода. При этом для
+            буферизации используется некоторый объем быстрой памяти (который может быть как частью
+            оперативной памяти сервера, так и специальной памятью, встроенной в сам диск). Это
+            повышает производительность приложений, их интенсивность записи, но пользователь не
+            будет уверен, когда его данные будут записаны на физический диск.</para>
+        <para>При работе с базой данных крайне желательно, чтобы данные были безопасно сохранены. В
+            Firebird можно указать должны ли данные сразу записываться на физический диск по commit
+            или в отложенном режиме (ОС сама решит когда записать).</para>
+        <para>Для изменения режима записи на диск используется следующая команда:
+            <synopsis>
+gfix -write <replaceable>&lt;mode&gt;</replaceable> <replaceable>database</replaceable>
+
+<replaceable>&lt;mode&gt;</replaceable> ::= {sync | async}
+        </synopsis>
+        </para>
+
+        <para>Параметр <replaceable>mode</replaceable> указывает в каком режиме буду записываться
+            данные: <itemizedlist>
+                <listitem>
+                    <para>sync — данные записываются синхронно (Forced writes). Это означает, что
+                        данные записываются на диск в COMMIT. Это наиболее безопасно для ваших
+                        данных. </para>
+                </listitem>
+                <listitem>
+                    <para>async — данные записываются асинхронно. Операционная система контролирует,
+                        когда данные фактически записываются на диск.</para>
+                </listitem>
+            </itemizedlist></para>
+
+        <para>По умолчанию, все БД работают с включенным Forced Writes (sync) и отключать этот режим
+            не рекомендуется. Если все же вы не удовлетворены производительностью БД, и при этом
+            стопроцентно уверены в своем серверном оборудовании, можете попробовать отключить Forced
+            Writes.</para>
     </section>
 
     <section>
-        <title>Исправляет базу данных для работы с текущей версией ICU</title>
+        <title>Исправление базы данных для работы с текущей версией ICU</title>
 
-        <para/>
+        <para>Если база данных была создана на севере с одной версии библиотеки ICU, а затем
+            перенесена на другой сервер с другой версией ICU, то в ряде случае могут возникать
+            проблемы при использовании сопоставлений (COLLATION), зависимых от ICU. Такой случай
+            описан в билете <link xlink:href="http://tracker.firebirdsql.org/browse/CORE-4571"
+                >CORE-4571</link>. Для решения этой проблемы в gfix существует команда -icu.</para>
+        <synopsis>
+gfix -icu <replaceable>icu_version</replaceable> <replaceable>database</replaceable>            
+        </synopsis>
+        <para>Данная команда обновляет сопоставления (COLLATION), зависимые от ICU, и перестраивает
+            зависимые индексы. </para>
     </section>
 
     <section>

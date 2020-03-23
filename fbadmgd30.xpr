@@ -14,7 +14,7 @@
                                 </field>
                                 <field name="scenarioIds">
                                     <list>
-                                        <String>Admin Guide XHTML</String>
+                                        <String>DocBook PDF</String>
                                     </list>
                                 </field>
                                 <field name="scenarioTypes">

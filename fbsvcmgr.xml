@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.1/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.1/sch/docbook.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="5.1" xml:id="fbsvcmgr" xml:lang="ru">
+    <title>Утилита FBSVCMGR</title>
+    <para>Утилита <application>fbsvcmgr</application> предоставляет интерфейс командной строки для
+        API служб, предоставляя доступ к любой службе, реализованной в Firebird.</para>
+    <para>Несмотря на то, что существует множество инструментов администрирования баз данных,
+        которые используют API-интерфейс служб через графические интерфейсы, инструмент
+            <application>fbsvcmgr</application> решает проблему для администраторов, которым
+        требуется доступ к удаленным серверам через текстовую консоль. </para>
+
+    <section>
+        <title>Использование fbsvcmgr</title>
+
+        <para><application>fbsvcmgr</application> не эмулирует переключатели, реализованные в
+            традиционных утилитах <quote>g*</quote>. Это всего лишь внешний интерфейс, через который
+            могут передаваться функции и параметры API служб. Поэтому пользователи должны быть
+            знакомы с API-интерфейсом служб в его нынешнем виде. Заголовочный файл API —
+                <filename>ibase.h</filename>, в каталоге <filename>../include</filename> — следует
+            рассматривать как основной источник информации о том, что доступно.</para>
+
+        <section>
+            <title>Параметры</title>
+
+            <para>Первый обязательный параметр командной строки — это менеджер служб, к которому вы
+                хотите подключиться. Для локального соединения используйте просто
+                    <code>service_mgr</code>. Чтобы присоединить к удаленной машине необходимо
+                дописать имя хоста в следующем формате
+                    <code><replaceable>hostname</replaceable>:service_mgr</code>.</para>
+            <para>Далее следуют блоки служебных параметров (SPB) со значениями, когда это
+                необходимо. Любой из них может (или не может) иметь префикс с одним знаком
+                    <quote>-</quote>. Для длинных командных строк, типичных для
+                    <application>fbsvcmgr</application>, использование <quote>-</quote> делает
+                командную строку более удобочитаемой для человека. Сравните:
+                <synopsis>
+fbsvcmgr service_mgr user sysdba password masterkey
+  action_db_stats dbname employee sts_hdr_pages                
+            </synopsis>
+                и
+                <synopsis>
+fbsvcmgr service_mgr -user sysdba -password masterkey
+  -action_db_stats -dbname employee -sts_hdr_pages                
+            </synopsis>
+            </para>
+        </section>
+
+        <section>
+            <title>Синтаксис SPB</title>
+
+            <para>Синтаксис SPB, который понимает <application>fbsvcmgr</application>, почти
+                совпадает с тем, который можно увидеть в файле <filename>ibase.h</filename> или в
+                документации по InterBase 6.0 API. Чтобы сократить набор текста и сделать командную
+                строку немного короче, используется немного сокращенная форма.</para>
+
+            <para>Все параметры SPB имеют одну из двух форм: (1)
+                        <code>isc_spb_<replaceable>VALUE</replaceable></code> или (2)
+                        <code>isc_<replaceable>VALUE1</replaceable>_svc_<replaceable>VALUE2</replaceable></code>.
+                При использовании fbsvcmgr для первого варианта нужно просто набрать
+                        <code><replaceable>VALUE</replaceable></code>, для второго —
+                        <code><replaceable>VALUE1</replaceable>_<replaceable>VALUE2</replaceable></code>.
+                Например:
+                <programlisting>
+isc_spb_dbname => dbname
+isc_action_svc_backup => action_backup
+isc_spb_sec_username => sec_username
+isc_info_svc_get_env_lock => info_get_env_lock                
+            </programlisting>
+                и так далее. </para>
+            <note>
+                <para>Исключением является <code>isc_spb_user_name</code>: оно может быть указано
+                    как user_name или просто как user.</para>
+            </note>
+
+            <section>
+                <title>Особенности синтаксиса fbsvcmgr</title>
+
+                <para>Используя <application>fbsvcmgr</application>, вы можете выполнить одно
+                    действие (и получить результаты его выполнения, когда они доступны) или получить
+                    несколько информационных элементов от менеджера сервисов. Например:
+                    <synopsis>
+fbsvcmgr service_mgr -user sysdba -password masterkey -action_display_user
+                </synopsis>
+                    выведет список пользователей на локальном сервере
+                    <screen>
+Login                        Full name                                 uid  gid adm
+SYSDBA                                                                   0    0  no
+NORMAN                                                                   0    0  no
+EPOCMAN                      Benoit Gilles Mascia                        0    0  no
+BOSS                                                                     0    0  no
+NEWADMIN                     New Admin User                              0    0  no
+                    </screen>
+                    и
+                    <synopsis>
+fbsvcmgr service_mgr -user sysdba -password masterkey -info_server_version 
+  -info_implementation
+                </synopsis>
+                    выведет информацию о версии сервера и его реализации
+                    <screen>
+Server version: WI-V3.0.6.33254 Firebird 3.0
+Server implementation: Firebird/Windows/AMD/Intel/x64                        
+                    </screen>
+                    Но попытка смешать все это в одной командной строке:
+                    <synopsis>
+fbsvcmgr service_mgr -user sysdba -password masterkey -action_display_user 
+  -info_server_version -info_implementation
+                </synopsis>
+                    выдаст ошибку:
+                    <screen>
+Unknown switch "-info_server_version"                        
+                    </screen>
+                </para>
+            </section>
+        </section>
+    </section>
+</chapter>

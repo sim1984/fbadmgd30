@@ -78,7 +78,7 @@ isc_info_svc_get_env_lock => info_get_env_lock
 
                 <para>Используя <application>fbsvcmgr</application>, вы можете выполнить одно
                     действие (и получить результаты его выполнения, когда они доступны) или получить
-                    несколько информационных элементов от менеджера сервисов. Например:
+                    несколько информационных элементов от менеджера служб. Например:
                     <synopsis>
 fbsvcmgr service_mgr -user sysdba -password masterkey -action_display_user
                 </synopsis>
@@ -112,6 +112,482 @@ Unknown switch "-info_server_version"
                     </screen>
                 </para>
             </section>
+        </section>
+    </section>
+    <section>
+        <title>Получение справки</title>
+
+        <para>Запуск fbsvcmgr без параметров приводит к отображению экрана с сокращенной справочной
+            информацией:
+            <screen>
+Usage: fbsvcmgr manager-name switches...
+Manager-name should be service_mgr, may be prefixed with host name
+according to common rules (host:service_mgr, \\host\service_mgr).
+Switches exactly match SPB tags, used in abbreviated form.
+Remove isc_, spb_ and svc_ parts of tag and you will get the switch.
+For example: isc_action_svc_backup is specified as action_backup,
+             isc_spb_dbname => dbname,
+             isc_info_svc_implementation => info_implementation,
+             isc_spb_prp_db_online => prp_db_online and so on.
+You may specify single action or multiple info items when calling fbsvcmgr once.
+Full command line samples:
+fbsvcmgr service_mgr user sysdba password masterkey action_db_stats dbname employee sts_hdr_pages
+  (will list header info in database employee on local machine)
+fbsvcmgr yourserver:service_mgr user sysdba password masterkey info_server_version info_svr_db_info
+  (will show firebird version and databases usage on yourserver)
+To get full list of known services run with -? switch            
+        </screen>
+        </para>
+        <para>Как сказано в последнем предложении запуск <application>fbsvcmgr</application> с
+            переключателем <code>-?</code> выведет дополнительную информацию об общих параметрах,
+            список информационных тегов, список доступных сервисов и их параметры:
+            <screen>
+Attaching to services manager:
+user [string value]
+user_name [string value]
+role [string value]
+sql_role_name [string value]
+password [string value]
+fetch_password [file name]
+trusted_auth
+expected_db [string value]
+
+Information requests:
+info_server_version
+info_implementation
+info_user_dbpath
+info_get_env
+info_get_env_lock
+info_get_env_msg
+info_svr_db_info
+info_version
+info_capabilities
+
+Actions:
+action_backup:
+    dbname [string value]
+    verbose
+    bkp_file [string value]
+    bkp_length [int32 value]
+    bkp_factor [int32 value]
+    bkp_ignore_checksums
+    bkp_ignore_limbo
+    bkp_metadata_only
+    bkp_no_garbage_collect
+    bkp_old_descriptions
+    bkp_non_transportable
+    bkp_convert
+    bkp_no_triggers
+    verbint [int32 value]
+    bkp_skip_data [string value]
+    bkp_stat [string value]
+action_restore:
+    bkp_file [string value]
+    dbname [string value]
+    res_length [int32 value]
+    verbose
+    res_buffers [int32 value]
+    res_page_size [int32 value]
+    res_access_mode [prp_am_readonly | prp_am_readwrite]
+    res_deactivate_idx
+    res_no_shadow
+    res_no_validity
+    res_one_at_a_time
+    res_replace
+    res_create
+    res_use_all_space
+    res_fix_fss_data [string value]
+    res_fix_fss_metadata [string value]
+    res_metadata_only
+    verbint [int32 value]
+    res_skip_data [string value]
+    res_stat [string value]
+action_properties:
+    dbname [string value]
+    prp_page_buffers [int32 value]
+    prp_sweep_interval [int32 value]
+    prp_shutdown_db [int32 value]
+    prp_deny_new_transactions [int32 value]
+    prp_deny_new_attachments [int32 value]
+    prp_set_sql_dialect [int32 value]
+    prp_access_mode [prp_am_readonly | prp_am_readwrite]
+    prp_reserve_space [prp_res_use_full | prp_res]
+    prp_write_mode [prp_wm_async | prp_wm_sync]
+    prp_activate
+    prp_db_online
+    prp_force_shutdown [int32 value]
+    prp_attachments_shutdown [int32 value]
+    prp_transactions_shutdown [int32 value]
+    prp_shutdown_mode [prp_sm_normal | prp_sm_multi | prp_sm_single | prp_sm_full]
+    prp_online_mode [prp_sm_normal | prp_sm_multi | prp_sm_single | prp_sm_full]
+    prp_nolinger
+action_repair:
+    dbname [string value]
+    rpr_commit_trans [int32 value]
+    rpr_rollback_trans [int32 value]
+    rpr_recover_two_phase [int32 value]
+    rpr_commit_trans_64 [int64 value]
+    rpr_rollback_trans_64 [int64 value]
+    rpr_recover_two_phase_64 [int64 value]
+    rpr_check_db
+    rpr_ignore_checksum
+    rpr_kill_shadows
+    rpr_mend_db
+    rpr_validate_db
+    rpr_full
+    rpr_sweep_db
+    rpr_list_limbo_trans
+    rpr_icu
+action_db_stats:
+    dbname [string value]
+    sts_record_versions
+    sts_nocreation
+    sts_table [string value]
+    sts_data_pages
+    sts_hdr_pages
+    sts_idx_pages
+    sts_sys_relations
+    sts_encryption
+action_get_fb_log
+action_get_ib_log
+action_display_user:
+    dbname [string value]
+    sec_username [string value]
+    sql_role_name [string value]
+action_display_user_adm:
+    dbname [string value]
+    sec_username [string value]
+    sql_role_name [string value]
+action_add_user:
+    dbname [string value]
+    sec_username [string value]
+    sql_role_name [string value]
+    sec_password [string value]
+    sec_groupname [string value]
+    sec_firstname [string value]
+    sec_middlename [string value]
+    sec_lastname [string value]
+    sec_userid [int32 value]
+    sec_groupid [int32 value]
+    sec_admin [int32 value]
+action_delete_user:
+    dbname [string value]
+    sec_username [string value]
+    sql_role_name [string value]
+action_modify_user:
+    dbname [string value]
+    sec_username [string value]
+    sql_role_name [string value]
+    sec_password [string value]
+    sec_groupname [string value]
+    sec_firstname [string value]
+    sec_middlename [string value]
+    sec_lastname [string value]
+    sec_userid [int32 value]
+    sec_groupid [int32 value]
+    sec_admin [int32 value]
+action_nbak:
+    dbname [string value]
+    nbk_file [string value]
+    nbk_level [int32 value]
+    nbk_no_triggers
+    nbk_direct [string value]
+action_nrest:
+    dbname [string value]
+    nbk_file [string value]
+action_trace_start:
+    trc_cfg [file name]
+    trc_name [string value]
+action_trace_suspend:
+    trc_id [int32 value]
+action_trace_resume:
+    trc_id [int32 value]
+action_trace_stop:
+    trc_id [int32 value]
+action_trace_list
+action_set_mapping:
+    dbname [string value]
+    sql_role_name [string value]
+action_drop_mapping:
+    dbname [string value]
+    sql_role_name [string value]
+action_validate:
+    dbname [string value]
+    val_tab_incl [string value]
+    val_tab_excl [string value]
+    val_idx_incl [string value]
+    val_idx_excl [string value]
+    val_lock_timeout [int32 value]            
+        </screen>
+        </para>
+    </section>
+    <section>
+        <title>Параметры подключения к службе</title>
+
+        <table frame="topbot">
+            <title>Параметры подключения к службе</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="0.8*"/>
+                <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                <thead>
+                    <row>
+                        <entry>Опция</entry>
+                        <entry>Описание</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry>
+                            <para><code>user [string value]</code></para>
+                            <para><code>user_name [string value]</code></para>
+                        </entry>
+                        <entry><para>Имя пользователя</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>role [string value]</code></para>
+                            <para><code>sql_role_name [string value]</code></para>
+                        </entry>
+                        <entry><para>Имя роли</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>password [string value]</code></para>
+                        </entry>
+                        <entry><para>Пароль пользователя</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>fetch_password [file name]</code></para>
+                        </entry>
+                        <entry><para>Извлечение пароля из файла</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>trusted_auth</code></para>
+                        </entry>
+                        <entry><para>Использование доверительной аутентификации</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>expected_db [string value]</code></para>
+                        </entry>
+                        <entry><para>Указание не стандартной базы данных безопасности. Подробное
+                                описание параметра см. ниже.</para></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+        <section>
+            <title>Использование служб с базой данных безопасности не по умолчанию</title>
+
+            <para>Если вы хотите использовать API служб для доступа к базе данных, которая настроена
+                на использование базы данных безопасности не по умолчанию, то при подключении к
+                диспетчеру служб следует использовать элемент SPB <code>isc_spb_expected_db</code>.
+                Значением этого элемента является база данных, к которой ожидается доступ.</para>
+
+            <para>Если необходим доступ к службам из старых программ с использованием нестандартной
+                базы данных безопасности, то существует обходной путь: установка переменной среды
+                    <envar>FB_EXPECTED_DB</envar>, которая будет автоматически добавлена ​​в
+                SPB.</para>
+
+            <para>Пример. Представьте, что у нас есть следующие строки в
+                    <filename>database.conf</filename>:
+                <programlisting>
+employee = $(dir_sampledb)/employee.fdb
+{
+  SecurityDatabase = employee
+}                
+            </programlisting>
+                то есть база данных employee настроена как база данных безопасности для себя. </para>
+
+            <para>Для доступа к нему с помощью <application>fbsvcmgr</application> необходимо
+                использовать следующую командную строку:
+                <synopsis>
+fbsvcmgr host:service_mgr -user sysdba -password xxx -expected_db employee 
+  -action_db_stats -dbname employee -sts_data_pages                
+            </synopsis>
+            </para>
+
+            <para>Или можно заранее установить переменную окружения <envar>FB_EXPECTED_DB</envar>:
+                <synopsis>
+export FB_EXPECTED_DB=employee
+fbsvcmgr host:service_mgr -user sysdba -password xxx -action_db_stats 
+  -dbname employee -sts_data_pages               
+            </synopsis>
+            </para>
+
+            <para>Естественно здесь может быть использовано любое другое действие.</para>
+        </section>
+    </section>
+
+    <section>
+        <title>Информационные запросы</title>
+
+        <para>Как было сказано ранее, используя <application>fbsvcmgr</application>, вы можете
+            получить несколько информационных элементов за одно обращения, то есть следующие опции
+            можно комбинировать в одной командной строке. Ответы для каждого информационного
+            элемента буду получены в порядке их указания. </para>
+
+        <table frame="topbot">
+            <title>Опции информационных запросов</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="0.8*"/>
+                <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                <thead>
+                    <row>
+                        <entry>Опция</entry>
+                        <entry>Описание</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry>
+                            <para><code>info_server_version</code></para>
+                        </entry>
+                        <entry><para>Выводит версию сервера</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>info_implementation</code></para>
+                        </entry>
+                        <entry><para>Выводит реализацию</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>info_user_dbpath</code></para>
+                        </entry>
+                        <entry><para>Выводит путь к базе данных безопасности</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>info_get_env</code></para>
+                        </entry>
+                        <entry><para>Выводит путь к корневой директории сервера</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>info_get_env_lock</code></para>
+                        </entry>
+                        <entry><para>Выводит путь к директории блокировок</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>info_get_env_msg</code></para>
+                        </entry>
+                        <entry><para>Выводит путь к директории в которой расположен файл сообщений
+                                firebird.msg</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>info_svr_db_info</code></para>
+                        </entry>
+                        <entry><para>Выводит информацию о количестве подключений, количестве
+                                открытых баз данных и полные пути к этим базам
+                            данных.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>info_version</code></para>
+                        </entry>
+                        <entry><para>Выводит версию диспетчера служб</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>info_capabilities</code></para>
+                        </entry>
+                        <entry><para>Выводит информацию о параметрах совместимости</para></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+
+        <example>
+            <title>Получение информации о версии сервера и реализации</title>
+            <para>
+                <synopsis>
+fbsvcmgr localhost/3053:service_mgr -user sysdba -password masterkey -info_svr_db_info
+</synopsis>
+                <screen>
+Databases:
+   Number of attachments: 3
+   Number of databases: 2
+   Database in use: f:\fbdata\3.0\horses.fdb
+   Database in use: f:\fbdata\3.0\test.fdb                    
+                </screen>
+            </para>
+        </example>
+
+        <example>
+            <title>Получение информации о версии сервера и реализации</title>
+            <para>
+                <synopsis>
+fbsvcmgr service_mgr -user sysdba -password masterkey -info_server_version 
+  -info_implementation
+</synopsis>
+                <screen>
+Server version: WI-V3.0.6.33254 Firebird 3.0
+Server implementation: Firebird/Windows/AMD/Intel/x64                 
+                </screen>
+            </para>
+        </example>
+    </section>
+    <section>
+        <title>Сервисные действия</title>
+        <section>
+            <title>Резервная копия (gbak)</title>
+
+            <para/>
+        </section>
+        <section>
+            <title>Восстановление (gbak)</title>
+
+            <para/>
+        </section>
+        <section>
+            <title>Установка свойств базы данных action_properties (gfix)</title>
+
+            <para/>
+        </section>
+        <section>
+            <title>Валидация, ремонт базы данных, sweep (gfix)</title>
+
+            <para/>
+        </section>
+        <section>
+            <title>Статистика базы данных (gstat)</title>
+
+            <para/>
+        </section>
+        <section>
+            <title>Управление пользователями (gsec)</title>
+
+            <para/>
+        </section>
+        <section>
+            <title>Резервная копия (nbackup)</title>
+
+            <para/>
+        </section>
+        <section>
+            <title>Восстановление (nbackup)</title>
+
+            <para/>
+        </section>
+        <section>
+            <title>Управление трассировкой</title>
+
+            <para/>
+        </section>
+        <section>
+            <title>Настройка отображения администраторов на RDB$ADMIN</title>
+
+            <para/>
+        </section>
+        <section>
+            <title>Онлайн валидация базы данных</title>
+
+            <para/>
         </section>
     </section>
 </chapter>

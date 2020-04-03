@@ -344,6 +344,9 @@ plausible options are:
             Для любой данной базы данных может существовать несколько теневых копий, которые могут
             быть активированы и деактивированы по умолчанию с помощью утилиты
                 <application>gfix</application>.</para>
+        <para>Под активацией теневой копии понимается процесс преобразования файла теневой копии в
+            файл базы данных. Под деактивацией теневой копии подразумевается удаление недоступной
+            теневой копии.</para>
 
         <para>Далее описании при активации и деактивации теневых файлов предполагается, что теневой
             файл уже существует для базы данных. Для этого была создана тень:
@@ -382,10 +385,9 @@ gfix -ac[tivate] <replaceable>&lt;shadow_file_name&gt;</replaceable>
                 заголовка базы данных.</para>
 
             <para>В случае, если ваш основной файл(ы) базы данных поврежден или нечитабелен,
-                администратор базы данных может активировать теневой файл. После активации файл
-                больше не является теневым файлом, и для его замены необходимо создать новый. Кроме
-                того, теневой файл должен быть переименован на имя старого файла базы данных,
-                который он заменяет.</para>
+                администратор базы данных может активировать теневой файл. После активации этот файл
+                больше не является файлом теневой копии. Файл теневой копии должен быть переименован
+                на имя старого файла базы данных, который он заменяет.</para>
 
             <warning>
                 <para>Следует отметить, что активация теневой копии, в то время как сама база данных
@@ -1345,7 +1347,7 @@ gfix -v[alidate] <replaceable>database</replaceable>
                 <para>Эта команда проверяет базу данных, исправляет поврежденные структуры и
                     освобождает потерянные страницы (orphan pages). Потерянная страница — это
                     страница, которая была распределена, но затем не связана с другими страницами,
-                    например, когда сервер был перезагружен.  </para>
+                    например, когда сервер был перезагружен. </para>
             </section>
 
             <section>
@@ -1417,7 +1419,266 @@ gfix -v[alidate] -i[gnore] <replaceable>database</replaceable>
             <section xml:id="gfix-validate-online">
                 <title>Онлайн проверка</title>
 
-                <para>TODO: Будет описано в FBSVCMGR. Дать ссылку.</para>
+                <para>Проверка базы данных позволяет на низком уровне проверять согласованность
+                    структур на диске и даже исправлять некоторые незначительные повреждения. Для
+                    любой ценной базы данных рекомендуется процедура периодической её проверки. </para>
+
+                <para>Обычная проверка базы данных требует эксклюзивного доступа, что препятствует
+                    проведению проверок базы данных, к которой требуется постоянный доступ
+                    пользователей. Онлайн проверка позволяет выполнять некоторые проверки
+                    согласованности без монопольного доступа.</para>
+
+                <section>
+                    <title>Что может онлайн проверка</title>
+                    <itemizedlist>
+                        <listitem>
+                            <para>проверять все или некоторые пользовательские таблицы базы
+                                данных;</para>
+                        </listitem>
+                        <listitem>
+                            <para>проверять все или некоторые индексы;</para>
+                        </listitem>
+                        <listitem>
+                            <para>системные таблицы не проверяются.</para>
+                        </listitem>
+                    </itemizedlist>
+
+                    <para>Другие проверки ODS, такие как страницы Header\PIP\TIP\Generators, не
+                        выполняются.</para>
+                </section>
+                <section>
+                    <title>Защита во время онлайн проверки</title>
+
+                    <para>Пока таблица (и/или ее индекс) проходит проверку, пользовательские
+                        вложения могут читать эту таблицу. Любая попытка изменить данные
+                        (INSERT\UPDATE\DELETE) будет ожидать завершения проверки или, в зависимости
+                        от времени ожидания пользовательской транзакции, выдаст ошибку времени
+                        ожидания блокировки.</para>
+                    <para>Любая сборка мусора в таблице или ее индексах отключена, пока она проходит
+                        проверку: <itemizedlist>
+                            <listitem>
+                                <para>фоновая и кооперативная сборка мусора просто пропустит эту
+                                    таблицу</para>
+                            </listitem>
+                            <listitem>
+                                <para>чистка (sweep) будет прервана с ошибкой</para>
+                            </listitem>
+                        </itemizedlist></para>
+                    <para>Когда онлайн-проверка начинает проверять таблицу, она получает несколько
+                        блокировок, чтобы предотвратить одновременное изменение своих данных: <itemizedlist>
+                            <listitem>
+                                <para>блокировка таблицы в режиме PR (защищенное чтение)</para>
+                            </listitem>
+                            <listitem>
+                                <para>блокировка сборки мусора в режиме PW (защищенная
+                                    запись)</para>
+                            </listitem>
+                        </itemizedlist></para>
+                    <para>Обе блокировки получены с использованием заданного пользователем таймаута
+                        блокировки. Для любого запроса блокировки, который не выполняется,
+                        сообщается об ошибке, и эта таблица пропускается.</para>
+                    <para>Как только блокировки получены, таблица и ее индексы проверяются так же,
+                        как это делает полная проверка. Блокировки снимаются после его завершения, и
+                        вся процедура повторяется для следующей таблицы.</para>
+                </section>
+                <section>
+                    <title>Действие isc_action_svc_validate в API служб</title>
+
+                    <para>Проверка в режиме онлайн реализована в виде службы Firebird и доступна
+                        через сервис API. Таким образом, его нельзя запустить из утилиты
+                            <application>gfix</application>.</para>
+
+                    <para>Вызов включает в себя следующие элементы:
+                        <literallayout class="monospaced">
+Действие:
+	isc_action_svc_validate
+
+Параметры:
+	isc_spb_dbname :
+		имя файла базы данных, строка, обязательный
+
+	isc_spb_val_tab_incl, isc_spb_val_tab_excl,
+	isc_spb_val_idx_incl, isc_spb_val_idx_excl :
+		шаблоны для имён таблиц\индексов, строка, необязательный
+
+	isc_spb_val_lock_timeout :
+		таймаут блокировки, целое, необязательный
+
+Вывод:
+	текстовые сообщения о прогрессе онлайн валидации
+           </literallayout>
+                    </para>
+                </section>
+                <section>
+                    <title>Использование онлайн проверки в интерактивном режиме</title>
+
+                    <para>Как говорилось выше онлайн проверку нельзя запустить в приложении
+                            <application>gfix</application>, поскольку она доступна только через API
+                        служб, однако вы можете воспользоваться утилитой
+                            <application>fbsvcmgr</application>. Синтаксис использования следующий:
+                        <synopsis>
+fbsvcmgr [<replaceable>host</replaceable>:]service_mgr [user <replaceable>&lt;username&gt;</replaceable>] [password <replaceable>&lt;password&gt;</replaceable>]
+	action_validate dbname <replaceable>&lt;filename&gt;</replaceable>
+	[val_tab_incl <replaceable>&lt;pattern&gt;</replaceable>]
+	[val_tab_excl <replaceable>&lt;pattern&gt;</replaceable>]
+	[val_idx_incl <replaceable>&lt;pattern&gt;</replaceable>]
+	[val_idx_excl <replaceable>&lt;pattern&gt;</replaceable>]
+	[val_lock_timeout <replaceable>&lt;number&gt;</replaceable>]                        
+                    </synopsis>
+                    </para>
+
+                    <table frame="topbot">
+                        <title>Опции онлайн проверки</title>
+                        <tgroup cols="2">
+                            <colspec colname="c1" colnum="1" colwidth="0.8*"/>
+                            <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                            <thead>
+                                <row>
+                                    <entry>Опция</entry>
+                                    <entry>Описание</entry>
+                                </row>
+                            </thead>
+                            <tbody>
+                                <row>
+                                    <entry>
+                                        <code><replaceable>host</replaceable></code>
+                                    </entry>
+                                    <entry><para>Имя удалённого хоста на котором находится
+                                            проверяемая база данных.</para></entry>
+                                </row>
+                                <row>
+                                    <entry><code>user
+                                            <replaceable>&lt;username&gt;</replaceable></code></entry>
+                                    <entry><para>Имя пользователя.</para></entry>
+                                </row>
+                                <row>
+                                    <entry><code>password
+                                                <replaceable>&lt;password&gt;</replaceable></code></entry>
+                                    <entry><para>Пароль.</para></entry>
+                                </row>
+                                <row>
+                                    <entry><code>dbname
+                                            <replaceable>&lt;filename&gt;</replaceable></code></entry>
+                                    <entry><para>Путь к первичному файлу базы данных или его
+                                            псевдониму.</para></entry>
+                                </row>
+                                <row>
+                                    <entry><code>val_tab_incl
+                                                <replaceable>&lt;pattern&gt;</replaceable></code></entry>
+                                    <entry><para>Шаблон для имён таблиц включённых в процедуру
+                                            проверки.</para></entry>
+                                </row>
+                                <row>
+                                    <entry><code>val_tab_excl
+                                                <replaceable>&lt;pattern&gt;</replaceable></code></entry>
+                                    <entry><para>Шаблон для имён таблиц исключённых из процедуры
+                                            проверки.</para></entry>
+                                </row>
+                                <row>
+                                    <entry><code>val_idx_incl
+                                                <replaceable>&lt;pattern&gt;</replaceable></code></entry>
+                                    <entry><para>Шаблон для имён индексов включённых в процедуру
+                                            проверки, по умолчанию <code>%</code>, то есть все
+                                            индексы.</para></entry>
+                                </row>
+                                <row>
+                                    <entry><code>val_idx_excl
+                                                <replaceable>&lt;pattern&gt;</replaceable></code></entry>
+                                    <entry><para>Шаблон для имён индексов исключённых из процедуры
+                                            проверки.</para></entry>
+                                </row>
+                                <row>
+                                    <entry><code>val_lock_timeout
+                                                <replaceable>&lt;number&gt;</replaceable></code></entry>
+                                    <entry><para>Таймаут блокировки, используемый для получения
+                                            блокировок для проверки таблицы. Измеряется в секундах.
+                                            По умолчанию — 10 секунд. 0 — нет ожидания, -1 —
+                                            бесконечное ожидание.</para></entry>
+                                </row>
+                            </tbody>
+                        </tgroup>
+                    </table>
+                    <note>
+                        <title>Замечания по использованию</title>
+
+                        <para>
+                            <itemizedlist>
+                                <listitem>
+                                    <para>Шаблоны — это регулярные выражения, которые обрабатываются
+                                        по тем же правилам, что и выражения SIMILAR TO.</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Все шаблоны чувствительны к регистру, независимо от
+                                        диалекта базы данных.</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Если шаблон для таблиц не указан, то все пользовательские
+                                        таблицы будут проверены.</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Если шаблон для индексов не указан, то все индексы для
+                                        указанных таблиц будут проверены.</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Системные таблицы не проверяются.</para>
+                                </listitem>
+                            </itemizedlist>
+                        </para>
+                        <para>Чтобы указать список таблиц: <itemizedlist>
+                                <listitem>
+                                    <para>Разделяйте имена с помощью символа <quote>|</quote></para>
+                                </listitem>
+                                <listitem>
+                                    <para>Не добавляйте пробелы: <code>TAB1 | TAB2</code> — это
+                                        ошибка</para>
+                                </listitem>
+                                <listitem>
+                                    <para>Заключите весь список в двойные кавычки, чтобы не запутать
+                                        интерпретатор команд</para>
+                                </listitem>
+                            </itemizedlist></para>
+                    </note>
+
+                    <simplesect>
+                        <title>Примеры</title>
+                        <orderedlist>
+                            <listitem>
+                                <para>Проверка всех таблиц в базе данных
+                                        <filename>c:\db.fdb</filename> с именами, начинающимися с
+                                        <quote>A</quote>. Индексы не проверяются. Ожидание
+                                    блокировки не выполняется.</para>
+                                <synopsis>
+fbsvcmgr.exe service_mgr user SYSDBA password masterkey
+		action_validate dbname c:\db.fdb
+		val_tab_incl A%
+		val_idx_excl %
+		val_lock_timeout 0                                    
+                                </synopsis>
+                            </listitem>
+                            <listitem>
+                                <para>Проверка таблиц TAB1 и TAB2 и всех их индексов. Тайм-аут
+                                    ожидания блокировки составляет 10 секунд (по умолчанию):</para>
+                                <synopsis>
+fbsvcmgr.exe service_mgr user SYSDBA password masterkey
+		action_validate dbname c:\db.fdb
+		val_tab_incl "TAB1|TAB2"                                    
+                                </synopsis>
+                            </listitem>
+                            <listitem>
+                                <para>Поведение по умолчанию для параметров <code>val_XXX</code>:
+                                    проверка всех пользовательских таблиц и их индексов в базе
+                                    данных <quote>c:\db.fdb</quote>, ожидание блокировки по
+                                    умолчанию — 10 секунд:</para>
+                                <synopsis>
+fbsvcmgr.exe service_mgr user SYSDBA password masterkey
+               action_validate dbname c:\db.fdb                                    
+                                </synopsis>
+                            </listitem>
+                        </orderedlist>
+
+
+                    </simplesect>
+                </section>
             </section>
         </section>
         <section>
@@ -1440,7 +1701,7 @@ gfix -m[end] <replaceable>database</replaceable>
                 </para>
 
                 <para>Выполнение этой команды приводит к тому, что записи с повреждениями будут
-                    удалены.  Последующие действия с базой данных (например, создание резервной
+                    удалены. Последующие действия с базой данных (например, создание резервной
                     копии) не будут включать поврежденные записи.</para>
 
                 <important>
@@ -1501,9 +1762,9 @@ gfix -write <replaceable>&lt;mode&gt;</replaceable> <replaceable>database</repla
             не рекомендуется. Если все же вы не удовлетворены производительностью БД, и при этом
             стопроцентно уверены в своем серверном оборудовании, можете попробовать отключить Forced
             Writes.</para>
-        <para>Команда <code>gstat -h</code> отображает режим sync как Forced Writes в строке Attributes, режим
-            async никак не отображается.
-        <screen>
+        <para>Команда <code>gstat -h</code> отображает режим sync как Forced Writes в строке
+            Attributes, режим async никак не отображается.
+            <screen>
 C:\Firebird\3.0>gstat -h test | grep Attributes
 STDIN
         Attributes              force write

@@ -20,7 +20,7 @@
     <section xml:id="nbackup-common">
         <title>Обзор возможностей Nbackup</title>
 
-        <para>backup позволяет выполнять два типа задач: <orderedlist>
+        <para>nbackup позволяет выполнять два типа задач: <orderedlist>
                 <listitem>
                     <para>Делать полные и инкрементные копии. Инкрементные копии содержат только
                         изменения относительно предыдущей резервной копии.</para>
@@ -103,7 +103,7 @@
         <table frame="topbot">
             <title>Описание параметров nbackup</title>
             <tgroup cols="2">
-                <colspec colname="c1" colnum="1" colwidth="0.65*"/>
+                <colspec colname="c1" colnum="1" colwidth="0.65*" align="left"/>
                 <colspec colname="c2" colnum="2" colwidth="1.35*"/>
                 <thead>
                     <row>
@@ -185,9 +185,9 @@
             прямой доступ к файлам, или и то и другое. Следующая таблица показывает детали:
                 <informaltable frame="topbot">
                 <tgroup cols="3">
-                    <colspec colname="c1" colnum="1" colwidth="0.65*"/>
-                    <colspec colname="c2" colnum="2" colwidth="0.65*"/>
-                    <colspec colname="c3" colnum="3" colwidth="0.65*"/>
+                    <colspec colname="c1" colnum="1" colwidth="0.55*"/>
+                    <colspec colname="c2" colnum="2" colwidth="0.85*"/>
+                    <colspec colname="c3" colnum="3" colwidth="0.55*"/>
                     <thead>
                         <row>
                             <entry>Параметр</entry>

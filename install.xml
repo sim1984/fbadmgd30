@@ -214,7 +214,7 @@ sudo add-apt-repository ppa:mapopa/firebird3.0
 sudo apt-get update                    
                 </synopsis>
                     </para>
-                    
+
                     <para>Теперь устанавливаем сам клиент:
                         <synopsis>
 sudo apt-get install libfbclient2                   
@@ -328,7 +328,7 @@ sudo systemctl start firebird-superserver
                 </synopsis>
                 <section xml:id="install-linux-repo-centos-client">
                     <title>Установка только клиента Firebird</title>
-                    
+
                     <para>Если необходимо установить только клиента Firebird без сервера, то
                         процедура немного сокращается.</para>
                     <para>Первым делом добавьте репозиторий EPEL
@@ -337,7 +337,7 @@ sudo dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noa
 sudo dnf update
                 </synopsis>
                     </para>
-                    
+
                     <para>Теперь устанавливаем сам клиент:
                         <synopsis>
 sudo dnf install libfbclient2                   
@@ -1337,12 +1337,11 @@ The GDS32.DLL has been removed from the System directory.
                 <para>Алгоритм обновления поверх существующего сервера Firebird следующий:<orderedlist>
                         <listitem>
                             <para>Убедится что все пользователи отключены от всех баз данных
-                                обслуживаемых обновляемым сервером Firebird. С помощью команды <programlisting>
-<![CDATA[
-gfix -shut -force <n>
-]]>                                
-                            </programlisting> можно закрыть все
-                                подключения и запретить последующие. </para>
+                                обслуживаемых обновляемым сервером Firebird. С помощью команды
+                                <programlisting>
+gfix -shut -force <replaceable>n</replaceable> <replaceable>databasename</replaceable>                               
+                            </programlisting>
+                                можно закрыть все подключения и запретить последующие. </para>
                         </listitem>
                         <listitem>
                             <para>Остановить сервер</para>
@@ -1364,10 +1363,9 @@ gfix -shut -force <n>
                             <para>Запустить обновленный сервер</para>
                         </listitem>
                         <listitem>
-                            <para>Перевести базы данных в онлайн режим <programlisting>
-                            <![CDATA[
-gfix -online
-]]>                         
+                            <para>Перевести базы данных в онлайн режим
+                                <programlisting>
+gfix -online <replaceable>databasename</replaceable>                      
 </programlisting>
                             </para>
                         </listitem>

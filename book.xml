@@ -5,7 +5,7 @@
     xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="ru" xml:id="fbadmgd" version="5.1">
     <info>
         <title>Руководство администратора Firebird 3.0</title>
-        <edition>11 апреля 2020 — v.0000-1</edition>
+        <edition>2 мая 2020 — v.0000-1</edition>
 
         <authorgroup>
             <author>
@@ -127,12 +127,10 @@
             
             <para/>
         </chapter>
-        <chapter>
-            <title>FBTRACEMGR</title>
-            
-            <para/>
-        </chapter>
         
+        <!-- FBTRACEMGR -->
+        <xi:include href="fbtracemgr.xml" xpointer="element(/1)"/>
+                
         <!-- GSEC -->
         <xi:include href="gsec.xml" xpointer="element(/1)"/>
         

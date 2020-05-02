@@ -12,7 +12,7 @@
     </indexterm>
 
     <para>Утилита <application>GFIX</application> является одним из основных инструментов
-        администратора БД. Она позволяет: <itemizedlist>
+        администратора БД. Она позволяет: <itemizedlist spacing="compact">
             <listitem>
                 <para>Выполнять принудительную чистку (sweep) базы данных; </para>
             </listitem>

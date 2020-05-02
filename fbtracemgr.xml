@@ -1,0 +1,653 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.1/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.1/sch/docbook.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="5.1" xml:id="fbtracemgr" xml:lang="ru">
+    <info>
+        <title>Утилита FBTRACEMGR</title>
+    </info>
+    <indexterm>
+        <primary>FBTRACEMGR</primary>
+    </indexterm>
+
+    <para>Утилита <application>fbtracemgr</application> для управления сеансами пользовательской
+        трассировки. Она позволяет: <itemizedlist>
+            <listitem>
+                <para>Отобразить список существующих сессий пользовательских трассировок</para>
+            </listitem>
+            <listitem>
+                <para>Начать новую сессию пользовательской трассировки</para>
+            </listitem>
+            <listitem>
+                <para>Завершить сессию пользовательской трассировки</para>
+            </listitem>
+            <listitem>
+                <para>Приостановить сессию пользовательской трассировки</para>
+            </listitem>
+            <listitem>
+                <para>Возобновить приостановленную сессию пользовательской трассировки</para>
+            </listitem>
+        </itemizedlist></para>
+
+    <para>Общий синтаксис запуска <application>fbtracemgr</application> выглядит следующим образом:
+        <synopsis>
+fbtracemgr <replaceable>&lt;action&gt;</replaceable> [<replaceable>&lt;parameters&gt;</replaceable>]       
+    </synopsis>
+    </para>
+
+    <para>Запуск <application>fbtracemgr</application> без команды (или с неверной командой) или с
+        переключателем -? приводит к отображению следующего экрана справочной информации: <screen><![CDATA[
+Firebird Trace Manager.
+Usage: fbtracemgr <action> [<parameters>]
+Actions:
+  -STA[RT]                              Start trace session
+  -STO[P]                               Stop trace session
+  -SU[SPEND]                            Suspend trace session
+  -R[ESUME]                             Resume trace session
+  -L[IST]                               List existing trace sessions
+  -Z                                    Show program version
+Action parameters:
+  -N[AME]    <string>                   Session name
+  -I[D]      <number>                   Session ID
+  -C[ONFIG]  <string>                   Trace configuration file name
+Connection parameters:
+  -SE[RVICE]  <string>                  Service name
+  -U[SER]     <string>                  User name
+  -P[ASSWORD] <string>                  Password
+  -FE[TCH]    <string>                  Fetch password from file
+  -T[RUSTED]  <string>                  Force trusted authentication
+
+Examples:
+  fbtracemgr -SE remote_host:service_mgr -USER SYSDBA -PASS masterkey -LIST
+  fbtracemgr -SE service_mgr -START -NAME my_trace -CONFIG my_cfg.txt
+  fbtracemgr -SE service_mgr -SUSPEND -ID 2
+  fbtracemgr -SE service_mgr -RESUME -ID 2
+  fbtracemgr -SE service_mgr -STOP -ID 4
+
+Notes:
+  Press CTRL+C to stop interactive trace session
+]]></screen>
+    </para>
+    <para>Доступны следующие действия: <table frame="topbot">
+            <title>Команды и опции утилиты FBTRACEMGR</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="0.65*"/>
+                <colspec colname="c2" colnum="2" colwidth="1.35*"/>
+                <thead>
+                    <row>
+                        <entry>Опция</entry>
+                        <entry>Описание</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry><code>-STA[RT]</code></entry>
+                        <entry><para>Стартует новый сеанс пользовательской
+                            трассировки.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-STO[P]</code></entry>
+                        <entry><para>Завершает сеанс пользовательской трассировки.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-SU[SPEND]</code></entry>
+                        <entry><para>Приостанавливает сеанс пользовательской
+                            трассировки.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-R[ESUME]</code></entry>
+                        <entry><para>Возобновляет приостановленный сеанс пользовательской
+                                трассировки.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-L[IST]</code></entry>
+                        <entry><para>Выводит список существующих сеансов пользовательской
+                                трассировки.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-Z</code></entry>
+                        <entry><para>Выводит версию программы.</para></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+    </para>
+    <section xml:id="fbtracemgr-conn_params">
+        <title>Параметры подключения</title>
+
+        <table frame="topbot">
+            <title>Параметры подключения к службе трассировки</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="0.65*"/>
+                <colspec colname="c2" colnum="2" colwidth="1.35*"/>
+                <thead>
+                    <row>
+                        <entry>Опция</entry>
+                        <entry>Описание</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry><code>-SE[RVICE] <replaceable>service</replaceable></code></entry>
+                        <entry><para>Указывает диспетчер служб.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-U[SER] <replaceable>username</replaceable></code></entry>
+                        <entry><para>Имя пользователя.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-P[ASSWORD] <replaceable>password</replaceable></code></entry>
+                        <entry><para>Пароль пользователя.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-FE[TCH] <replaceable>filename</replaceable></code></entry>
+                        <entry><para>Извлечение пароля из файла.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-T[RUSTED]</code></entry>
+                        <entry>Использование доверительной аутентификации.</entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+
+        <para>Утилита <application>fbtracemgr</application> управляет сессиями трассировки используя
+            Service API, поэтому параметр <code>-SE[RVICE]</code> для указания диспетчера служб
+            является обязательным. Для локального соединения используйте просто
+                <code>service_mgr</code>. Чтобы присоединить к удаленной машине необходимо дописать
+            имя хоста в следующем формате
+                <code><replaceable>hostname</replaceable>:service_mgr</code>.</para>
+        <para>Имя пользователя и пароль можно не указывать, если в системе установлены контекстные
+            переменные <envar>ISC_USER</envar> и <envar>ISC_PASSWORD</envar>. А также если указан
+            переключатель <code>-T[RUSTED]</code> для использования доверительной аутентификации
+            Windows (Win_Sspi).</para>
+    </section>
+    <section xml:id="fbtracemgr-start">
+        <title>Запуск пользовательской трассировки</title>
+        <indexterm>
+            <primary>FBTRACEMGR</primary>
+            <secondary>-STA[RT]</secondary>
+        </indexterm>
+
+        <para>Для запуска пользовательской трассировки необходимо указать действие
+                <code>-STA[RT]</code>.</para>
+
+        <formalpara>
+            <title>Синтаксис:</title>
+
+
+            <para>
+                <synopsis>
+fbtracemgr <replaceable>&lt;connection params&gt;</replaceable> -STA[RT] [-N[AME] <replaceable>tracename</replaceable>] -C[ONFIG] <replaceable>filename</replaceable>      
+    </synopsis></para>
+        </formalpara>
+
+        <table frame="topbot">
+            <title>Параметры запуска пользовательской трассировки</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="0.65*"/>
+                <colspec colname="c2" colnum="2" colwidth="1.35*"/>
+                <thead>
+                    <row>
+                        <entry>Опция</entry>
+                        <entry>Описание</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry><code>-N[AME] <replaceable>tracename</replaceable></code></entry>
+                        <entry><para>Задаёт имя сеансу пользовательской трассировки.</para></entry>
+                    </row>
+                    <row>
+                        <entry><code>-C[ONFIG] <replaceable>filename</replaceable></code></entry>
+                        <entry><para>Задаёт имя файла с конфигурацией пользовательской трассировки.
+                                Обязательный.</para></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+
+        <para>Для запуска пользовательской трассировки обязательно необходимо указать имя файла
+            конфигурации в параметре <code>-C[ONFIG] <replaceable>filename</replaceable></code>,
+            которая будет использоваться для сеанса трассировки. Кроме того, можно задать имя сеанса
+            пользовательской трассировки с помощью необязательного параметра <code>-N[AME]
+                    <replaceable>tracename</replaceable></code>. Это имя будет отображаться при
+            выводе списка существующих сеансов трассировки.</para>
+        <para>Конфигурация сессии представляет собой текстовый файл, составленный в соответствии с
+            правилами и синтаксисом, приведенными в файле шаблона <filename>fbtrace.conf</filename>. </para>
+
+        <note>
+            <para>Очевидно, файл конфигурации хранится не на сервере, а на клиентском компьютере, с
+                которого запускается сессия пользовательской трассировки. </para>
+        </note>
+
+        <para>Следующие примеры служат основой для составления текстов конфигурации для сессий
+            пользовательской трассировки. </para>
+
+        <informalexample>
+            <para>Трассировка событий подготовки, выполнения и освобождения всех операторов для
+                соединения с номером 12345.</para>
+
+            <programlisting>
+database = %[\\/]mydatabase.fdb
+{
+    enabled = true
+    connection_id = 12345
+    log_statement_prepare = true
+    log_statement_free = true
+    log_statement_start = true
+    log_statement_finish = true
+    time_threshold = 0
+}                
+            </programlisting>
+        </informalexample>
+        <informalexample>
+            <para>Трассировка выполнения операторов INSERT, UPDATE, DELETE и вложенных вызовов
+                процедур и триггеров с показом соответствующих планов (PLAN) и статистики во всех
+                подключениях заданного пользователя к базе данных
+                    <filename>mydatabase.fdb</filename>.</para>
+
+            <programlisting>
+database = %[\\/]mydatabase.fdb
+{
+    enabled = true
+    include_filter = %(INSERT|UPDATE|DELETE)%
+    log_statement_prepare = true
+    log_statement_free = true
+    log_statement_start = true
+    log_statement_finish = true
+    time_threshold = 0
+}                
+            </programlisting>
+        </informalexample>
+        <para>После подготовки файла конфигурации можно запускать сеанс пользовательской трассировки
+            следующей командой.
+            <synopsis>
+fbtracemgr -SE localhost:service_mgr -START -NAME my_trace -CONFIG d:\my_cfg.conf 
+-u SYSDBA -p masterkey            
+        </synopsis>
+        </para>
+        <para>После выполнения команды вы увидите текстовое сообщение рапортует о статусе операции.
+            Это может быть сообщение об ошибке или
+            <screen>
+Trace session ID <replaceable>NNN</replaceable> started            
+        </screen>
+            В последнем случае вслед за сообщением начнут выводиться результаты трассировки. </para>
+        <screen>
+Trace session ID 1 started
+2020-05-02T11:07:42.5690 (888:0000000015D20040) TRACE_INIT
+        SESSION_1 my_trace
+
+
+2020-05-02T11:07:42.6160 (888:0000000015D20040) PREPARE_STATEMENT
+        test (ATT_9192, SYSDBA:NONE, NONE, TCPv4:127.0.0.1/50251)
+        c:\Firebird\3.0\isql.exe:8020
+                (TRA_3023, CONCURRENCY | WAIT | READ_WRITE)
+
+Statement 20:
+-------------------------------------------------------------------------------
+SELECT CURRENT_USER, CURRENT_ROLE FROM RDB$DATABASE
+     12 ms
+
+2020-05-02T11:07:42.6160 (888:0000000015D20040) EXECUTE_STATEMENT_START
+        test (ATT_9192, SYSDBA:NONE, NONE, TCPv4:127.0.0.1/50251)
+        c:\Firebird\3.0\isql.exe:8020
+                (TRA_3023, CONCURRENCY | WAIT | READ_WRITE)
+
+Statement 20:
+-------------------------------------------------------------------------------
+SELECT CURRENT_USER, CURRENT_ROLE FROM RDB$DATABASE
+
+2020-05-02T11:07:42.6160 (888:0000000015D20040) EXECUTE_STATEMENT_FINISH
+        test (ATT_9192, SYSDBA:NONE, NONE, TCPv4:127.0.0.1/50251)
+        c:\Firebird\3.0\isql.exe:8020
+                (TRA_3023, CONCURRENCY | WAIT | READ_WRITE)
+
+Statement 20:
+-------------------------------------------------------------------------------
+SELECT CURRENT_USER, CURRENT_ROLE FROM RDB$DATABASE
+0 records fetched
+      0 ms, 5 fetch(es)
+
+2020-05-02T11:07:42.6160 (888:0000000015D20040) FREE_STATEMENT
+        test (ATT_9192, SYSDBA:NONE, NONE, TCPv4:127.0.0.1/50251)
+        c:\Firebird\3.0\isql.exe:8020
+
+Statement 20:
+-------------------------------------------------------------------------------
+SELECT CURRENT_USER, CURRENT_ROLE FROM RDB$DATABASE            
+        </screen>
+        <para>Чтобы выйти из сессии трассировки нажмите Ctrl-C.</para>
+        <tip>
+            <para>Вы можете перенаправить вывод сеанса трассировки в текстовый файл с помощью
+                оператора перенаправления <code>&gt;</code>
+                <synopsis>
+fbtracemgr -SE localhost:service_mgr -START -NAME my_trace -CONFIG d:\my_cfg.conf 
+-u SYSDBA -p masterkey > d:\output.log   
+        </synopsis>
+            </para>
+        </tip>
+    </section>
+    <section xml:id="fbtracemgr-list">
+        <title>Отображение списка сеансов трассировки и аудита</title>
+        <indexterm>
+            <primary>FBTRACEMGR</primary>
+            <secondary>-L[IST]</secondary>
+        </indexterm>
+
+        <para>Для отображения сеансов пользовательской трассировки и аудита необходимо указать
+            действие <code>-L[IST]</code>. Администраторы могут видеть все сеансы пользовательской
+            трассировки и аудита, остальные пользователи могут видеть только сеансы трассировки
+            запущенные ими.</para>
+
+        <formalpara>
+            <title>Синтаксис:</title>
+
+            <para>
+                <synopsis>
+fbtracemgr <replaceable>&lt;connection params&gt;</replaceable> -L[IST]   
+    </synopsis></para>
+        </formalpara>
+
+        <para>Информация о каждой сессии содержит следующие сведения: <itemizedlist>
+                <listitem>
+                    <para><code>Session ID: <replaceable>&lt;number&gt;</replaceable></code> —
+                        идентификатор запущенной сессии;</para>
+                </listitem>
+                <listitem>
+                    <para><code>name: <replaceable>&lt;string&gt;</replaceable></code> — имя сеанса
+                        пользовательской трассировки, если оно было задано;</para>
+                </listitem>
+                <listitem>
+                    <para><code>user: <replaceable>&lt;string&gt;</replaceable></code> — имя
+                        пользователя, запустившего сессию;</para>
+                </listitem>
+                <listitem>
+                    <para><code>date: <replaceable>YYYY-MM-DD HH:NN:SS</replaceable></code> — дата и
+                        время старта сессии;</para>
+                </listitem>
+                <listitem>
+                    <para><code>flags: <replaceable>&lt;string&gt;</replaceable></code> — набор
+                        флагов через запятую: <variablelist spacing="compact">
+                            <varlistentry>
+                                <term><code>active | suspend</code></term>
+                                <listitem>
+                                    <para>Состояние запущенной сессии.</para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                                <term><code>admin</code></term>
+                                <listitem>
+                                    <para>Выводит <quote>admin</quote>, если сессию запустил
+                                        администратор. Для сессий, созданных обычными
+                                        пользователями, ничего не выводит. </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                                <term><code>system</code></term>
+                                <listitem>
+                                    <para>Показывает <quote>system</quote>, если сессия создана
+                                        сервером (сессия системного аудита). Отсутствует для сессий
+                                        пользовательской трассировки. </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                                <term><code>audit | trace</code></term>
+                                <listitem>
+                                    <para>Показывает тип сессии: <quote>audit</quote> для сессий
+                                        системного аудита или <quote>trace</quote> для сессий
+                                        пользовательской трассировки. </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                                <term><code>log full</code></term>
+                                <listitem>
+                                    <para>Выводится для сессий трассировки, если файл лога достиг
+                                        предела. </para>
+                                </listitem>
+                            </varlistentry>
+                        </variablelist>
+                    </para>
+                </listitem>
+            </itemizedlist></para>
+        <para>Команда для просмотра списка сессий трассировки и её вывод будут выглядеть следующим
+            образом: <synopsis>
+fbtracemgr -SE localhost:service_mgr -user SYSDBA -password masterkey -LIST            
+        </synopsis>
+            <screen>
+
+Session ID: 1
+  name:  my_trace
+  user:  SYSDBA
+  date:  2020-05-02 11:47:16
+  flags: active, trace
+
+Session ID: 2
+  user:  SYSDBA
+  date:  2020-05-02 11:47:50
+  flags: suspend, trace
+                
+            </screen>
+        </para>
+    </section>
+    <section xml:id="fbtracemgr-suspend">
+        <title>Приостановка сеанса трассировки</title>
+        <indexterm>
+            <primary>FBTRACEMGR</primary>
+            <secondary>-SU[SPEND]</secondary>
+        </indexterm>
+        
+
+        <para>Для приостановки сеанса трассировки необходимо указать действие
+                <code>-SU[SPEND]</code>. Администраторы могут приостанавливать все сеансы
+            пользовательской трассировки и аудита, остальные пользователи могут приостанавливать
+            только сеансы трассировки запущенные ими.</para>
+
+        <formalpara>
+            <title>Синтаксис:</title>
+
+            <para>
+                <synopsis>
+fbtracemgr <replaceable>&lt;connection params&gt;</replaceable> -SU[SPEND] -ID <replaceable>&lt;id&gt;</replaceable>  
+    </synopsis></para>
+        </formalpara>
+
+        <table frame="topbot">
+            <title>Параметры команды приостановки сеанса трассировки</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="0.65*"/>
+                <colspec colname="c2" colnum="2" colwidth="1.35*"/>
+                <thead>
+                    <row>
+                        <entry>Опция</entry>
+                        <entry>Описание</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry><code>-ID <replaceable>&lt;id&gt;</replaceable></code></entry>
+                        <entry><para>Задаёт идентификатор сеанса трассировки, который необходимо
+                                приостановить.</para></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+
+        <para>Для приостановки сеанса трассировки обязательно требуется указать идентификатор этого
+            сеанса. Список запущенных сеансов и их идентификаторов можно узнать с помощью действия
+                <link xlink:href="#fbtracemgr-list">-L[IST]</link>. Если сеанс трассировки
+            приостановлен, то события указанные в её конфигурации не будут регистрироваться, до тех
+            пор, пока сеанс не будет возобновлен. Возобновить сеанс можно с помощью действия <link
+                xlink:href="#fbtracemgr-resume">-R[ESUME]</link>.</para>
+        <para>После выполнения команды приостановки сеанса будет выведено одно из следующих сообщений:<itemizedlist spacing="compact">
+                <listitem>
+                    <para>Trace session ID <replaceable>NNN</replaceable> paused </para>
+                </listitem>
+                <listitem>
+                    <para>No permissions to stop other user trace session </para>
+                </listitem>
+                <listitem>
+                    <para>Trace session ID <replaceable>NNN</replaceable> not found</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>Пример команды приостановки сеанса трассировки и её вывод выглядят следующим образом: <synopsis>
+fbtracemgr -SE localhost:service_mgr -user SYSDBA -password masterkey -SUSPEND -ID 2            
+        </synopsis>
+            <screen>
+Trace session ID 2 paused                
+            </screen>
+        </para>
+    </section>
+    <section xml:id="fbtracemgr-resume">
+        <title>Возобновление сеанса трассировки</title>
+        <indexterm>
+            <primary>FBTRACEMGR</primary>
+            <secondary>-R[ESUME]</secondary>
+        </indexterm>
+
+        <para>Для возобновления приостановленного сеанса трассировки необходимо указать действие
+                <code>-R[ESUME]</code>. Администраторы могут возобновлять все приостановленные
+            сеансы пользовательской трассировки и аудита, остальные пользователи могут возобновлять
+            только сеансы трассировки запущенные ими.</para>
+
+        <formalpara>
+            <title>Синтаксис:</title>
+
+            <para>
+                <synopsis>
+fbtracemgr <replaceable>&lt;connection params&gt;</replaceable> -R[ESUME] -ID <replaceable>&lt;id&gt;</replaceable>  
+    </synopsis></para>
+        </formalpara>
+
+        <table frame="topbot">
+            <title>Параметры команды приостановки сеанса трассировки</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="0.65*"/>
+                <colspec colname="c2" colnum="2" colwidth="1.35*"/>
+                <thead>
+                    <row>
+                        <entry>Опция</entry>
+                        <entry>Описание</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry><code>-ID <replaceable>&lt;id&gt;</replaceable></code></entry>
+                        <entry><para>Задаёт идентификатор сеанса трассировки, который необходимо
+                                возобновить.</para></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+
+        <para>Для возобновления приостановленного сеанса трассировки обязательно требуется указать
+            идентификатор этого сеанса. Список запущенных сеансов и их идентификаторов можно узнать
+            с помощью действия <link xlink:href="#fbtracemgr-list">-L[IST]</link>. </para>
+        <para>После выполнения команды возобновления приостановленного сеанса будет выведено одно из
+            следующих сообщений:<itemizedlist spacing="compact">
+                <listitem>
+                    <para>Trace session ID <replaceable>NNN</replaceable> resumed </para>
+                </listitem>
+                <listitem>
+                    <para>No permissions to stop other user trace session </para>
+                </listitem>
+                <listitem>
+                    <para>Trace session ID <replaceable>NNN</replaceable> not found</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>Пример команды возобновления приостановленного сеанса трассировки и её вывод выглядят
+            следующим образом: <synopsis>
+fbtracemgr -SE localhost:service_mgr -user SYSDBA -password masterkey -RESUME -ID 2            
+        </synopsis>
+            <screen>
+Trace session ID 2 resumed                
+            </screen>
+        </para>
+    </section>
+    <section xml:id="fbtracemgr-stop">
+        <title>Остановка сеанса трассировки</title>
+        <indexterm>
+            <primary>FBTRACEMGR</primary>
+            <secondary>-STO[P]</secondary>
+        </indexterm>
+
+        <para>Для остановки сеанса трассировки необходимо указать действие <code>-STO[P]</code>.
+            Администраторы могут останавливать все сеансы пользовательской трассировки, остальные
+            пользователи могут останавливать только сеансы трассировки запущенные ими.</para>
+
+        <formalpara>
+            <title>Синтаксис:</title>
+
+            <para>
+                <synopsis>
+fbtracemgr <replaceable>&lt;connection params&gt;</replaceable>-STO[P] -ID <replaceable>&lt;id&gt;</replaceable>  
+    </synopsis></para>
+        </formalpara>
+
+        <table frame="topbot">
+            <title>Параметры команды остановки сеанса трассировки</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="0.65*"/>
+                <colspec colname="c2" colnum="2" colwidth="1.35*"/>
+                <thead>
+                    <row>
+                        <entry>Опция</entry>
+                        <entry>Описание</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry><code>-ID <replaceable>&lt;id&gt;</replaceable></code></entry>
+                        <entry><para>Задаёт идентификатор сеанса трассировки, который необходимо
+                                остановить.</para></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+
+        <para>Для остановки сеанса трассировки обязательно требуется указать идентификатор этого
+            сеанса. Список запущенных сеансов и их идентификаторов можно узнать с помощью действия
+                <link xlink:href="#fbtracemgr-list">-L[IST]</link>.</para>
+        <para>После выполнения команды остановки сеанса будет выведено одно из следующих сообщений:<itemizedlist spacing="compact">
+                <listitem>
+                    <para>Trace session ID <replaceable>NNN</replaceable> stopped </para>
+                </listitem>
+                <listitem>
+                    <para>No permissions to stop other user trace session </para>
+                </listitem>
+                <listitem>
+                    <para>Trace session ID <replaceable>NNN</replaceable> not found</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>Пример команды остановки сеанса трассировки и её вывод выглядят следующим образом: <synopsis>
+fbtracemgr -SE localhost:service_mgr -user SYSDBA -password masterkey -STOP -ID 2            
+        </synopsis>
+            <screen>
+Trace session ID 2 stopped              
+            </screen>
+        </para>
+    </section>
+    <section xml:id="fbtracemgr-z">
+        <title>Получение версии программы</title>
+        <indexterm>
+            <primary>FBTRACEMGR</primary>
+            <secondary>-Z</secondary>
+        </indexterm>
+        
+        <para>Для получения версии программы менеджера трассировок необходимо указать действие <code>-Z</code>.</para>
+        
+        <formalpara>
+            <title>Синтаксис:</title>
+            
+            <para>
+                <synopsis>
+fbtracemgr -Z  
+    </synopsis></para>
+        </formalpara>
+        <para>Вывод этой команды будет выглядеть следующим образом:
+        <screen>
+Firebird Trace Manager version WI-V3.0.6.33254 Firebird 3.0            
+        </screen>
+        </para>
+    </section>
+</chapter>

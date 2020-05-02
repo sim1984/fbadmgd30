@@ -3,7 +3,13 @@
 <?xml-model href="http://docbook.org/xml/5.1/sch/docbook.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
 <chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
     version="5.1" xml:id="fbsvcmgr" xml:lang="ru">
-    <title>Утилита FBSVCMGR</title>
+    <info>
+        <title>Утилита FBSVCMGR</title>
+    </info>
+    <indexterm>
+        <primary>FBSVCMGR</primary>
+    </indexterm>
+    
     <para>Утилита <application>fbsvcmgr</application> предоставляет интерфейс командной строки для
         API служб, предоставляя доступ к любой службе, реализованной в Firebird.</para>
     <para>Несмотря на то, что существует множество инструментов администрирования баз данных,
@@ -946,7 +952,7 @@ gbak:    0.257  0.000 restoring domain RDB$3
 
                 <example>
                     <title>Восстановление из удалённой резервной копии.</title>
-                    
+
                     <para>Восстановление из резервной копии. Копия расположена на клиентском
                         компьютере, а база данных восстанавливается на сервере.</para>
 

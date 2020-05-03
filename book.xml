@@ -107,12 +107,10 @@
         <title>Утилиты командной строки</title> 
         <!-- ISQL -->
         <xi:include href="isql.xml" xpointer="element(/1)"/>
+        
+        <!-- GBAK -->
+        <xi:include href="gbak.xml" xpointer="element(/1)"/>
 
-        <chapter xml:id="gbak" xml:lang="ru">
-            <title>GBAK</title>
-            
-            <para/>
-        </chapter>
         <!-- NBACKUP -->
         <xi:include href="nbackup.xml" xpointer="element(/1)"/>
         

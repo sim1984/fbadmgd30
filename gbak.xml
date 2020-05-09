@@ -325,7 +325,7 @@ gbak:switches can be abbreviated to the unparenthesized characters
             быть владельцем базы данных или обладать административными привилегиями в ней
             (соединиться с ролью RDB$ADMIN).</para>
 
-        <para>Формат командной строки для создания резервной выглядит следующим образом:
+        <para>Формат командной строки для создания резервной копии выглядит следующим образом:
             <programlisting>
 gbak -b <replaceable>&lt;database&gt;</replaceable> <replaceable>&lt;backup set&gt;</replaceable> [<replaceable>backup options</replaceable>] [<replaceable>general options</replaceable>]   
                 
@@ -342,113 +342,120 @@ gbak -b <replaceable>&lt;database&gt;</replaceable> <replaceable>&lt;backup set&
             </programlisting>
         </para>
 
-        <table frame="topbot">
-            <title>Опции резервного копирования утилиты GBAK</title>
-            <tgroup cols="2">
-                <colspec colname="c1" colnum="1" colwidth="0.75*" align="left"/>
-                <colspec colname="c2" colnum="2" colwidth="1.25*" align="left"/>
-                <thead>
-                    <row>
-                        <entry>Опция</entry>
-                        <entry>Описание</entry>
-                    </row>
-                </thead>
-                <tbody>
-                    <row>
-                        <entry><code>-B[ACKUP_DATABASE]</code></entry>
-                        <entry>
-                            <para>Создать резервную копию.</para></entry>
-                    </row>
-                    <row>
-                        <entry><code>-CO[NVERT]</code></entry>
-                        <entry><para>Конвертировать внешние таблицы во внутренние таблицы базы
-                                данных.</para></entry>
-                    </row>
-                    <row>
-                        <entry><code>-E[XPAND]</code></entry>
-                        <entry><para>Отключение сжатия данных при резервном копировани. По умолчанию
-                                резервная копия записывается в <quote>сжатом</quote>
-                            виде.</para></entry>
-                    </row>
-                    <row>
-                        <entry><code>-FA[CTOR] <replaceable>&lt;n&gt;</replaceable></code></entry>
-                        <entry><para>При резервном копировании на физическое ленточное устройство
-                                этот переключатель позволяет указать коэффициент блокировки ленты.
-                                Атавизм.</para></entry>
-                    </row>
-                    <row>
-                        <entry><code>-G[ARBAGE_COLLECT]</code></entry>
-                        <entry><para>Отключение сборки мусора во время резервного копирования. </para>
-                            <para>gbak подключается к базе данных как и любое обычное приложение.
-                                Обычно при чтении таблиц сервер проверяет записи на наличие мусора,
-                                и в случае его обнаружения убирает его. Использование этого
-                                параметра предотвращает запуск сборки мусора во время резервного
-                                копирования. Это может помочь ускорить резервное копирование.
-                            </para>
-                        </entry>
-                    </row>
-                    <row>
-                        <entry><code>-IG[NORE]</code></entry>
-                        <entry><para>Этот переключатель заставляет gbak игнорировать неверные
-                                контрольные суммы в базе данных.</para>
-                            <para>В обычной командной строке для создания резервной копии базы
-                                данных категорически не рекомендуется указывать параметр
-                                    <code>-ig</code>! Если база данных вдруг окажется повреждена, то
-                                с этим параметром вы можете <quote>не увидеть</quote> повреждение.
-                                Так что, <code>-ig</code> для gbak используется только в крайнем
-                                случае – когда поврежденная база починена утилитой gfix, но обычная
-                                резервная копия не проходит. Только тогда имеет смысл повторить
-                                создание резервной копии с опцией <code>-ig</code>.</para>
-                        </entry>
-                    </row>
-                    <row>
-                        <entry><code>-L[IMBO]</code></entry>
-                        <entry><para>Игнорировать зависшие двухфазные транзакции (limbo).</para>
-                            <para>Не сохраняет в резервной копии БД версии записей, которые созданы
-                                транзакциями, находящимися в состоянии in limbo. Такое состояние
-                                может быть только у не завершившихся транзакций двухфазного коммита
-                                (2PC). Если приложения не используют двухфазный коммит, или вы не
-                                знаете, что это такое, то этот параметр вам никогда не
-                                понадобится.</para>
-                        </entry>
-                    </row>
-                    <row>
-                        <entry><code>-NOD[BTRIGGERS]</code></entry>
-                        <entry><para>Не запускать триггеры уровня базы данных.</para></entry>
-                    </row>
-                    <row>
-                        <entry><code>-NT</code></entry>
-                        <entry><para>Формат резервной копии, непереносимой между аппаратными
-                                платформами.</para>
-                            <para>Если вы используете этот переключатель для создания резервной
-                                копии, вы можете восстановить ее только на аналогичной платформе.
-                            </para>
-                        </entry>
-                    </row>
-                    <row>
-                        <entry><code>-OL[D_DESCRIPTIONS]</code></entry>
-                        <entry><para>Устарел. Требовался для создания резервных копий в формате
-                                совместимом с Interbase 3.3.</para></entry>
-                    </row>
-                    <row>
-                        <entry><code>-T[RANSPORTABLE]</code></entry>
-                        <entry>
-                            <para>Создаёт транспортабельную (переносимую) резервную копию.</para>
-                            <para>Формат файла резервную копии по умолчанию является переносимым,
-                                поэтому указывать данный переключатель не следует. Переносимые файлы
-                                резервных копий записываются в формате, известном как формат
-                                представления внешних данных (XDR). Такой файл резервной копии можно
-                                восстановить на альтернативной аппаратной платформе, где порядок
-                                байт в целых числах отличается. То есть, например, между Intel и
-                                Sparc, или HP-UX и Intel, и так далее. Но между Windows и Linux (или
-                                другой ОС) на Intel файл резервной копии будет и так переносимым,
-                                даже при указании ключа <code>-nt</code> (non-transportable).
-                            </para></entry>
-                    </row>
-                </tbody>
-            </tgroup>
-        </table>
+        <section>
+            <title>Опции резервного копирования</title>
 
+            <table frame="topbot">
+                <title>Опции резервного копирования утилиты GBAK</title>
+                <tgroup cols="2">
+                    <colspec colname="c1" colnum="1" colwidth="0.75*" align="left"/>
+                    <colspec colname="c2" colnum="2" colwidth="1.25*" align="left"/>
+                    <thead>
+                        <row>
+                            <entry>Опция</entry>
+                            <entry>Описание</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry><code>-B[ACKUP_DATABASE]</code></entry>
+                            <entry>
+                                <para>Создать резервную копию.</para></entry>
+                        </row>
+                        <row>
+                            <entry><code>-CO[NVERT]</code></entry>
+                            <entry><para>Конвертировать внешние таблицы во внутренние таблицы базы
+                                    данных.</para></entry>
+                        </row>
+                        <row>
+                            <entry><code>-E[XPAND]</code></entry>
+                            <entry><para>Отключение сжатия данных при резервном копировани. По
+                                    умолчанию резервная копия записывается в <quote>сжатом</quote>
+                                    виде.</para></entry>
+                        </row>
+                        <row>
+                            <entry><code>-FA[CTOR]
+                                <replaceable>&lt;n&gt;</replaceable></code></entry>
+                            <entry><para>При резервном копировании на физическое ленточное
+                                    устройство этот переключатель позволяет указать коэффициент
+                                    блокировки ленты. Атавизм.</para></entry>
+                        </row>
+                        <row>
+                            <entry><code>-G[ARBAGE_COLLECT]</code></entry>
+                            <entry><para>Отключение сборки мусора во время резервного копирования. </para>
+                                <para>gbak подключается к базе данных как и любое обычное
+                                    приложение. Обычно при чтении таблиц сервер проверяет записи на
+                                    наличие мусора, и в случае его обнаружения убирает его.
+                                    Использование этого параметра предотвращает запуск сборки мусора
+                                    во время резервного копирования. Это может помочь ускорить
+                                    резервное копирование. </para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry><code>-IG[NORE]</code></entry>
+                            <entry><para>Этот переключатель заставляет gbak игнорировать неверные
+                                    контрольные суммы в базе данных.</para>
+                                <para>В обычной командной строке для создания резервной копии базы
+                                    данных категорически не рекомендуется указывать параметр
+                                        <code>-ig</code>! Если база данных вдруг окажется
+                                    повреждена, то с этим параметром вы можете <quote>не
+                                        увидеть</quote> повреждение. Так что, <code>-ig</code> для
+                                    gbak используется только в крайнем случае – когда поврежденная
+                                    база починена утилитой gfix, но обычная резервная копия не
+                                    проходит. Только тогда имеет смысл повторить создание резервной
+                                    копии с опцией <code>-ig</code>.</para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry><code>-L[IMBO]</code></entry>
+                            <entry><para>Игнорировать зависшие двухфазные транзакции (limbo).</para>
+                                <para>Не сохраняет в резервной копии БД версии записей, которые
+                                    созданы транзакциями, находящимися в состоянии in limbo. Такое
+                                    состояние может быть только у не завершившихся транзакций
+                                    двухфазного коммита (2PC). Если приложения не используют
+                                    двухфазный коммит, или вы не знаете, что это такое, то этот
+                                    параметр вам никогда не понадобится.</para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry><code>-NOD[BTRIGGERS]</code></entry>
+                            <entry><para>Не запускать триггеры уровня базы данных.</para></entry>
+                        </row>
+                        <row>
+                            <entry><code>-NT</code></entry>
+                            <entry><para>Формат резервной копии, непереносимой между аппаратными
+                                    платформами.</para>
+                                <para>Если вы используете этот переключатель для создания резервной
+                                    копии, вы можете восстановить ее только на аналогичной
+                                    платформе. </para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry><code>-OL[D_DESCRIPTIONS]</code></entry>
+                            <entry><para>Устарел. Требовался для создания резервных копий в формате
+                                    совместимом с Interbase 3.3.</para></entry>
+                        </row>
+                        <row>
+                            <entry><code>-T[RANSPORTABLE]</code></entry>
+                            <entry>
+                                <para>Создаёт транспортабельную (переносимую) резервную
+                                    копию.</para>
+                                <para>Формат файла резервную копии по умолчанию является
+                                    переносимым, поэтому указывать данный переключатель не следует.
+                                    Переносимые файлы резервных копий записываются в формате,
+                                    известном как формат представления внешних данных (XDR). Такой
+                                    файл резервной копии можно восстановить на альтернативной
+                                    аппаратной платформе, где порядок байт в целых числах
+                                    отличается. То есть, например, между Intel и Sparc, или HP-UX и
+                                    Intel, и так далее. Но между Windows и Linux (или другой ОС) на
+                                    Intel файл резервной копии будет и так переносимым, даже при
+                                    указании ключа <code>-nt</code> (non-transportable).
+                                </para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+        </section>
         <section>
             <title>Имя базы данных</title>
 
@@ -570,11 +577,437 @@ gbak -backup -service inet4://tux:3051/service_mgr employee /backups/employee.fb
             <para>Для достижения лучшего результата вы можете комбинировать опции
                     <code>-g[arbage_collect]</code> и <code>-se[rvice]</code>.</para>
         </section>
-        
+
         <section>
             <title>Примеры команд резервного копирования</title>
-            
-            <para></para>
+
+            <example>
+                <title>Создание резервной копии на локальном компьютере</title>
+
+                <para>Следующая команда создаёт резервную копию на локальном компьютере (gbak и
+                    сервер базы данных находятся на одном и том же компьютере).
+                    <synopsis>
+gbak -b -g d:\data\employee.fdb d:\backups\employee.fbk -user sysdba
+-password masterkey
+            </synopsis>
+                </para>
+                <para>Обратите внимание на опцию <code>-g</code> которая указана для отключения
+                    сборки мусора, чтобы ускорить процесс резервного копирования.</para>
+                <para>В данном случае будет использован локальный протолок для доступа к базе
+                    данных. Вы можете явно указать локальный протокол при помощи префикса xnet.
+                    Вместо пути к первичному файлу базы данных используется алиас.
+                    <synopsis>
+gbak -b -g xnet://employee d:\backups\employee.fbk -user sysdba -pas masterkey
+            </synopsis>
+                </para>
+                <para>Для более быстрого создания резервной копии на локальном компьютере
+                    рекомендуем использовать диспетчер служб.
+                    <synopsis>
+gbak -b -g -se service_mgr employee d:\backups\employee.fbk 
+-user sysdba -pas masterkey
+            </synopsis>
+                </para>
+            </example>
+
+            <example>
+                <title>Создание резервной копии на удалённом компьютере</title>
+
+                <para>Следующая команда создаёт резервную копию на удалённом компьютере (gbak и
+                    сервер базы данных находятся на разных компьютерах). Используется протокол TCP.
+                    Резервная копия будет создана на компьютере на котором запущен gbak.
+                    <synopsis>
+gbak -b -g remotehost:d:\data\employee.fdb d:\backups\employee.fbk -user sysdba
+-password masterkey
+            </synopsis>
+                    Если Firebird работает на нестандартном порту, например 3051, то команда
+                    измениться так:
+                    <synopsis>
+gbak -b -g remotehost/3051:d:\data\employee.fdb d:\backups\employee.fbk -user sysdba
+-password masterkey
+            </synopsis>
+                </para>
+                <para>Вы можете явно указать протокол TCP при помощи префиксов: inet, inet4, inet6.
+                    Вместо пути к первичному файлу базы данных используется алиас.
+                    <synopsis>
+gbak -b -g inet://remotehost/employee d:\backups\employee.fbk 
+-user sysdba -pas masterkey
+            </synopsis>
+                    Если Firebird работает на нестандартном порту, например 3051, то команда
+                    измениться так:
+                    <synopsis>
+gbak -b -g inet://remotehost:3051/employee d:\backups\employee.fbk 
+-user sysdba -pas masterkey
+            </synopsis>
+                </para>
+
+                <para>Для более быстрого создания резервной копии рекомендуем использовать диспетчер
+                    служб. Однако учтите, что в этом случае резервная копия будет создана на том же
+                    компьютере, на котором расположена база данных.
+                    <synopsis>
+gbak -b -g -se remotehost:service_mgr employee d:\backups\employee.fbk 
+-user sysdba -pas masterkey
+            </synopsis>
+                </para>
+
+                <para>Вариант с использованием явного указания префикса протокола представлен ниже:
+                    <synopsis>
+gbak -b -g -se inet4://remotehost/service_mgr employee d:\backups\employee.fbk 
+-user sysdba -pas masterkey
+            </synopsis>
+                </para>
+            </example>
+            <example>
+                <title>Создание резервной копии с логом операций gbak</title>
+
+                <para>Следующая команда создаст резервную копию на локальном компьютере с
+                    использование диспетчера служб. Журнал операций выполняем gbak будет выведен на
+                    консоль.
+                    <synopsis>
+gbak -b -g -se inet://localhost/service_mgr -user sysdba -password masterkey 
+employee /copy/employee.dmp -v
+            </synopsis>
+                </para>
+
+                <para>Каждую операцию можно снабдить статистикой с помощью опции <code>-ST</code>.
+                    <synopsis>
+gbak -b -g -se inet://localhost/service_mgr -user sysdba -password masterkey 
+employee /copy/employee.dmp -v -st trwd
+            </synopsis>
+                </para>
+
+                <para>Для того чтобы журнал операций gbak был записан в файл добавим опцию
+                        <code>-Y</code>.
+                    <synopsis>
+gbak -b -g -se inet://localhost/service_mgr -user sysdba -password masterkey 
+employee /copy/employee.dmp -v -st trwd -y /copy/employee_dump.log
+            </synopsis>
+                </para>
+            </example>
+            <example>
+                <title>Создание резервной копии только метаданных</title>
+
+                <para>Следующая команда создаст резервную копию на локальном компьютере с
+                    использование диспетчера служб. В резервную копию попадут только метаданные (
+                    описания таблиц, представлений, хранимых, процедур и функций, триггеров, но без
+                    данных в таблицах).
+                    <synopsis>
+gbak -b -g -metadata -se inet://localhost/service_mgr -user sysdba -password masterkey 
+employee /copy/employee.dmp
+            </synopsis>
+                </para>
+            </example>
+            <example>
+                <title>Создание резервной копии с исключением данных некоторых таблиц</title>
+
+                <para>Иногда требуется создать резервную копию, но исключить из неё данные некоторых
+                    таблиц, чтобы уменьшить объём резервной копии. Например, это могут быть таблицы
+                    логирования, которые могут содержать довольно значительный объём данных, но
+                    хранение которых не критично. Учтите, что от данных исключаемой таблицы не
+                    должно быть зависимостей, т.е. ссылок на её строки из других по внешнему ключу.
+                    Если таковые имеются, то их следует также исключить из резервной копии, в
+                    противном случае из-за нарушения ограничений целостности. база данных не может
+                    быть восстановлена.</para>
+                <para>В следующей команде будет создана резервная копия из которой будут исключены
+                    данные таблиц table1 и table2. Для исключения данных таблиц из резервной копии
+                    используется переключатель <code>-SKIP_D[ATA]
+                            <replaceable>&lt;pattern&gt;</replaceable></code>, где
+                        <replaceable>&lt;pattern&gt;</replaceable> — регулярное выражение в
+                    SQL-синтаксисе (см. оператор SIMILAR TO). Из резервной копии будут исключены
+                    таблицы соответствующие регулярному выражению. Если вам необходимо исключить
+                    конкретный список таблиц, вы можете перечислить их имена, разделив их символом
+                        <quote>|</quote>.
+                    <synopsis>
+gbak -b -g -se inet://localhost/service_mgr -user sysdba -password masterkey 
+-skip_data table1|table2 employee /copy/employee.dmp
+            </synopsis>
+                </para>
+            </example>
+            <example>
+                <title>Создание многофайловой резервной копии</title>
+
+                <para>В примере ниже будут созданы три файла резервной копии, два файла размером по
+                    100 Мегабайт, и третий файл в котором расположена оставшаяся часть резервной
+                    копии.</para>
+                <para>
+                    <programlisting>
+gbak -b -g inet://localhost/service_mgr -user SYSDBA -password masterkey
+C:\data\my.fdb D:\backup\copy_1.fbk 100M D:\backup\copy_2.fbk 100M D:\backup\copy_3.fbk
+</programlisting>
+                </para>
+            </example>
+        </section>
+    </section>
+    <section>
+        <title>Восстановление базы данных из резервной копии</title>
+
+        <para>Процесс восстановления базы данных из резервной копии происходит следующим образом: <orderedlist>
+                <listitem>
+                    <para>Сервер создает пустую базу данных. Причем, создает ее в том формате баз
+                        данных (ODS), который является для него <quote>родным</quote>. Пустая база
+                        данных будет содержать все системные таблицы rdb$ (пока пустые), и будет
+                        иметь ряд параметров, например, такие как размер страницы, forced write и т.
+                        д., которые или взяты из резервной копии, или установлены в командной строке
+                        gbak.</para>
+                </listitem>
+                <listitem>
+                    <para>Сервер считывает метаданные (описания таблиц и индексов, процедур,
+                        функций) из резервной копии и переносит их в базу данных.</para>
+                </listitem>
+                <listitem>
+                    <para>Сервер считывает данные из резервной копии и переносит их в базу
+                        данных</para>
+                </listitem>
+                <listitem>
+                    <para>Сервер считывает остальные метаданные (триггеры, привилегии, check
+                        constraints и т. п.) из резервной копии и переносит их в базу данных</para>
+                </listitem>
+                <listitem>
+                    <para>Сервер создает (активирует) все индексы таблиц (которые были активны в
+                        момент создания резервной копии)</para>
+                </listitem>
+            </orderedlist></para>
+
+        <note>
+            <para>Если вас интересует точная последовательность действий gbak при backup и restore,
+                например, порядок сохранения и восстановления объектов метаданных, то вы можете
+                обратиться к исходным текстам — <filename>backup.epp</filename> и
+                    <filename>restore.epp</filename> соответственно. По мере развития IB/FB и
+                исправления ошибок порядок сохранения-восстановления некоторых объектов
+                изменялся.</para>
+        </note>
+
+        <para>Таким образом, восстановленная из резервной копии база данных будет на самом деле не
+            копией старой базы, а совершенно новой базой данных, наполненной старыми данными.</para>
+
+        <para>Помните, что если вы делаете восстановление на новой версии сервера, например,
+            резервную копию делали на Firebird 2.5 (формат БД ODS 11.3), а восстанавливаете на
+            Firebird 3.0 (формат БД ODS 12.0), то база будет создана в формате, поддерживаемом по
+            умолчанию Firebird 3.0, и Firebird 2.5 с этой базой работать не сможет.</para>
+
+        <para>Резервные копии тоже имеют свой формат, и резервная копия БД, сделанная например в
+            Firebird 2.5 утилитой gbak этой же версии, не может быть восстановлена утилитой gbak от
+            Firebird 2.1. Резервная копия сделанная в Firebird 3.0 моет быть восстановлена в
+            Firebird 2.5, при условии, что база данных не использует новые возможности ODS 12
+            (хранимые функции, пакеты, новые типы данных, новые возможности SQL и PSQL в метаданных
+            и другое).</para>
+
+        <para>Для восстановления базы данных пользователь должен обладать административной
+            привилегией в базе данных безопасности (SYSDBA или соединиться с ролью RDB$ADMIN) или
+            обладать привилегией <code>CREATE DATABASE</code>. Этот пользователь будет владельцем
+            восстановленной базы данных.</para>
+
+        <para>Формат командной строки для восстановления базы данных из резервной копии выглядит
+            следующим образом:
+            <programlisting>
+gbak {-c | -r o | -rep} <replaceable>&lt;backup set&gt;</replaceable> <replaceable>&lt;db set&gt;</replaceable> [<replaceable>restore options</replaceable>] [<replaceable>general options</replaceable>]                
+                 
+<replaceable>&lt;backup set&gt;</replaceable> ::= <replaceable>backup_file</replaceable> [<replaceable>backup_file_2</replaceable> ... [<replaceable>backup_file_N</replaceable>]]  
+
+<replaceable>&lt;db set&gt;</replaceable> ::= <replaceable>&lt;database&gt;</replaceable> [<replaceable>size1</replaceable> <replaceable>db2</replaceable> ... [<replaceable>sizeN-1</replaceable> <replaceable>dbN</replaceable>]]             
+
+<replaceable>&lt;database&gt;</replaceable> ::= [<replaceable>&lt;server_spec&gt;</replaceable>]{<replaceable>filepath</replaceable> | <replaceable>db_alias</replaceable>}     
+
+<replaceable>&lt;server_spec&gt;</replaceable> ::= 
+    <replaceable>hostname</replaceable>[\<replaceable>port</replaceable> | <replaceable>service</replaceable>]: 
+  | \\<replaceable>hostname</replaceable>[@<replaceable>port</replaceable> | <replaceable>service</replaceable>]\ 
+  | <replaceable>&lt;protocol&gt;</replaceable>://[<replaceable>hostname</replaceable>[:<replaceable>port</replaceable> | <replaceable>service</replaceable>]/]
+
+<replaceable>&lt;protocol&gt;</replaceable> = inet | inet4 | inet6 | wnet | xnet
+            </programlisting>
+        </para>
+
+        <section>
+            <title>Создание базы данных, восстановление или замена</title>
+
+            <para>Восстановление базы данных из резервной копии может происходить в нескольких
+                режимах. <itemizedlist>
+                    <listitem>
+                        <para><code>-C[REATE_DATABASE]</code> — создание новой базы данных из
+                            резервной копии. Если файл базы данных уже существует, то будет выдана
+                            ошибка.</para>
+                    </listitem>
+                    <listitem>
+                        <para><code>-R[ECREATE_DATABASE] [O[VERWRITE]]</code> — создание новой (или
+                            замена существующей при использовании опции <code>O[VERWRITE]</code>)
+                            базы данных из резервной копии. Если базы данных не существует, то будет
+                            создана новая база данных. Если база данных уже существует, то при
+                            использовании опции <code>O[VERWRITE]</code> она будет заменена на
+                            новую, в противном случае будет выдана ошибка.</para>
+                    </listitem>
+                    <listitem>
+                        <para><code>-REP[LACE_DATABASE]</code> — замена существующей базы данных при
+                            восстановлении из резервной копии.</para>
+                    </listitem>
+                </itemizedlist></para>
+
+            <note>
+                <para>Настоятельно рекомендуем не пользоваться ключами <code>-R O</code> и
+                        <code>-REP</code>. Если база данных существует на диске, и вы просите gbak
+                    восстановить ее с помощью одного из двух указанных выше ключей, вы можете
+                    повредить базу данных, особенно если база данных используется и не была закрыта
+                    с помощью gfix. </para>
+
+                <para>Кроме того, процесс восстановления базы данных из резервной копии может
+                    завершиться неудачей, и в этом случае вы окажетесь без рабочей базы
+                    данных.</para>
+
+                <para>В целях безопасности всегда заново создавайте базу данных с новым именем.
+                    Только после того как вы проверили целостность новой базы данных, вы можете
+                    заменить ею рабочую базу данных.</para>
+            </note>
+        </section>
+
+        <section>
+            <title>Опции восстановления базы данных из резервной копии</title>
+
+            <table frame="topbot">
+                <title>Опции восстановления базы данных из резервной копии с помощью GBAK</title>
+                <tgroup cols="2">
+                    <colspec colname="c1" colnum="1" colwidth="0.75*" align="left"/>
+                    <colspec colname="c2" colnum="2" colwidth="1.25*" align="left"/>
+                    <thead>
+                        <row>
+                            <entry>Опция</entry>
+                            <entry>Описание</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry><code>-C[REATE_DATABASE]</code></entry>
+                            <entry>
+                                <para>Создание новой базы данных из резервной копии. Если файл базы
+                                    данных уже существует, то будет выдана ошибка.</para></entry>
+                        </row>
+                        <row>
+                            <entry><code>-R[ECREATE_DATABASE] [O[VERWRITE]]</code></entry>
+                            <entry>
+                                <para>Создание новой (или замена существующей при использовании
+                                    опции <code>O[VERWRITE]</code>) базы данных из резервной копии.
+                                    Если базы данных не существует, то будет создана новая база
+                                    данных. Если база данных уже существует, то при использовании
+                                    опции <code>O[VERWRITE]</code> она будет заменена на новую, в
+                                    противном случае будет выдана ошибка.</para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry><code>-REP[LACE_DATABASE]</code></entry>
+                            <entry><para>Замена существующей базы данных при восстановлении из
+                                    резервной копии.</para></entry>
+                        </row>
+                        <row>
+                            <entry><code>-BU[FFERS]
+                                <replaceable>&lt;n&gt;</replaceable></code></entry>
+                            <entry><para>Изменить (или указать новый) размер страничного кэша базы
+                                    данных. Принимается значение больше 0. Размер кэша базы данных
+                                    прописывается в её заголовок, его можно изменить позже с помощью
+                                    утилиты gfix. Рекомендуем не устанавливать кэш на уровне
+                                    заголовка базы данных, а использовать вместо этого параметр
+                                        <parameter>DefaultDbCachePages</parameter> в файле
+                                        <filename>databases.conf</filename>.</para></entry>
+                        </row>
+                        <row>
+                            <entry><code>-FIX_FSS_D[ATA]
+                                    <replaceable>&lt;charset&gt;</replaceable></code></entry>
+                            <entry><para>Этот переключатель заставляет gbak исправлять искаженные
+                                    символьные данные UNICODE_FSS во время восстановления.</para>
+                                <para>Этот и следующий переключатель не требуется при нормальных
+                                    обстоятельствах. Однако, если операция восстановления
+                                    завершается неудачно с ошибкой <quote>malformed string</quote>,
+                                    то сообщение, выведенное из gbak, отсылает пользователя к одному
+                                    или обоим этим переключателям для исправления неверно
+                                    сформированных данных или метаданных UNICODE_FSS в зависимости
+                                    от ситуации.</para></entry>
+                        </row>
+                        <row>
+                            <entry><code>-FIX_FSS_M[ETADATA]
+                                        <replaceable>&lt;charset&gt;</replaceable></code></entry>
+                            <entry><para>Этот переключатель заставляет gbak исправлять некорректные
+                                    метаданные UNICODE_FSS во время восстановления.</para>
+                                <para>Этот переключатель, как и предыдущий, не требуется в
+                                    нормальных условиях. Однако, если операция восстановления
+                                    завершается неудачно с ошибкой <quote>malformed string</quote>,
+                                    сообщение, выведенное из gbak, отсылает пользователя к одному
+                                    или обоим этим переключателям для исправления неверно
+                                    сформированных данных или метаданных UNICODE_FSS в зависимости
+                                    от ситуации.</para></entry>
+                        </row>
+                        <row>
+                            <entry><code>-I[NACTIVE]</code></entry>
+                            <entry><para>Не выполнять активацию индексов. После восстановления базы
+                                    данных все индексы в ней останутся отключены (неактивны).
+                                    Фактически с такой базой данных работать нельзя, т. к. при
+                                    отключенных индексах Primary key, Foreign key и Unique возможны
+                                    нарушения целостности данных в таблицах (дублирование первичных
+                                    ключей и т. д.).</para>
+                                <para>Если вы восстановили резервную копию с опцией <code>-i</code>,
+                                    индексы можно активировать командой <code>alter index
+                                            <replaceable>indexname</replaceable> active</code> (для
+                                    каждого индекса).</para></entry>
+                        </row>
+                        <row>
+                            <entry><code>-K[ILL]</code></entry>
+                            <entry><para>Этот ключ восстанавливает базу данных, но не воссоздает
+                                    файлы теневых копий, которые существовали ранее.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <code>-MO[DE] {read_write | read_only}</code>
+                            </entry>
+                            <entry><para>Этот переключатель позволяет восстановить базу данных в
+                                    заданном режиме доступа <quote>read_only</quote> или
+                                        <quote>read_write</quote>. По умолчанию режим берется из
+                                    базы данных, с которой была сделана резервная
+                                копия.</para></entry>
+                        </row>
+                        <row>
+                            <entry><code>-N[O_VALIDITY]</code></entry>
+                            <entry><para>Не выполнять проверку ограничений. Может потребоваться.
+                                    если при обычном восстановлении базы оказалось, что логическая
+                                    целостность оригинальной базы данных была повреждена.</para>
+                                <para>Крайне не рекомендуется для использования в <quote>командной
+                                        строке автоматизированного
+                                восстановления</quote>.</para></entry>
+                        </row>
+                        <row>
+                            <entry><code>-O[NE_AT_A_TIME]</code></entry>
+                            <entry><para>Этот переключатель заставляет восстанавливать одну таблицу
+                                    за раз. Обычно восстановление данных таблиц выполняется в одной
+                                    транзакции с одним подтверждением в конце восстановления. При
+                                    использовании опции <code>-o[ne_at_a_time]</code> транзакция
+                                    стартует и фиксируется для восстановления каждой таблицы.</para>
+                                <para>Эта опция может быть полезна, если предыдущее восстановление
+                                    не удалось из-за ошибок данных. </para></entry>
+                        </row>
+                        <row>
+                            <entry><code>-P[AGE_SIZE]
+                                <replaceable>&lt;n&gt;</replaceable></code></entry>
+                            <entry><para>Указать новый размер страницы для базы данных. Принимаются
+                                    значения: 4096, 8192, 16384. По умолчанию база данных
+                                    восстанавливается с использованием того же размера страницы,
+                                    который использовался при создании резервной базы
+                                данных.</para></entry>
+                        </row>
+                        <row>
+                            <entry><code>-USE_[ALL_SPACE]</code></entry>
+                            <entry><para>Этот переключатель заставляет при восстановлении
+                                    использовать 100% каждой страницы данных (DP). По умолчанию
+                                    Firebird резервирует приблизительно 20% на каждой странице для
+                                    размещения версий при будущих удалениях или обновлениях записей.
+                                    Этот переключатель может быть полезен если база данных создается
+                                    и используется в режиме только для чтения, а обновления
+                                    существующих данных не требуются.</para>
+                                <para>Вы можете переопределить этот параметр, используя <code>gfix
+                                        -use {full | reserve}
+                                            <replaceable>database_name</replaceable></code>, где
+                                    full использует 100% каждой страницы, а reserve зарезервирует
+                                    некоторое место для версий. Подробнее смотри в главе
+                                        <quote>Утилита GFIX</quote> секции <link
+                                        xlink:href="gfix-use_space">Использование пространства
+                                        страниц базы данных</link>.</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
         </section>
     </section>
 </chapter>

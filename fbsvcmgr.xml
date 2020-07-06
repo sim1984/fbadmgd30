@@ -17,7 +17,7 @@
             <application>fbsvcmgr</application> решает проблему для администраторов, которым
         требуется доступ к удаленным серверам через текстовую консоль. </para>
 
-    <section>
+    <section xml:id="fbsvcmgr-usage">
         <title>Использование fbsvcmgr</title>
 
         <para><application>fbsvcmgr</application> не эмулирует переключатели, реализованные в
@@ -27,7 +27,7 @@
                 <filename>ibase.h</filename>, в каталоге <filename>../include</filename> — следует
             рассматривать как основной источник информации о том, что доступно.</para>
 
-        <section>
+        <section xml:id="fbsvcmgr-usage-params">
             <title>Параметры</title>
 
             <para>Первый обязательный параметр командной строки — это менеджер служб, к которому вы
@@ -52,7 +52,7 @@ fbsvcmgr service_mgr -user sysdba -password masterkey
             </para>
         </section>
 
-        <section>
+        <section xml:id="fbsvcmgr-usage-spb">
             <title>Синтаксис SPB</title>
 
             <para>Синтаксис SPB, который понимает <application>fbsvcmgr</application>, почти
@@ -79,7 +79,7 @@ isc_info_svc_get_env_lock => info_get_env_lock
                     как user_name или просто как user.</para>
             </note>
 
-            <section>
+            <section xml:id="fbsvcmgr-syn-features">
                 <title>Особенности синтаксиса fbsvcmgr</title>
 
                 <para>Используя <application>fbsvcmgr</application>, вы можете выполнить одно
@@ -120,7 +120,7 @@ Unknown switch "-info_server_version"
             </section>
         </section>
     </section>
-    <section>
+    <section xml:id="fbsvcmgr-help">
         <title>Получение справки</title>
 
         <para>Запуск fbsvcmgr без параметров приводит к отображению экрана с сокращенной справочной
@@ -327,7 +327,7 @@ action_validate:
         </screen>
         </para>
     </section>
-    <section>
+    <section xml:id="fbsvcmgr-conn-params">
         <title>Параметры подключения к службе</title>
 
         <para>При подключении к диспетчеру служб требуется авторизация. Перечисленные ниже параметры
@@ -387,7 +387,7 @@ action_validate:
                 </tbody>
             </tgroup>
         </table>
-        <section>
+        <section xml:id="fbsvcmgr-non-standart-security">
             <title>Использование служб с базой данных безопасности не по умолчанию</title>
 
             <para>Если вы хотите использовать API служб для доступа к базе данных, которая настроена
@@ -430,7 +430,7 @@ fbsvcmgr host:service_mgr -user sysdba -password xxx -action_db_stats
         </section>
     </section>
 
-    <section>
+    <section xml:id="fbsvcmgr-info-query">
         <title>Информационные запросы</title>
 
         <para>Как было сказано ранее, используя <application>fbsvcmgr</application>, вы можете
@@ -541,9 +541,9 @@ Server implementation: Firebird/Windows/AMD/Intel/x64
             </para>
         </example>
     </section>
-    <section>
+    <section xml:id="fbsvcmgr-actions">
         <title>Сервисные действия</title>
-        <section>
+        <section xml:id="fbsvcmgr-gbak-backup">
             <title>Резервная копия (gbak)</title>
 
             <para>Для создания резервной копии (как создаёт gbak) с помощью утилиты
@@ -755,7 +755,7 @@ fbsvcmgr remotehost:service_mgr -user sysdba -password masterkey
                 </example>
             </simplesect>
         </section>
-        <section>
+        <section xml:id="fbsvcmgr-gbak-restore">
             <title>Восстановление (gbak)</title>
             <para>Для восстановления из резервной копии, созданной с помощью gbak, утилитой
                     <application>fbsvcmgr</application> используется действие action_restore. </para>

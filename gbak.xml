@@ -655,6 +655,13 @@ gbak -b -g -se inet4://remotehost/service_mgr employee d:\backups\employee.fbk
 -user sysdba -pas masterkey
             </synopsis>
                 </para>
+
+                <para>Существует возможность создания резервной копии на удалённом компьютере с
+                    использованием диспетчера служб, однако утилита gbak её не предоставляет. Однако
+                    вы можете воспользоваться утилитой fbsvcmgr. Пример использования вы можете
+                    найти в разделе <link xmlns:xlink="http://www.w3.org/1999/xlink"
+                        linkend="fbsvcmgr-gbak-backup">Утилита FBSVCMGR. Резервная копия
+                        (gbak)</link>.</para>
             </example>
             <example>
                 <title>Создание резервной копии с логом операций gbak</title>
@@ -1125,9 +1132,17 @@ gbak -c -se inet://localhost/service_mgr -user sysdba -password masterkey
                     шаблона для исправления подобных ошибок в BLOB ваших пользовательских данных.
                     Ключи восстановления были добавлены в код восстановления
                         <application>gbak</application> в версии 2.5 для внесения таких же
-                    исправлений в метаданные и данные, соответственно, в процессе восстановления
+                    исправлений в метаданные (опция <code>-fix_fss_m[etadata]</code>) и данные
+                    (опция <code>-fix_fss_d[ata]</code>), соответственно, в процессе восстановления
                     базы данных для обновления.</para>
             </blockquote>
+
+            <warning>
+                <para>Обе опции <code>-fix_fss_*</code> указываются ОДИН раз в том случае, если при
+                    восстановлении бэкапа возникает ошибка <quote>malformed string</quote>. При
+                    указании этих опций повторно при backup/restore база данных будет
+                    испорчена.</para>
+            </warning>
         </section>
         <section>
             <title>Ускорение восстановления базы данных</title>
@@ -1141,6 +1156,104 @@ gbak -c -se inet://localhost/service_mgr -user sysdba -password masterkey
 tux> gbak -replace -service tux:service_mgr /backups/employee.fbk employee                
             </programlisting>
             </para>
+        </section>
+        <section>
+            <title>Примеры команд восстановления из резервной копии</title>
+
+            <example>
+                <title>Восстановление из резервной копии на локальном компьютере</title>
+
+                <para>Следующая команда восстановит (создаст новую базу данных) из резервной копии
+                    на локальном компьютере (gbak и сервер базы данных находятся на одном и том же
+                    компьютере).
+                    <synopsis>
+gbak -с d:\backups\employee.fbk d:\data\employee.fdb -user sysdba
+-password masterkey
+            </synopsis>
+                </para>
+
+                <important>
+                    <para>Обратите внимание, если файл базы данных уже существует, то будет выдана
+                        ошибка.</para>
+                    <para>Существуют так же опции <code>-r o</code> (<code>-RECREATE_DATABASE
+                            OVERWRITE</code>) или <code>-rep</code>
+                        (<code>-REPLACE_DATABASE</code>), которые позволяют заменить существующий
+                        файл базы данных, однако мы не рекомендуем использовать их, поскольку они
+                        могут привести к утрате оригинального файла базы данных в случае если
+                        восстановление завершиться с ошибкой.</para>
+                </important>
+
+                <para>В примере выше будет использован локальный протолок. Вы можете явно указать
+                    локальный протокол при помощи префикса xnet.
+                    <synopsis>
+gbak -с d:\backups\employee.fbk xnet://d:\data\employee.fdb -user sysdba
+-password masterkey
+            </synopsis>
+                </para>
+
+                <para>Для более быстрого восстановления базы данных из резервной копии на локальном
+                    компьютере рекомендуем использовать диспетчер служб.
+                    <synopsis>
+gbak -с -se service_mgr d:\backups\employee.fbk d:\data\employee.fdb -user sysdba
+-password masterkey
+            </synopsis>
+                </para>
+            </example>
+            <example>
+                <title>Восстановление из резервной копии на удалённом компьютере</title>
+
+                <para>Следующая команда восстанавливает базу данных (создаёт новую) из резервной
+                    копии расположенной на удалённом компьютере (gbak и сервер базы данных находятся
+                    на разных компьютерах). Используется протокол TCP. База данных будет создана на
+                    компьютере на котором расположен сервер Firebird.
+                    <synopsis>
+gbak -с d:\backups\employee.fbk remotehost:d:\data\employee.fdb -user sysdba
+-password masterkey
+            </synopsis>
+                </para>
+                <para>Если Firebird работает на нестандартном порту, например 3051, то команда
+                    измениться так:
+                    <synopsis>
+gbak -с d:\backups\employee.fbk remotehost/3051:d:\data\employee.fdb -user sysdba
+-password masterkey
+            </synopsis>
+                </para>
+                <para>Вы можете явно указать протокол TCP при помощи префиксов: inet, inet4, inet6.
+                    Вместо пути к первичному файлу базы данных используется алиас.
+                    <synopsis>
+gbak -с d:\backups\employee.fbk inet://remotehost/employee -user sysdba
+-password masterkey
+            </synopsis>
+                </para>
+                <para>Если Firebird работает на нестандартном порту, например 3051, то команда
+                    измениться так:
+                    <synopsis>
+gbak -с d:\backups\employee.fbk inet://remotehost:3051/employee -user sysdba
+-password masterkey
+            </synopsis>
+                </para>
+                <para>Для более быстрого восстановления базы данных из резервной копии рекомендуем
+                    использовать диспетчер служб. Однако учтите, что в этом случае резервная копия
+                    должна быть распложена на том же компьютере, на котором расположен сервер
+                    Firebird.
+                    <synopsis>
+gbak -с -se remotehost:service_mgr d:\backups\employee.fbk d:\data\employee.fdb -user sysdba
+-password masterkey
+            </synopsis>
+                </para>
+                <para>Вариант с использованием явного указания префикса протокола представлен ниже:
+                    <synopsis>
+gbak -с -se inet://remotehost/service_mgr d:\backups\employee.fbk d:\data\employee.fdb -user sysdba
+-password masterkey
+            </synopsis>
+                </para>
+                <para>Существует возможность восстановления из удалённой резервной копии с
+                    использованием диспетчера служб, однако утилита gbak её не предоставляет. Однако
+                    вы можете воспользоваться утилитой fbsvcmgr. Пример использования вы можете
+                    найти в разделе <link xmlns:xlink="http://www.w3.org/1999/xlink"
+                        linkend="fbsvcmgr-gbak-restore">Утилита FBSVCMGR. Восстановление
+                        (gbak)</link>.</para>
+            </example>
         </section>
     </section>
 </chapter>

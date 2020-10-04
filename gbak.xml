@@ -1087,7 +1087,7 @@ gbak -c -se inet://localhost/service_mgr -user sysdba -password masterkey
 </programlisting>
             </para>
 
-            <para>Кроме того. существует возможность восстановления многофайловой базы данных из
+            <para>Кроме того, существует возможность восстановления многофайловой базы данных из
                 многофайловой резервной копии. В этом случае утилита gbak сама определит где
                 заканчивается перечисление файлов резервной копии и начинается перечисление файлов
                 баз данных. Либо файл базы данных указан последним, либо после файла базы данных
@@ -1254,6 +1254,808 @@ gbak -с -se inet://remotehost/service_mgr d:\backups\employee.fbk d:\data\emplo
                         linkend="fbsvcmgr-gbak-restore">Утилита FBSVCMGR. Восстановление
                         (gbak)</link>.</para>
             </example>
+            <example>
+                <title>Восстановление из резервной копии с новым размером страницы</title>
+
+                <para>Следующая команда восстановит базу данных из резервной копии на локальном
+                    компьютере с использование диспетчера служб. База данных будет восстановлена с
+                    новым размером страницы.
+                    <synopsis>
+gbak -с -se inet://localhost/service_mgr -user sysdba -password masterkey 
+-p 16384 d:\backups\employee.fbk d:\data\employee.fdb
+            </synopsis>
+                </para>
+                <note>
+                    <para>Указывать опцию <code>-p[age_size]</code> имеет смысл только если
+                        резервная копия была сделана с базы данных имеющий другой размер
+                        страницы.</para>
+                </note>
+            </example>
+            <example>
+                <title>Восстановление из резервной копии с логом операций gbak</title>
+
+                <para>Следующая команда восстановит базу данных из резервной копии на локальном
+                    компьютере с использование диспетчера служб. Журнал операций выполняем gbak
+                    будет выведен на консоль.
+                    <synopsis>
+gbak -с -se inet://localhost/service_mgr -user sysdba -password masterkey 
+d:\backups\employee.fbk d:\data\employee.fdb -v
+            </synopsis>
+                </para>
+
+                <para>Каждую операцию можно снабдить статистикой с помощью опции <code>-ST</code>.
+                    <synopsis>
+gbak -с -se inet://localhost/service_mgr -user sysdba -password masterkey 
+d:\backups\employee.fbk d:\data\employee.fdb -v -st trwd
+            </synopsis>
+                </para>
+
+                <para>Для того чтобы журнал операций gbak был записан в файл добавим опцию
+                        <code>-Y</code>.
+                    <synopsis>
+gbak -с -se inet://localhost/service_mgr -user sysdba -password masterkey 
+d:\backups\employee.fbk d:\data\employee.fdb -v -st trwd -y /copy/employee_dump.log
+            </synopsis>
+                </para>
+            </example>
+            <example>
+                <title>Восстановление только метаданных</title>
+
+                <para>Следующая команда восстановит базу данных из резервной копии на локальном
+                    компьютере с использование диспетчера служб. В базе данных будут только
+                    метаданные (описания таблиц, представлений, хранимых, процедур и функций,
+                    триггеров, но без данных в таблицах).
+                    <synopsis>
+gbak -с -metadata -se inet://localhost/service_mgr -user sysdba -password masterkey 
+d:\backups\employee.fbk d:\data\employee.fdb 
+            </synopsis>
+                </para>
+            </example>
+            <example>
+                <title>Восстановление из резервной копии с исключением данных некоторых
+                    таблиц</title>
+
+                <para>Иногда требуется восстановить базу данных, но исключить из неё данные
+                    некоторых таблиц, чтобы уменьшить объём базы данных. Например, это могут быть
+                    таблицы логирования, которые могут содержать довольно значительный объём данных,
+                    но хранение которых не критично. Учтите, что от данных исключаемой таблицы не
+                    должно быть зависимостей, т.е. ссылок на её строки из других по внешнему ключу.
+                    Если таковые имеются, то их следует также исключить, в противном случае из-за
+                    нарушения ограничений целостности, база данных не может быть
+                    восстановлена.</para>
+                <para>В следующей команде будет восстановлена резервная копия из которой будут
+                    исключены данные таблиц table1 и table2. Для исключения данных таблиц из базы
+                    данных используется переключатель <code>-SKIP_D[ATA]
+                            <replaceable>&lt;pattern&gt;</replaceable></code>, где
+                        <replaceable>&lt;pattern&gt;</replaceable> — регулярное выражение в
+                    SQL-синтаксисе (см. оператор SIMILAR TO). Из резервной копии будут исключены
+                    таблицы соответствующие регулярному выражению. Если вам необходимо исключить
+                    конкретный список таблиц, вы можете перечислить их имена, разделив их символом
+                        <quote>|</quote>.
+                    <synopsis>
+gbak -с -se inet://localhost/service_mgr -user sysdba -password masterkey 
+-skip_data table1|table2 /copy/employee.dmp /data/employee.fdb
+            </synopsis>
+                </para>
+            </example>
+        </section>
+    </section>
+    <section>
+        <title>Рецепты резервного копирования и восстановления</title>
+
+        <para>В следующих рецептах показаны примеры задач резервного копирования и восстановления с
+            использованием gbak. Это, вероятно, самые частые случаи, с которыми вы можете
+            столкнуться как администратор баз данных. Во всех примерах используется база данных
+            сотрудников, поставляемая с Firebird, а фактическое местоположение правильно настроено в
+                <filename>aliases.conf</filename>. Каждый из следующих рецептов выполняется с
+            предположением, что переменным среды ISC_USER и ISC_PASSWORD присвоены подходящие
+            значения.</para>
+
+        <section>
+            <title>Предварительные условия для резервного копирования и восстановления</title>
+
+            <para>Если вы замените открытую и работающую базу данных, есть большая вероятность, что
+                вы ее повредите. Для достижения наилучших результатов и минимальной вероятности
+                повреждения базы данных вам следует закрыть ее перед заменой. Чтобы закрыть базу
+                данных, используйте gfix следующим образом:
+                <synopsis>
+tux> gfix -shut -tran 60 employee
+            </synopsis>
+            </para>
+            <para>В приведенном выше примере предотвращается запуск любой новой транзакции, что
+                предотвращает выполнение новых запросов или подключение новых сеансов к базе данных.
+                Firebird будет ждать 60 секунд, пока все выйдут из системы и все текущие транзакции
+                завершатся, прежде чем закрыть базу данных. Если какие-либо длительные транзакции не
+                завершены по истечении 60 секунд, тайм аут истечёт, и база данных останется
+                открытой.</para>
+            <note>
+                <para>После завершения восстановления базы данных она автоматически откроется для
+                    использования.</para>
+            </note>
+        </section>
+
+        <section>
+            <title>Простое резервное копирование и восстановление</title>
+
+            <para>В этом примере создается резервная копия, а затем исходная база данных немедленно
+                перезаписывается из новой резервной копии. Обычно это не лучшая идея, поскольку
+                первое действие при восстановлении — стереть оригинальную базу данных.</para>
+
+            <synopsis>
+tux> # Backup the database.
+tux> gbak -backup employee /backups/employee.fbk
+
+tux> # Restore the database.
+tux> gfix -shut -tran 60 employee
+tux> gbak -replace /backups/employee.fbk employee
+            </synopsis>
+        </section>
+
+        <section>
+            <title>Только метаданные</title>
+
+            <para>Можно использовать gbak для воссоздания пустой базы данных, содержащей только
+                различные домены, таблицы, индексы и так далее, то есть исходной базы данных, но без
+                данных. Это может быть полезно, когда вы завершили тестирование своего приложения в
+                тестовой среде и хотите перенести систему в производственную среду без каких-либо
+                тестовых данных.</para>
+            <synopsis>
+tux> #Backup only the database metadata.
+tux> gfix -shut -tran 60 employee
+tux> gbak -backup -meta_data employee employee.meta.fbk
+            </synopsis>
+
+            <para>Когда указанный выше файл копии восстанавливается на рабочем сервере, в базе
+                данных будут присутствовать только метаданные.</para>
+
+            <para>Есть еще один способ создать базу данных без данных и только с метаданными. Просто
+                выполните восстановление из существующего дампа, содержащего данные, и укажите ключ
+                    <code>-m[eta_data]</code> в командной строке восстановления. База данных будет
+                восстановлена, но исходных данных не будет.</para>
+            <synopsis>
+tux> #Restore only the database metadata.
+tux> gbak -create employee.fbk mytest.fdb -meta_data
+            </synopsis>
+
+            <para>Ключ <code>-m[eta_data]</code> можно использовать как при резервном копировании,
+                так и при восстановлении, чтобы упростить создание клонированной базы данных (или
+                перезаписи существующей) без фактических данных.</para>
+        </section>
+
+        <section>
+            <title>Разделение резервной копии</title>
+
+            <para>Приложение фильтра <application>gsplit</application>, описанное в отдельном
+                руководстве, на самом деле больше не работает. Этот фильтр поставлялся со старыми
+                версиями InterBase и Firebird, чтобы можно было разделить большие резервные копии
+                баз данных на несколько файлов для преодоления ограничений файловой системы. Такими
+                ограничениями могут быть размер компакт-диска, ограничение в 2 ГБ на размер
+                отдельных файлов на DVD и так далее.</para>
+
+            <para><application>Gbak</application> позволяет разбивать файлы дампа на различные
+                размеры (минимум 2048 байт) и создает только необходимые файлы.</para>
+            <synopsis>
+tux> # Backup the database to multiple files.
+tux> gbak -backup employee /backups/emp.a.fbk 600m /backups/emp.b.fbk 600m
+            </synopsis>
+
+            <para>После каждого имени файла указывается максимальный размер этого файл. Размер по
+                умолчанию указывается в байтах, но вы можете указать суффикс k, m или g, чтобы
+                использовать единицы килобайт, мегабайт или гигабайт.</para>
+
+            <para>Если дамп завершается до записи в некоторые файлы, то эти файлы не создаются. Файл
+                дампа создается только тогда, когда это необходимо.</para>
+
+            <para>Размер окончательного файла дампа будет игнорироваться, если база данных стала
+                слишком большой, чтобы можно было завершить усеченное резервное копирование. Если в
+                приведенном выше примере для резервного копирования требуется всего 1500 МБ, то
+                последний файл будет записан с конечным размером 900 МБ, а не с указанными 600
+                МБ.</para>
+
+            <para>Для восстановления такой многофайловой резервной копии необходимо указать все
+                имена файлов в дампе и в правильном порядке. В следующем примере показано
+                восстановление базы данных сотрудников из двух созданных выше файлов резервной
+                копии:</para>
+            <synopsis>
+tux> # Restore the database from multiple files.
+tux> gfix -shut -tran 60 employee
+tux> gbak -replace /backups/employee.a.fbk /backups/employee.b.fbk employee
+            </synopsis>
+        </section>
+
+        <section>
+            <title>Изменение ODS</title>
+
+            <para>Обычно используется ODS той версии Firebird, которая используется для
+                восстановления базы данных. Таким образом, приведенные выше примеры фактически
+                изменят ODS при восстановлении базы данных. Резервное копирование должно быть
+                выполнено с помощью утилиты gbak, входящей в состав старой версии InterBase или
+                Firebird (с родной для них ODS). Восстановление следует производить с помощью gbak
+                из более новой версии Firebird.</para>
+            <synopsis>
+tux> setenv_firebird 2.5
+Firebird environment set for version 2.5.
+
+tux> # Check current ODS version (as root user!)
+tux> gstat -h employee|grep ODS
+        ODS version             11.2
+
+tux> # Backup the (old) database.
+tux> gbak -backup employee /backups/employee.2_5.fbk
+
+tux> setenv_firebird 3.0
+Firebird environment set for version 3.0.
+
+tux> # Recreate the database and upgrade the ODS.
+tux> gfix -shut -tran 60 employee
+tux> gbak -replace /backups/employee.2_5.fbk employee
+
+tux> # Check new ODS version (as root user!)
+tux> gstat -h employee|grep ODS
+        ODS version             12.0                
+            </synopsis>
+
+            <para>После вышесказанного старая база данных Firebird 2.5 будет воссоздана — с
+                удалением старой базы данных — как база данных Firebird 3.0 с соответствующим
+                обновлением ODS с 11.2 до 12.0.</para>
+
+            <para>Сценарий <filename>setenv_firebird</filename> не поставляется с Firebird и просто
+                устанавливает PATH и т.д., чтобы использовать правильную версию Firebird в
+                соответствии с предоставленным параметром.</para>
+        </section>
+
+        <section>
+            <title>Изменение размера кеша</title>
+
+            <para>Размер страничного кеша по умолчанию задаётся при создании базы данных или может
+                быть переопределён позже с помощью утилиты gfix. Gbak может восстановить базу данных
+                и сбросить размер кеша по умолчанию. Процесс выглядит следующим образом:</para>
+            <synopsis>
+tux> # Check current cache size (as root user!)
+tux> gstat -h employee | grep -i buffer
+        Page buffers            0
+
+tux> # Restore the database &amp; change the cache size.
+tux> gfix -shut -tran 60 employee
+tux> gbak -replace -buffer 200 /backups/employee.fbk employee
+
+tux> # Check the new cache size (as root user!)
+tux> gstat -h employee | grep -i buffer
+        Page buffers            200                
+            </synopsis>
+
+            <para>Размер кэша по умолчанию используется, когда количество буферов равно нулю, как в
+                первом примере выше. Gbak позволяет при желании это изменить. Однако Gbak не может
+                сбросить размер кэша на ноль. Для этого вы должны использовать gfix.</para>
+        </section>
+
+        <section>
+            <title>Изменение размера страницы</title>
+
+            <para>Подобно приведенному выше примеру для изменения размера кэша базы данных по
+                умолчанию, размер страницы базы данных также можно изменить с помощью gbak.</para>
+
+            <synopsis>
+tux> # Check current page size (as root user!)
+tux> gstat -h employee | grep -i "page size"
+        Page size               4096
+
+tux> # Restore the database &amp; change the page size.
+tux> gfix -shut -tran 60 employee
+tux> gbak -replace -page_size 8192 /backups/employee.fbk employee
+
+tux> # Check the new page size (as root user!)
+tux> gstat -h employee | grep -i "page size"
+        Page size               8192                
+            </synopsis>
+        </section>
+
+        <section>
+            <title>Создание клона базы данных только для чтения</title>
+
+            <para>Иногда вы не хотите, чтобы ваш персонал, составляющий отчеты, выполнял интенсивные
+                запросы к вашей производственной базе данных. С этой целью вы можете создать клон
+                своей производственной базы данных и сделать ее доступной только для чтения. Это
+                позволяет группе составления отчетов запускать столько интенсивных отчетов, сколько
+                они пожелают, без вредных последствий для производственной базы данных и
+                предотвращает непреднамеренное внесение изменений.</para>
+
+            <para>В следующем примере показана рабочая база данных employee, работающая на сервере
+                Linux <emphasis>tux</emphasis>, клонируемая на сервер Linux группы создания отчетов
+                с именем <emphasis>tuxrep</emphasis>. Сначала на рабочем сервере
+                    <emphasis>tux</emphasis> выполните:</para>
+
+            <synopsis>
+tux> # Backup the production database.
+tux> gbak -backup employee /backups/employee.fbk                
+            </synopsis>
+
+            <para>Затем на сервере <emphasis>tuxrep</emphasis> группы отчетов:</para>
+
+
+            <synopsis>
+tuxrep> # Scp the dump file from tux.
+tuxrep> scp fbuser@tux:/backups/employee.fbk ./
+Using keyboard-interactive authentication.
+Password:
+employee.fbk              |         19 kB |  19.3 kB/s | ETA: 00:00:00 | 100%
+
+tuxrep> # Restore the employee database as read-only.
+tuxrep> gfix -shut -tran 60 employee
+tuxrep> gbak -replace -mode read_only employee.fbk employee
+
+tuxrep> # Check database mode (as root user)
+tuxrep> gstat -h employee|grep -i attributes
+        Attributes              no reserve, read only              
+            </synopsis>
+        </section>
+        <section>
+            <title>Создание клона базы данных только без файла дампа</title>
+
+            <para>Вы можете использовать gbak для создания клона базы данных на том же сервере без
+                необходимости создавать потенциально большой файл дампа. Для этого необходимо
+                передать вывод резервной копии gbak прямо на вход восстановления gbak, как показано
+                ниже.</para>
+
+            <synopsis>
+tux> # Clone a test database to the same server, without requiring a dump file.
+tux> gbak -backup emptest stdout | gbak -replace stdin emptest_2              
+            </synopsis>
+
+            <para>Обратите внимание, что имя выходного файла для резервной копии —
+                    <filename>stdout</filename>, а имя входного файла для восстановления —
+                    <filename>stdin</filename>. Благодаря этой способности передавать стандартный
+                вывод одного процесса стандартному вводу другого можно избежать создания
+                промежуточного файла дампа. Приведенные выше команды предполагают, что для emptest и
+                emptest_2 настроены подходящие псевдонимы. Если нет, вам нужно будет указать полный
+                путь к двум базам данных, а не псевдоним.</para>
+
+            <para>Параметр <code>-replace</code> в процессе восстановления перезапишет указанную
+                базу данных если он существует, и создаст её заново, в противном случае. В качестве
+                альтернативы вы также можете использовать параметр <code>-recreate overwrite</code>.
+                Оба имеют одинаковый результат.</para>
+
+            <para>Если вы не хотите перезаписывать существующие базы данных, используйте
+                    <code>-create</code>, который создаст базу данных только в том случае, если она
+                еще не существует, и завершит работу с ошибкой в противном случае. В
+                POSIX-совместимых системах код ошибки в $? в данном случае равно 1.</para>
+
+            <para>Дополнительные примеры резервного копирования и восстановления удаленных баз
+                данных по ssh с использованием имен файлов stdin и stdout можно увидеть ниже.</para>
+        </section>
+        <section>
+            <title>Резервное копирование и восстановление с теневой копией и без неё</title>
+
+            <para>Базы данных могут иметь прикрепленные файлы теневых копий при обычном
+                использовании. Gbak создает резервные копии и восстанавливает их, и при обычном
+                использовании теневые файлы будут воссозданы. Если вы хотите восстановить только
+                базу данных и игнорировать тени, gbak может сделать это за вас, как показано в
+                следующем примере.</para>
+
+            <screen>
+tux> # Check current shadows, use isql as gstat is broken.
+tux> isql employee
+
+Database:  employee
+SQL> show database;
+Database: employee
+        Owner: SYSDBA
+ Shadow 1: "/opt/firebird/shadows/employee.shd1" manual
+ Shadow 2: "/opt/firebird/shadows/employee.shd2" manual
+...
+
+SQL> quit;                
+            </screen>
+            <screen>
+tux> # Restore the database preserving shadow files.
+tux> gfix -shut -tran 60 employee
+tux> gbak -replace overwrite /backups/employee.fbk employee
+
+tux> # Check shadows again, use isql as gstat is broken.
+tux> isql employee
+
+Database:  employee
+SQL> show database;
+Database: employee
+        Owner: SYSDBA
+ Shadow 1: "/opt/firebird/shadows/employee.shd1" manual
+ Shadow 2: "/opt/firebird/shadows/employee.shd2" manual
+...
+
+SQL> quit;                
+                </screen>
+            <screen>
+tux> # Restore the database killing shadow files.
+tux> gfix -shut -tran 60 employee
+tux> gbak -replace overwrite -kill /backups/employee.fbk employee
+
+tux> # Check shadows again, use isql as gstat is broken.
+tux> isql employee
+
+Database:  employee
+SQL> show database;
+Database: employee
+        Owner: SYSDBA
+...
+
+SQL> quit;                
+                </screen>
+            <note>
+                <para> Я использую isql в приведенных выше примерах, так как <code>gstat -h</code>,
+                    кажется, не понимает, сколько теней существует в базе данных. Он сообщает об
+                    нуле, когда их два, в конце концов он догоняет и сообщает, что их двое, затем,
+                    если вы убиваете тень, он сообщает, что теперь их три! </para>
+            </note>
+        </section>
+        <section>
+            <title>Удаленное резервное копирование и восстановление</title>
+
+            <para>Утилита Firebird <application>gbak</application> может создавать резервные копии
+                удаленной базы данных. Для этого вам необходимо подключиться к диспетчеру служб,
+                запущенному на удаленном сервере, обычно он называется <code>service_mgr</code>. В
+                следующем примере показано резервное копирование базы данных сотрудников Firebird на
+                сервере <emphasis>tuxrep</emphasis> с сервера <emphasis>tux</emphasis>. Резервная
+                копия будет записана на удаленный сервер, другими словами, файл резервной копии
+                будет создан на сервере <emphasis>tuxrep</emphasis>, а не на сервере
+                    <emphasis>tux</emphasis>. Используемый сетевой протокол — TCP.</para>
+
+            <synopsis>
+tux> # Backup the reporting database on remote server tuxrep.
+tux> gbak -backup -service tuxrep:service_mgr employee /backups/remote_backup.fbk                
+            </synopsis>
+
+            <para>Файл резервной копии будет иметь того же владельца и группу, что и сервер базы
+                данных Firebird — по крайней мере, в системах Unix.</para>
+
+            <para>Таким же образом можно восстановить удаленную базу данных, и gbak позволяет
+                это.</para>
+
+            <synopsis>
+tux> # Restore the read-only reporting database on remote server tuxrep.
+tux> gbak -replace -mode read_only -service tuxrep:service_mgr \
+            /backups/remote_backup.fbk employee                
+            </synopsis>
+
+            <note>
+                <para> В приведенном выше примере используется удобная способность Unix разбивать
+                    длинную строку на множество более коротких, используя обратную косую черту в
+                    качестве последнего символа в строке. </para>
+            </note>
+
+            <para>Как всегда, вам рекомендуется остерегаться замены базы данных в случае
+                возникновения проблем во время восстановления. В приведенном выше примере
+                воссоздается существующая база данных в режиме только для чтения, но это не всегда
+                так.</para>
+
+            <para>Удаленное резервное копирование также можно запустить на самом сервере базы
+                данных! В Windows это не имеет значения, но в системах Unix этот локально-удаленный
+                метод резервного копирования и восстановления снижает сетевой трафик.
+                    <quote>Удаленный</quote> сервер в этом случае фактически не является удаленным,
+                это просто способ запуска резервного копирования — подключение к диспетчеру служб —
+                подразумевает удаленность.</para>
+
+            <synopsis>
+tux> # Backup the employee database on this server, but pseudo-remotely!
+tux> gbak -backup -service tux:service_mgr employee /backups/remote_backup.fbk                
+            </synopsis>
+
+            <para>Соответствующее восстановление также можно запускать удаленно:</para>
+
+            <synopsis>
+tux> # Restore the employee database on this server, but pseudo-remotely!
+tux> gbak -replace -service tux:service_mgr /backups/remote_backup.fbk employee               
+            </synopsis>
+
+            <para>Формат параметра, используемого для переключателя -service, различается в
+                зависимости от характера используемого сетевого протокола: <itemizedlist>
+                    <listitem>
+                        <para><emphasis role="bold">TCP</emphasis> — При использовании сетей TCP
+                            разделителем параметров является двоеточие, например <code>-service
+                                server_name:service_mgr</code>. В Firebird 3.0 допускается также
+                            указание префикса протокола в url подобном синтаксисе <code>-service
+                                inet://server_name/service_mgr</code>. Вы можете уточнить версию
+                            используемого TCP протокола с помощью префиксов inet4 или inet6.</para>
+                    </listitem>
+                    <listitem>
+                        <para><emphasis role="bold">Named pipes</emphasis> — При использовании
+                            именованных каналов для параметра требуются две ведущие обратные косые
+                            черты, а в качестве разделителя используется еще одна обратная косая
+                            черта, как в <code>-service \\server_name\service_mgr</code>. Как и в
+                            случае TCP протокола, вы можете воспользоваться URL подобным
+                            синтаксисом. В этом случае указание параметра будет выглядеть следующим
+                            образом <code>-service wnet://server_name/service_mgr</code>. </para>
+                    </listitem>
+                </itemizedlist></para>
+        </section>
+        <section>
+            <title>Удаленное резервное копирование и восстановление с помощью SSH</title>
+
+            <para>Как показано выше, вы можете использовать специальные имена файлов
+                    <filename>stdin</filename> и <filename>stdout</filename> для резервного
+                копирования и восстановления базы данных в отдельную базу данных на том же сервере.
+                Однако вы также можете использовать те же инструменты через SSH-соединение с
+                удаленным сервером и передать резервную копию одной базы данных напрямую для
+                восстановления другой.</para>
+
+            <para>В первом примере локальная база данных копируется на удаленный сервер, на котором
+                запущен Firebird, а среда пользователя firebird настроена так, что инструмент
+                    <application>gbak</application> по умолчанию находится в <envar>$PATH</envar>
+                при входе в систему.</para>
+
+            <note>
+                <para>В каждом из следующих примеров параметры <code>-user sysdba</code> и
+                        <code>-password</code> в командной строке заменены на <code>{…}</code>. При
+                    выполнении этих команд любые удаленные команды <application>gbak</application>
+                    потребуют их указания, если только пользователь firebird в удаленных базах
+                    данных не имеет <envar>ISC_USER</envar> и <envar>ISC_PASSWORD</envar>,
+                    определенных в файлах входа в систему <filename>.profile</filename> или
+                        <filename>.bashrc</filename> (или эквивалентных). Однако это очень плохая
+                    идея и невероятно небезопасная.</para>
+            </note>
+
+            <synopsis>
+tux> # Clone a test database to a different server, without requiring a dump file.
+tux> gbak -backup employee stdout | \
+ssh firebird@tuxrep "gbak {...} -replace stdin emptest"
+            </synopsis>
+
+            <para>Когда это будет выполнено, вам будет предложено ввести пароль для удаленного
+                пользователя firebird на сервере <emphasis>tuxrep</emphasis>, предполагая, что у вас
+                нет уже настроенной и активной пары ключей SSH. Команда заменит локальную базу
+                данных в соответствии с псевдонимом emptest, но при необходимости вы можете указать
+                полные имена путей для баз данных. Ниже показан пример выполнения
+                вышеуказанного.</para>
+
+            <screen>
+tux> # Clone a test database to a different server, without requiring a dump file.
+tux> gbak -backup employee stdout | \
+ssh firebird@tuxrep "gbak {...} -replace stdin emptest"
+
+firebird@tuxrep's password:                
+            </screen>
+
+            <para>Как видите, вывода не так много, но вы можете подключиться удаленно и
+                проверить:</para>
+
+            <screen>
+tux> isql {...} tuxrep:emptest
+
+Database:  tuxrep:emptest
+
+SQL> show database;
+
+Database: tuxrep:emptest
+        Owner: SYSDBA
+PAGE_SIZE 4096
+...                
+            </screen>
+
+            <para>В следующем примере показано резервное копирование удаленной базы данных в
+                локальную аналогичным образом.</para>
+
+            <screen>
+tux> ssh firebird@tuxrep "gbak -backup {...} emptest stdout" | \
+gbak -create stdin data/tuxrep_emptest.fdb
+
+firebird@tuxrep's password:
+
+tux> ls data
+
+employee.fdb  tuxrep_emptest.fdb                
+            </screen>
+
+            <para>Вы видите, что создана новая база данных <filename>tuxrep_emptest.fdb</filename>.
+                Это работает? Проверка с помощью isql показывает, что это так.</para>
+
+            <screen>
+tux> isql data/tuxrep_emptest.fdb
+
+Database:  data/tuxrep_emptest.fdb
+
+SQL> quit;                
+            </screen>
+
+            <para>В последнем примере показано, как сделать резервную копию удаленной базы данных на
+                одном сервере в удаленную базу данных на другом.</para>
+
+            <screen>
+tux> ssh firebird@tuxrep "gbak -backup {...} emptest stdout" |  \
+ssh firebird@tuxqa "gbak -create {...} stdin data/tuxrep_empqa.fdb"
+
+firebird@tuxrep's password:
+firebird@tuxqa's password
+
+tux> ssh firebird@tuxqa "ls data"
+
+employee.fdb  tuxrep_empqa.fdb                
+            </screen>
+        </section>
+
+        <section>
+            <title>Использование внешних инструментов</title>
+
+            <para>Gbak и nbackup — лучшие инструменты для резервного копирования и/или
+                восстановления баз данных Firebird. Они были тщательно протестированы и знают
+                внутреннее устройство базы данных и то, как она работает, поэтому шансы, что эти
+                инструменты повредят ваши ценные данные, очень малы. Однако некоторые администраторы
+                баз данных по-прежнему предпочитают использовать внешние инструменты (не
+                поставляемые с Firebird) для создания резервных копий по какой-либо причине.</para>
+
+            <para>Поскольку внешние инструменты не могут знать, где находится база данных, с учетом
+                псевдонима, автор сценария и/или DBA должны явно определить правильное
+                местоположение файла(ов) базы данных и передать их внешнему орудие труда. Чтобы
+                упростить эту задачу для авторов сценариев, моя собственная установка использует
+                стандарт в моем файле <filename>aliases.conf</filename> следующим образом: <itemizedlist>
+                    <listitem>
+                        <para>Псевдоним базы данных должен начинаться с первого столбца.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Перед знаком равенства (=) должен стоять один пробел.</para>
+                    </listitem>
+                    <listitem>
+                        <para>После знака равенства (=) должен быть один пробел.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Двойные кавычки вокруг имени файла базы данных не допускаются — это
+                            также не работает для утилит Firebird.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Все базы данных представляют собой однофайловые базы данных.</para>
+                    </listitem>
+                </itemizedlist></para>
+
+            <para>Последнее правило применяется только к моей установке и означает, что следующий
+                простой сценарий резервного копирования будет работать. Если бы использовалось
+                многофайловые баз данных, потребовалось бы больше кода для создания резервной копии
+                с использованием внешних инструментов.</para>
+
+            <screen>
+tux> cat /opt/firebird/aliases.conf
+# ---------------------------------------------------------
+# WARNING: Backup Standards require that:
+#          The database name starts in column 1.
+#          There is a single space before the equals sign.
+#          There is a single space after the equals sign.
+#          The path has no double quotes (they don't work!)
+# ----------------------------------------------------------
+employee = /opt/firebird/examples/empbuild/employee.fdb                
+            </screen>
+
+            <para>Ниже показано использование утилиты <application>gzip</application> на сервере
+                Linux для создания и сжатия резервной копии работающей базы данных. Следующее
+                запускается от имени пользователя root из-за необходимости запуска
+                    <application>gfix</application> для завершения работы базы данных.</para>
+
+            <synopsis>
+tux> # Backup the production employee database using gzip.
+tux> gfix -shut -tran 60 employee
+tux> DBFILE=`grep -i "^employee =" /opt/firebird/aliases.conf | cut -d" " -f3`
+tux> gzip -9 --stdout $DBFILE > /backups/employee.fdb.gz                
+            </synopsis>
+
+            <para>Процесс восстановления для этой базы данных будет обратным описанному выше. Опять
+                же, следующий сценарий запускается как root.</para>
+
+            <synopsis>
+tux> # Restore the production employee database from a gzip backup.
+tux> gfix -shut -tran 60 employee
+tux> DBFILE=`grep -i "^employee =" /opt/firebird/aliases.conf | cut -d" " -f3`
+tux> gunzip --stdout /backups/employee.fdb.gz > $DBFILE
+
+tux> # Make sure firebird can see the file.
+tux> chown firebird:firebird $DBFILE               
+            </synopsis>
+        </section>
+    </section>
+
+    <section>
+        <title>Предостережения Gbak</title>
+
+        <para>Ниже приводится краткий список подводных камней и забавных моментов, которые я
+            обнаружил при собственном использовании <application>gbak</application>. Некоторые из
+            них упомянуты выше, другие могут не упоминаться. Собрав их все в одном месте, вы сможете
+            узнать, что происходит, если у вас возникнут проблемы.</para>
+
+        <section>
+            <title>Gbak режим по умолчанию</title>
+
+            <para>Если вы не укажете переключатель режима, такой как <code>-b[ackup]</code> или
+                    <code>-c[reate]</code>, то gbak выполнит резервное копирование, как если бы был
+                указан переключатель <code>-b[ackup]</code> — при условии, что другие указанные
+                переключатели верны для резервного копирования.</para>
+
+            <warning>
+                <para>Это определение того, пытаетесь ли вы выполнить резервное копирование или
+                    восстановление, означает, что если вы используете параметр командной строки
+                        <code>-z</code> для просмотра информации <application>gbak</application>, то
+                    вы создадите резервную копию и перезапишете предоставленный вами файл резервной
+                    копии, если в командной строке также есть присутствует имя базы данных и имя
+                    файла резервной копии. Это предполагает, что у <application>gbak</application>
+                    есть способ определить имя пользователя и пароль, которые будут использоваться —
+                    либо как параметры командной строки, либо через определенные переменные
+                    среды.</para>
+            </warning>
+        </section>
+
+        <section>
+            <title>Обычные и привилегированные пользователи</title>
+
+            <para>Только SYSDBA или владелец базы данных могут сделать резервную копию базы данных,
+                однако любой аутентифицированный пользователь может восстановить резервную копию
+                базы данных с помощью переключателя <code>-c[reate]</code>. Это означает, что вы
+                должны убедиться, что ваши файлы резервных копий не попадут в чужие руки, потому что
+                тогда нет ничего, что могло бы помешать неавторизованным людям увидеть ваши данные с
+                помощью простого процесса восстановления ваших резервных копий на их сервере.</para>
+
+            <para>Конечно, восстановление базы данных не удастся, если выполняющий его пользователь
+                не является владельцем базы данных и база данных с таким же именем файла уже
+                существует.</para>
+        </section>
+
+        <section>
+            <title>Молчаливый запуск</title>
+
+            <para>Ключ <code>-y suppress_output</code> должен подавлять весь вывод. Фактически
+                аналогично запуску без переключателя <code>-v[erify]</code>. Однако <code>-y
+                    suppress_output</code> заставляет вывод (в соответствии с настройкой
+                переключателя <code>-v[erify]</code>) записываться в файл с именем
+                    <filename>suppress_output</filename>. К сожалению это работает только один раз,
+                потому что следующий запуск <code>gbak с -y suppress_output</code> завершится
+                неудачно, потому что файл <filename>suppress_output</filename> уже
+                существует.</para>
+
+            <para>Возможно, эта проблема появилась в версии 2 для Firebird, потому что версии 2.0 и
+                2.1 фактически используют переключатель <code>-y suppress</code>, а не <code>-y
+                    suppress_output</code>. Использование этой (более короткой) опции действительно
+                работает по назначению, и вывод действительно подавляется.</para>
+        </section>
+
+        <section>
+            <title>Файл журнала gbak не может быть перезаписан</title>
+
+            <para>Если вы укажете имя файла журнала с помощью переключателя <code>-y &lt;log
+                    file&gt;</code>, и файл уже существует, то даже если пользователь firebird
+                владеет файлом и имеет права на запись в него, gbak не может его перезаписать. Вы
+                всегда должны указывать имя несуществующего файла журнала. В системах Linux может
+                помочь следующее:</para>
+
+            <screen>
+tux> # Generate unique dump and logfile name.
+tux> FILENAME=employee_`date "+%Y%m%d_%H%M%S"`
+
+tux> # Shut down and Backup the database
+tux> gfix -shut -tran 60 employee
+tux> gbak -backup employee /backups/${FILENAME}.fbk -y /logs/${FILENAME}.log -v                
+            </screen>
+
+            <para>Вышеуказанное весьма полезно, поскольку предотвращает перезапись предыдущих
+                резервных копий, которые могут потребоваться. Обратной стороной является то, что
+                теперь вам необходимо внедрить систему обслуживания, чтобы убрать старые, ненужные
+                резервные копии, чтобы предотвратить переполнение дискового пространства под область
+                резервных копий.</para>
+        </section>
+
+        <section>
+            <title>Использование имен файлов stdin или stdout</title>
+
+            <para>Gbak распознает строковые литералы 'stdin' и 'stdout' как имена файлов источника
+                или назначения. В системах POSIX, когда используются стандартные входные и/или
+                выходные каналы, не разрешается выполнять операции поиска на этих каналах.
+                Использование 'stdin' или 'stdout' в качестве имен файлов заставит gbak использовать
+                обработку, которая не будет искать во входных или выходных каналах, что делает их
+                пригодными для использования в качестве конвейера — согласно примерам в разделе
+                рецептов выше.</para>
+            <para>Эти имена файлов, хотя они кажутся именами POSIX, определенно не являются
+                синонимами для <code>/dev/stdin</code> или <code>/dev/stdout</code>, они просто
+                литералы, которые gbak проверяет при обработке своих параметров. Не пытайтесь
+                использовать имена <code>/dev/stdin</code> или <code>/dev/stdout</code> в
+                конвейерном процессе, так как это, скорее всего, потерпит неудачу.</para>
+
+            <para>Если вы хотите создать файл дампа с именем stdin или stdout, вы должны указать имя
+                файла как полный или относительный путь, например <filename>./stdin</filename> или
+                    <filename>./stdout</filename>, что заставляет gbak рассматривать их как
+                буквальное имя файл, а не специальное имя файла, которое вызывает отличную от
+                нормальной обработку во время процесса дампа или восстановления.</para>
         </section>
     </section>
 </chapter>

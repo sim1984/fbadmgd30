@@ -9,7 +9,7 @@
     <indexterm>
         <primary>FBSVCMGR</primary>
     </indexterm>
-    
+
     <para>Утилита <application>fbsvcmgr</application> предоставляет интерфейс командной строки для
         API служб, предоставляя доступ к любой службе, реализованной в Firebird.</para>
     <para>Несмотря на то, что существует множество инструментов администрирования баз данных,
@@ -977,14 +977,344 @@ gbak:    0.257  0.000 restoring domain RDB$3
             </simplesect>
         </section>
         <section>
-            <title>Установка свойств базы данных action_properties (gfix)</title>
+            <title>Установка свойств базы данных, её остановка и перевод в онлайн режим
+                (gfix)</title>
 
-            <para/>
+            <para>Для установки некоторых свойств базы данных утилитой
+                    <application>fbsvcmgr</application> используется действие
+                    <code>action_properties</code>. Оно может также использоваться для остановки
+                базы данных (shutdown) или возврата её в онлайн режим. Для установки доступен тот же
+                набор свойств, который можно установить с помощью утилиты gfix.</para>
+
+            <table frame="topbot">
+                <title>Параметры для действия <code>action_properties</code></title>
+                <tgroup cols="2">
+                    <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
+                    <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                    <thead>
+                        <row>
+                            <entry>Опция</entry>
+                            <entry>Описание</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                <para><code>dbname [string value]</code></para>
+                            </entry>
+                            <entry><para>Имя файла базы данных или алиас.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>prp_page_buffers [int32 value]</code></para>
+                            </entry>
+                            <entry><para>Размер кэша базы данных в страницах. Если установлено 0, то
+                                    размер кэша читается из параметра
+                                        <parameter>DefaultDbCachePages</parameter> конфигурационного
+                                    файла <filename>firebird.conf</filename> или
+                                        <filename>databases.conf</filename>. См. также <link
+                                        linkend="gfix-buffers">gfix -buffers</link>.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>prp_sweep_interval [int32 value]</code></para>
+                            </entry>
+                            <entry><para>Установка интервала автоматической чистки (sweep). См.
+                                    также <link linkend="gfix-sweep">gfix -h</link>.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>prp_shutdown_db [int32 value]</code></para>
+                            </entry>
+                            <entry>Закрытие базы данных (перевод базы данных в состояние shutdown).
+                                В качестве параметра тайм-аут в секундах. См. также <link
+                                    linkend="gfix-shutdown">gfix -shutdown</link>.</entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>prp_deny_new_transactions [int32 value]</code></para>
+                            </entry>
+                            <entry>Режим закрытия базы данных (shutdown) с предотвращением новых
+                                транзакций. См. также <link linkend="gfix-shutdown-tran">gfix
+                                    -shutdown -transaction</link></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>prp_deny_new_attachments [int32 value]</code></para>
+                            </entry>
+                            <entry>Режим закрытия базы данных (shutdown) с предотвращением новых
+                                соединений. См. также <link linkend="gfix-shutdown-attach">gfiz
+                                    -shutdown -attach</link>.</entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>prp_set_sql_dialect [int32 value]</code></para>
+                            </entry>
+                            <entry>
+                                <para>Изменение SQL диалекта базы данных. См. также <link
+                                        linkend="gfix-dialect">gfix -sql_dialect</link>.</para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>prp_access_mode [prp_am_readonly |
+                                        prp_am_readwrite]</code></para>
+                            </entry>
+                            <entry><para>Изменение режима доступа для базы данных. prp_am_readonly —
+                                    база данных только для чтения, prp_am_readwrite — база данных
+                                    для чтения и записи. См. также <link
+                                        linkend="gfix-read_write_mode">gfix
+                                -mode</link>.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>prp_reserve_space [prp_res_use_full |
+                                    prp_res]</code></para>
+                            </entry>
+                            <entry>
+                                <para>Изменение режима использования пространства страниц.
+                                    prp_res_use_full — всё пространство на странице используется
+                                    целиком, prp_reserve_space — используется только 80%
+                                    пространства страниц под данные, остальное резервируется для
+                                    фрагментов записей и версий. См. также <link
+                                        linkend="gfix-use_space">gfix -use</link>.</para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>prp_activate</code></para>
+                            </entry>
+                            <entry>
+                                <para>Активация теневой копии. См. также <link linkend="gfix-shadow"
+                                        >gfix -active</link>.</para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry><para><code>prp_db_online</code></para></entry>
+                            <entry><para>Перевод базы данных в состояние online (открытие). См.
+                                    также <link linkend="gfix-online">gfix
+                                -online</link>.</para></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>prp_force_shutdown [int32
+                                value]</code></para></entry>
+                            <entry><para>Режим принудительного закрытия базы данных (shutdown) с
+                                    отменой всех активных транзакций. См. также <link
+                                        linkend="gfix-shutdown-force">gfix -shutdown
+                                    -force</link>.</para></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>prp_attachments_shutdown [int32
+                                value]</code></para></entry>
+                            <entry><para>Режим закрытия базы данных (shutdown) с предотвращением
+                                    новых соединений. См. также <link linkend="gfix-shutdown-attach"
+                                        >gfiz -shutdown -attach</link>.</para></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>prp_transactions_shutdown [int32
+                                value]</code></para></entry>
+                            <entry><para>Режим закрытия базы данных (shutdown) с предотвращением
+                                    новых транзакций. См. также <link linkend="gfix-shutdown-tran"
+                                        >gfix -shutdown -transaction</link>.</para></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>prp_shutdown_mode [prp_sm_multi | prp_sm_single |
+                                        prp_sm_full]</code></para></entry>
+                            <entry><para>Указывает режим в который база данных перейдёт после
+                                    закрытия: prp_sm_multi - SYSDBA и владелец могу делать
+                                    неограниченное количество подключений; prp_sm_single - только
+                                    один SYSDBA или владелец может подключится к БД, prp_sm_full -
+                                    все соединения с БД запрещены. См. также <link
+                                        linkend="gfix-shutdown">gfix
+                                -shutdown</link>.</para></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>prp_online_mode [prp_sm_normal | prp_sm_multi |
+                                        prp_sm_single]</code></para></entry>
+                            <entry><para>Указывает режим в который база данных перейдёт после
+                                    открытия: prp_sm_multi - SYSDBA и владелец могу делать
+                                    неограниченное количество подключений; prp_sm_single - только
+                                    один SYSDBA или владелец может подключится к БД, prp_sm_normal -
+                                    любое количество соединений с БД с любыми пользователями
+                                    разрешены. См. также <link linkend="gfix-online">gfix
+                                        -online</link>.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>prp_nolinger</code></para>
+                            </entry>
+                            <entry>
+                                <para>Позволяет закрыть указанную базу данных, после того как
+                                    последнего соединения не стало, независимо от установок LINGER в
+                                    базе данных.</para>
+                            </entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            <simplesect>
+                <title>Примеры</title>
+
+                <example>
+                    <title>Установка кеша для базы данных</title>
+
+                    <para>В данном примере для базы данных <filename>d:\test.fdb</filename>
+                        устанавливается размер кеша в 10000 страниц.</para>
+
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_properties -dbname d:\test.fdb prp_page_buffers 10000  
+                    </synopsis>
+                </example>
+
+                <example>
+                    <title>Отключение автоматической чистки базы данных (sweep)</title>
+
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_properties -dbname d:\test.fdb prp_sweep_interval 0  
+                    </synopsis>
+                </example>
+
+                <example>
+                    <title>Отключение базы данных (shutdown)</title>
+
+                    <para>Следующая команда переводит базу данных в закрытое состояние. До закрытия
+                        всей активности проходит 5 секунд. После закрытия база данных переходит в
+                        состояние shutdown full, то есть никакие соединения с БД не
+                        позволены.</para>
+
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_properties -dbname d:\test.fdb prp_shutdown_db 5 prp_shutdown_mode prp_sm_full  
+                    </synopsis>
+
+                    <para>Команда ниже переводит базу данных в закрытое состояние, если по истечении
+                        5 секунд не остаётся ни одного активного соединения. Все последующие
+                        соединения с базой данных не позволяются.</para>
+                </example>
+
+
+                <example>
+                    <title>Открытие базы данных (online)</title>
+
+                    <para>Следующая команда переводит базу данных shutdown multi из shutdown single
+                        или full shutdown</para>
+
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_properties -dbname d:\test.fdb prp_db_online prp_online_mode prp_sm_multi  
+                    </synopsis>
+
+                </example>
+
+                <example>
+                    <title>Изменение режима доступа к базе данных</title>
+
+                    <para>В следующем примере база данных переводится в режим только для
+                        чтения.</para>
+
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_properties -dbname d:\test.fdb prp_access_mode prp_am_readonly 
+                    </synopsis>
+                </example>
+            </simplesect>
         </section>
         <section>
             <title>Валидация, ремонт базы данных, sweep (gfix)</title>
+            <para>Действие <code>action_repair</code> используется для валидации и ремонта базы
+                данных, а также её чистке (sweep). </para>
 
-            <para/>
+            <table frame="topbot">
+                <title>Параметры для действия <code>action_repair</code></title>
+                <tgroup cols="2">
+                    <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
+                    <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                    <thead>
+                        <row>
+                            <entry>Опция</entry>
+                            <entry>Описание</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                <para><code>dbname [string value]</code></para>
+                            </entry>
+                            <entry><para>Имя файла базы данных или алиас.</para></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>rpr_commit_trans [int32 value]</code></para></entry>
+                            <entry><para>Подтверждение транзакции в состоянии in-limbo (32 битный номер транзакции).</para></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>rpr_rollback_trans [int32
+                                value]</code></para></entry>
+                            <entry><para>Откат транзакции в состоянии in-limbo (32 битный номер транзакции).</para></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>rpr_recover_two_phase [int32
+                                value]</code></para></entry>
+                            <entry><para>Автоматическое двухфазное восстановление limbo транзакции с указанным идентификатором (32
+                                    битный номер транзакции).</para></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>rpr_commit_trans_64 [int64
+                                value]</code></para></entry>
+                            <entry><para>Подтверждение транзакции в состоянии in-limbo (64 битный номер транзакции).</para></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>rpr_rollback_trans_64 [int64
+                                value]</code></para></entry>
+                            <entry><para>Откат транзакции в состоянии in-limbo (64 битный номер транзакции).</para></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>rpr_recover_two_phase_64 [int64
+                                value]</code></para></entry>
+                            <entry>
+                                <para>Автоматическое двухфазное восстановление limbo транзакции с
+                                    указанным идентификатором (64 битный номер транзакции).</para></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>rpr_check_db</code></para></entry>
+                            <entry><para/></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>rpr_ignore_checksum</code></para></entry>
+                            <entry><para/></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>rpr_kill_shadows</code></para></entry>
+                            <entry><para/></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>rpr_mend_db</code></para></entry>
+                            <entry><para/></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>rpr_validate_db</code></para></entry>
+                            <entry><para/></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>rpr_full</code></para></entry>
+                            <entry><para/></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>rpr_sweep_db</code></para></entry>
+                            <entry><para/></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>rpr_list_limbo_trans</code></para></entry>
+                            <entry><para/></entry>
+                        </row>
+                        <row>
+                            <entry><para><code>rpr_icu</code></para></entry>
+                            <entry><para/></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
         </section>
         <section>
             <title>Статистика базы данных (gstat)</title>

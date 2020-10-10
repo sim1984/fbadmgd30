@@ -1155,7 +1155,7 @@ gfix -sh[ut] <replaceable>&lt;state&gt;</replaceable> <replaceable>&lt;mode&gt;<
             </para>
             <para>Далее рассмотрим эти режимы подробнее.</para>
 
-            <section>
+            <section xml:id="gfix-shutdown-attach">
                 <title>Предотвращение новых соединений</title>
 
                 <para>Закрытие базы данных в режиме <code>-at[tach]</code> означает, что все новые
@@ -1173,7 +1173,7 @@ linux> gfix -shut full -attach 5 my_employee
                     выведено.</para>
             </section>
 
-            <section>
+            <section xml:id="gfix-shutdown-tran">
                 <title>Предотвращение новых транзакций</title>
 
                 <para>При указании режима <code>-tra[nsaction]</code> сервер заблокирует старт новых
@@ -1187,7 +1187,7 @@ linux> gfix -shut full -tran 5 my_employee
                 </screen>
             </section>
 
-            <section>
+            <section xml:id="gfix-shutdown-force">
                 <title>Принудительное закрытие базы данных</title>
 
                 <para>При закрытии базы данных в режиме <code>-fo[rce_shutdown]</code> сервер будет

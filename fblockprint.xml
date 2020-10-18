@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://docbook.org/xml/5.1/rng/docbook.rng" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://docbook.org/xml/5.1/sch/docbook.sch" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="5.1" xml:id="fb_lock_print" xml:lang="ru">
+    <info>
+        <title>Утилита FB_LOCK_PRINT</title>
+    </info>
+    <indexterm>
+        <primary>FB_LOCK_PRINT</primary>
+    </indexterm>
+    <para>Утилита <application>fb_lock_print</application> является инструментом, формирующим
+        статистические данные файла блокировок, что помогает при решении сложных проблем взаимных
+        блокировок.</para>
+    <para>Исполняемый модуль <application>fb_lock_print</application> находится в корневом каталоге
+        установки СУБД Firebird. Синтаксис вызова утилиты может выглядеть одним из следующих
+        способов:
+        <synopsis>
+fb_lock_print -d <replaceable>&lt;database file name&gt;</replaceable> <replaceable>&lt;options&gt;</replaceable>  
+fb_lock_print -f <replaceable>&lt;lock table file name&gt;</replaceable> <replaceable>&lt;options&gt;</replaceable>             
+fb_lock_print -?    
+        </synopsis>
+    </para>
+    <para>Запуск <application>fb_lock_print</application> без аргументов (или с неверным
+        переключателем) или с переключателем <code>-?</code> приводит к отображению следующего
+        экрана справочной информации: </para>
+    <para>
+        <screen>
+<![CDATA[
+Please specify either -d <database name> or -f <lock file name>
+
+Firebird lock print utility.
+Usage: fb_lock_print (-d | -f) [<parameters>]
+
+One of -d or -f switches is mandatory:
+  -d  <database file name>      specify database which lock table to be printed
+  -f  <lock table file name>    specify lock table file itself to be printed
+
+Optional parameters are:
+  -o        print list of lock owners
+  -p        same as -o
+  -l        print locks
+  -r        print requests made by lock owners (valid only if -o specified)
+  -h        print recent events history
+  -a        print all of the above (equal to -o -l -r -h swithes)
+  -s <N>    print only locks of given series (valid only if -l specified)
+  -n        print only pending owners (if -o specified) or
+            pending locks (if -l specified)
+  -w        print "waiting for" list for every owner
+            (valid only if -o specified)
+  -c        acquire lock manager's mutex to print consistent view of
+            lock table (valid only if -d specified)
+  -m        make output in html format
+
+  -i[<counters>] [<N> [<M>]]    interactive mode:
+     print chosen lock manager activity counters during <N> seconds
+     with interval of <M> seconds. Defaults are 1 sec for both values.
+     Counters are:
+     a    number of mutex acquires, acquire blocks, etc
+     o    number of lock operations (enqueues, converts, downgrades, etc)
+     t    number of operations with most important lock series
+     w    number of waits, timeouts, deadlock scans, etc
+     Default is aotw
+
+  -?        this help screen
+]]>
+        </screen>
+    </para>
+    <para>Как видно из справки один из переключателей <code>-d</code> или <code>-f</code> является
+        обязательным. Параметр <replaceable>&lt;database file name&gt;</replaceable> задает имя и
+        путь к БД. Параметр <replaceable>&lt;lock table file name&gt;</replaceable> задает имя и
+        путь к lock - файлу. Путь к файлу таблицы блокировок проходит через
+            <filename>/tmp/firebird</filename> в ОС Linux и
+            <filename>C:/ProgramData/firebird</filename> в ОС Windows.</para>
+    <para>С помощью утилиты <application>fb_lock_print</application> может быть выведена таблица
+        блокировок в удобном пользователю формате. Отчет вывода разбит на блоки в следующей
+        последовательности: <orderedlist>
+            <listitem>
+                <para>LOCK_HEADER BLOCK: заголовок блока; </para>
+            </listitem>
+            <listitem>
+                <para>OWNER BLOCK: группы владельцев; </para>
+            </listitem>
+            <listitem>
+                <para>REQUEST BLOCK: группы запросов. Каждый владелец выводится с его запросами;
+                </para>
+            </listitem>
+            <listitem>
+                <para>LOCK BLOCK: группы блокировок; </para>
+            </listitem>
+            <listitem>
+                <para>History: история событий. </para>
+            </listitem>
+        </orderedlist></para>
+    <para>Утилита <application>fb_lock_print</application> имеет несколько дополнительных опций,
+        приведенных в таблице ниже. Если никаких опций не задано, то выводится заголовок блока
+        LOCK_HEADER BLOCK, в котором описано основная конфигурация и состояние таблицы
+        блокировок.</para>
+
+    <table frame="topbot">
+        <title>Опции утилиты fb_lock_print</title>
+        <tgroup cols="2">
+            <colspec colname="c1" colnum="1" colwidth="0.75*" align="left"/>
+            <colspec colname="c2" colnum="2" colwidth="1.25*" align="left"/>
+            <thead>
+                <row>
+                    <entry>Опция</entry>
+                    <entry>Описание</entry>
+                </row>
+            </thead>
+            <tbody>
+                <row>
+                    <entry><code>-a</code></entry>
+                    <entry>
+                        <para>Выводит содержимое таблицы блокировок: заголовок блока (LOCK_HEADER
+                            BLOCK), группы блоков (LOCK BLOCK), группы владельцев (OWNER BLOCK),
+                            группы запросов (REQUEST BLOCK) и историю событий (History). Эта опция
+                            эквивалентна следующему набору опций <code>-o -l -r
+                        -h</code>.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-c</code></entry>
+                    <entry><para>Запрашивает мьютекс (mutex) менеджера блокировок распечатать
+                            цельное последовательное представление таблицы блокировок. При этом
+                            останавливаются все процессы доступа к базе данных. Действует только
+                            если указан переключатель <code>-d</code>.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-h</code></entry>
+                    <entry><para>Выводит недавнюю историю событий.</para></entry>
+                </row>
+                <row>
+                    <entry>
+                        <para><code>-i[<replaceable>&lt;counters&gt;</replaceable>]
+                                    [<replaceable>&lt;N&gt;</replaceable>
+                                    [<replaceable>&lt;M&gt;</replaceable>]]</code>
+                        </para>
+                    </entry>
+                    <entry><para>Выводит интерактивный отчет, отслеживающий текущую деятельность
+                            таблицы блокировок. Выводит выбранные параметры менеджера блокировок в
+                            течение <replaceable>N</replaceable> секунд с интервалом
+                                <replaceable>M</replaceable> секунд. Значения по умолчанию 1 сек для
+                            обоих значений. Если указано только <code>-i</code> — выводится вся
+                            информация (aotw).</para>
+                        <para>Можно задать вывод следующих счётчиков: <itemizedlist>
+                                <listitem>
+                                    <para><code>a</code> - количество полученных мьютексов,
+                                        полученных блоков и т.д.</para>
+                                </listitem>
+                                <listitem>
+                                    <para><code>o</code> - количество операций блокировки
+                                        (постановка в очередь, преобразование, понижение и т.
+                                        д.)</para>
+                                </listitem>
+                                <listitem>
+                                    <para><code>t</code> - количество операций с наиболее важной
+                                        серией блокировок</para>
+                                </listitem>
+                                <listitem>
+                                    <para><code>w</code> - количество ожиданий, тайм-аутов,
+                                        сканирований тупиков и т. д.</para>
+                                </listitem>
+                            </itemizedlist></para></entry>
+                </row>
+                <row>
+                    <entry><code>-l</code></entry>
+                    <entry><para>Выводит группы блоков.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-m</code></entry>
+                    <entry><para>Вывод в формате HTML</para></entry>
+                </row>
+                <row>
+                    <entry><code>-n</code></entry>
+                    <entry><para>Выводит только ожидающих завершения владельцев (если указано
+                                <code>-o</code>) или ожидающих завершения групп блоков (если указано
+                                <code>-l</code>).</para></entry>
+                </row>
+                <row>
+                    <entry><code>-o | -p</code></entry>
+                    <entry><para>Выводит группы владельцев.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-r</code></entry>
+                    <entry><para>Выводит информацию о группе блока запросов.</para></entry>
+                </row>
+                <row>
+                    <entry><code>-s <replaceable>&lt;N&gt;</replaceable></code></entry>
+                    <entry><para>Выводит группы блокировок ресурсов заданной серии (действует только
+                            если указан спецификатор <code>-l</code>).</para></entry>
+                </row>
+                <row>
+                    <entry><code>-w</code></entry>
+                    <entry><para>Выводит временный список блокировок (групп запросов), блокирующих
+                        другие запросы на блокировку, для каждого владельца (действует только
+                        с указанием <code>-o</code>).</para></entry>
+                </row>
+            </tbody>
+        </tgroup>
+    </table>
+    <para>Результаты использования утилиты могут оказаться достаточно большими, поэтому удобнее
+        отчет выводить в файл, указав:
+    <synopsis>       
+fb_lock_print -d <replaceable>&lt;database file name&gt;</replaceable> <replaceable>&lt;options&gt;</replaceable> > <replaceable>&lt;output file&gt;</replaceable> 
+fb_lock_print -f <replaceable>&lt;lock table file name&gt;</replaceable> <replaceable>&lt;options&gt;</replaceable> > <replaceable>&lt;output file&gt;</replaceable>                             
+    </synopsis>
+    </para>
+</chapter>

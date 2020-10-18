@@ -5,7 +5,7 @@
     xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="ru" xml:id="fbadmgd" version="5.1">
     <info>
         <title>Руководство администратора Firebird 3.0</title>
-        <edition>4 октября 2020 — v.0000-1</edition>
+        <edition>18 октября 2020 — v.0000-1</edition>
 
         <authorgroup>
             <author>
@@ -119,12 +119,9 @@
         
         <!-- GSTAT -->
         <xi:include href="gstat.xml" xpointer="element(/1)"/>
-        
-        <chapter>
-            <title>FB_LOCK_PRINT</title>
-            
-            <para/>
-        </chapter>
+                
+        <!-- FB_LOCK_PRINT -->
+        <xi:include href="fblockprint.xml" xpointer="element(/1)"/>
         
         <!-- FBTRACEMGR -->
         <xi:include href="fbtracemgr.xml" xpointer="element(/1)"/>

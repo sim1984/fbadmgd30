@@ -15,7 +15,10 @@
 
     <para>Запуск <application>gbak</application> без аргументов (или с неверным переключателем) или
         с переключателем <code>-?</code> приводит к отображению следующего экрана справочной
-        информации: <screen><![CDATA[        
+        информации: 
+    </para>
+    <para>
+        <screen><![CDATA[        
 gbak:Usage:
      gbak -b <db set> <backup set> [backup options] [general options]
      gbak -c <backup set> <db set> [restore options] [general options]

@@ -192,17 +192,775 @@ Optional parameters are:
                 <row>
                     <entry><code>-w</code></entry>
                     <entry><para>Выводит временный список блокировок (групп запросов), блокирующих
-                        другие запросы на блокировку, для каждого владельца (действует только
-                        с указанием <code>-o</code>).</para></entry>
+                            другие запросы на блокировку, для каждого владельца (действует только с
+                            указанием <code>-o</code>).</para></entry>
                 </row>
             </tbody>
         </tgroup>
     </table>
     <para>Результаты использования утилиты могут оказаться достаточно большими, поэтому удобнее
         отчет выводить в файл, указав:
-    <synopsis>       
+        <synopsis>       
 fb_lock_print -d <replaceable>&lt;database file name&gt;</replaceable> <replaceable>&lt;options&gt;</replaceable> > <replaceable>&lt;output file&gt;</replaceable> 
 fb_lock_print -f <replaceable>&lt;lock table file name&gt;</replaceable> <replaceable>&lt;options&gt;</replaceable> > <replaceable>&lt;output file&gt;</replaceable>                             
     </synopsis>
     </para>
+
+    <section xml:id="fb_lock_print-lock_header">
+        <title>Блок LOCK_HEADER</title>
+
+        <para>Первая группа всех отчетов <application>fb_lock_print</application>. Каждый отчет
+            выводит только одну группу заголовка. Ниже пример, как может выглядеть блок
+            LOCK_HEADER.</para>
+
+        <screen>
+LOCK_HEADER BLOCK
+        Version: 146, Creation timestamp: 2020-11-25 23:09:34
+        Active owner:      0, Length: 1048576, Used:  94440
+        Enqs:    124, Converts:      1, Rejects:      0, Blocks:      0
+        Deadlock scans:      0, Deadlocks:      0, Scan interval:  10
+        Acquires:    159, Acquire blocks:      0, Spin count:   0
+        Mutex wait: 0.0%
+        Hash slots: 8191, Hash lengths (min/avg/max):    0/   0/   4
+        Hash lengths distribution:
+                0  :     8095   (98%)
+                1  :       91   (1%)
+                2  :        3   (0%)
+                3  :        1   (0%)
+                4  :        0   (0%)
+                5  :        1   (0%)        
+        Remove node:      0, Insert queue:      0, Insert prior:      0
+        Owners (4):     forward:  78328, backward:  79504
+        Free owners: *empty*
+        Free locks (3): forward:  80264, backward:  93344
+        Free requests (2):      forward:  94152, backward:  93272
+        </screen>
+
+
+        <para>
+            <variablelist>
+                <varlistentry>
+                    <term>Version:</term>
+                    <listitem>
+                        <para>Номер версии менеджера блокировок</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Active owner:</term>
+                    <listitem>
+                        <para>Владелец, который управляет таблицей блокировок в настоящий момент.
+                            Если в таблицу блокировок не пишет ни один процесс, то активным
+                            владельцем будет 0.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term> Length:</term>
+                    <listitem>
+                        <para>Общий объем памяти, выделенный таблице блокировок (в байтах).</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Used:</term>
+                    <listitem>
+                        <para>Наибольшая величина смещения в таблице блокировок, которая
+                            используется в настоящий момент.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Enqs:</term>
+                    <listitem>
+                        <para>Число запросов, полученных на блокировку (не включает запросы, которые
+                            пришли и ушли).</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Converts:</term>
+                    <listitem>
+                        <para>Запросы на повышение уровня блокировки.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Rejects:</term>
+                    <listitem>
+                        <para>Запросы, которые не могут быть удовлетворены.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Вlocks:</term>
+                    <listitem>
+                        <para>Запросы, которые не могут быть удовлетворены немедленно.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Deadlock scans:</term>
+                    <listitem>
+                        <para>Показывает число просмотров менеджером блокировок цепочки блокировок и
+                            владельцев для поиска взаимных блокировок. Менеджер приступает к
+                            просмотру, когда процесс ожидает блокировки в течение <emphasis
+                                role="bold">Scan interval</emphasis> секунд.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Deadlocks:</term>
+                    <listitem>
+                        <para>Число найденных взаимных блокировок.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Scan interval:</term>
+                    <listitem>
+                        <para>Время (в секундах), которое ожидает менеджер блокировок до того как
+                            запустить к поиску взаимных блокировок.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Acquires:</term>
+                    <listitem>
+                        <para>Сколько раз владелец запрашивает исключительное управление таблицей
+                            блокировок, чтобы выполнить изменения.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Acquire blocks:</term>
+                    <listitem>
+                        <para>Сколько раз владелец находился в состоянии ожидания при запросе
+                            исключительного управления таблицей блокировок.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Spin count:</term>
+                    <listitem>
+                        <para>Режим ожидания взаимной блокировки, когда повторяется запрос к таблице
+                            блокировок. По умолчанию отключено(равно 0).</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Mutex wait:</term>
+                    <listitem>
+                        <para>Процент попыток, которые были заблокированы, когда владелец старался
+                            обратиться к таблице блокировок Сколько раз (в процентах) владелец
+                            находился в состоянии ожидания, когда пытался обратиться к таблице
+                            блокировок.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Hash slots:</term>
+                    <listitem>
+                        <para>Число слотов хэш таблицы блокировок.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Hash lengths:</term>
+                    <listitem>
+                        <para>Длина цепочки заблокированных групп.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Remove node:</term>
+                    <listitem>
+                        <para>Владелец сообщает о намерении удалить узел из таблицы, когда зависает
+                            при запросе к таблице блокировок.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Insert queue:</term>
+                    <listitem>
+                        <para>Владелец сообщает о намерении добавить узел в таблицу, когда зависает
+                            при запросе к таблице блокировок.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Insert prior:</term>
+                    <listitem>
+                        <para>Указывает, где размещается ошибочное добавление узла.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Оwners:</term>
+                    <listitem>
+                        <para>Количество владельцев, соединенных с таблицей блокировок.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Free owners:</term>
+                    <listitem>
+                        <para>Количество блоков владельцев, выделенных владельцам, которые завершили
+                            их соединения, оставив блоки неиспользованными.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Free locks:</term>
+                    <listitem>
+                        <para>Количество групп блокировок, которые были освобождены и не
+                            использованы повторно.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Free requests:</term>
+                    <listitem>
+                        <para>Количество групп запросов, которые были освобождены и не использованы
+                            повторно.</para>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+        </para>
+    </section>
+
+    <section xml:id="fb_lock_print-owner">
+        <title>Блок OWNER</title>
+
+        <para>Идентифицирует конкретного владельца. Владельцы делятся на несколько типов, которым
+            сопоставляются числа: 1 – процесс, 2 – база данных, 3 – клиентское соединение, 4 –
+            транзакция, 255 – фиктивный процесс.</para>
+        <para>Заголовок блока содержит число, которое используется в качестве идентификатора
+            владельца в таблице блокировок.</para>
+        <screen>
+  OWNER BLOCK 172960
+          Owner id: 13494787244039, Type: 1
+          Process id:   3142 (Alive), Thread id:   3144
+          Flags: 0x00
+          Requests (80):  forward: 173144, backward: 186040
+          Blocks: *empty*
+          Pending: *empty*            
+        </screen>
+
+        <para>
+            <variablelist>
+                <varlistentry>
+                    <term>Owner id:</term>
+                    <listitem>
+                        <para>Идентификатор владельца.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Type:</term>
+                    <listitem>
+                        <para>Тип владельца.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Process id:</term>
+                    <listitem>
+                        <para>Идентификатор процесса.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Thread id:</term>
+                    <listitem>
+                        <para>Идентификатор потока.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Flags:</term>
+                    <listitem>
+                        <para>Биты, которые определяют состояние. Процесс в одно и то же время может
+                            находиться более чем в одном состоянии.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Requests:</term>
+                    <listitem>
+                        <para>Запросы на блокировку (обработанные или ожидающие завершения)
+                            связанные с этим процессом.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Forward:</term>
+                    <listitem>
+                        <para>Ссылается на последующий элемент в очереди запросов, принадлежащих
+                            этому процессу. Число задает смещение.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Backward:</term>
+                    <listitem>
+                        <para>Ссылается на предыдущий элемент в очереди запросов, принадлежащих
+                            этому процессу. Число задает смещение.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Blocks:</term>
+                    <listitem>
+                        <para>Временный список блокировок (групп запросов), блокирующих другие
+                            запросы на блокировку, которыми владеет этот процесс.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Pending:</term>
+                    <listitem>
+                        <para>Ожидание завершения блокировки, запрошенную владельцем, но не
+                            полученную. Показывает смещение группы запроса блокировки.</para>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+        </para>
+    </section>
+
+    <section xml:id="fb_lock_print-request">
+        <title>Блок REQUEST</title>
+
+        <para>Выводит все запросы владельца.</para>
+        <screen>
+REQUEST BLOCK  78552
+        Owner:  78328, Lock:  78624, State: 6, Mode: 6, Flags: 0x00
+        AST: 0x00007FFF9479DB70, argument: 0x00000000059499C0
+        lrq_own_requests:       forward:  78688, backward:  78336
+        lrq_lbl_requests:       forward:  78596, backward:  78596
+        lrq_own_blocks  : *empty*
+        lrq_own_pending : *empty*         
+        </screen>
+
+        <para>
+            <variablelist>
+                <varlistentry>
+                    <term>Owner id:</term>
+                    <listitem>
+                        <para>Смещение группы владельца в таблице блокировок, выполнившего
+                            запрос.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Lock:</term>
+                    <listitem>
+                        <para>Смещение группы блокировки, которая описывает блокируемый
+                            ресурс</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>State:</term>
+                    <listitem>
+                        <para>Состояние блокировки, которое назначено этому ресурсу.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Mode:</term>
+                    <listitem>
+                        <para>Режим блокировки – состояние, которое было запрошено для
+                            блокировки.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Flags:</term>
+                    <listitem>
+                        <para>Флаг запроса содержит биты: 1 – блокирование, 2 – ожидание завершения,
+                            4 – конвертирование, 8 – отмена. Они могут комбинироваться.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>AST:</term>
+                    <listitem>
+                        <para>Адрес подпрограммы, которая вызывается, когда кто-либо еще хочет
+                            получить блокировку на ресурс, используемый настоящим запросом.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Argument:</term>
+                    <listitem>
+                        <para>Адрес аргумента, который может понадобиться подпрограмме AST.</para>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+        </para>
+    </section>
+
+    <section xml:id="fb_lock_print-lock">
+        <title>Блок LOCK</title>
+
+        <para>Группы блокировок представляют блокируемые ресурсы различных типов, соответствующих
+            определенным сериям: <table frame="all">
+                <title>Типы ресурсов</title>
+                <tgroup cols="3">
+                    <colspec colname="c1" colnum="1" colwidth="0.3*"/>
+                    <colspec colname="c2" colnum="2" colwidth="0.6*"/>
+                    <colspec colname="c3" colnum="3" colwidth="2*"/>
+                    <thead>
+                        <row>
+                            <entry>Серия</entry>
+                            <entry>Символ</entry>
+                            <entry>Тип ресурса</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>1</entry>
+                            <entry>LCK_database</entry>
+                            <entry>Монопольная блокировка базы. В архитектуре Classic Server
+                                предоставляется первому процессу, выполнившему соединение. Второе
+                                подключение, пытающееся установить соединение, "видит" монопольную
+                                блокировку, уже выданную первому, и посылает ему сигнал о
+                                необходимости понизить уровень блокировки с exclusive до shared. В
+                                итоге, обе блокировки на базу приходят к уровню "разделяемое
+                                чтение". В архитектуре Superserver база устанавливает монопольную
+                                блокировку сама на себя.</entry>
+                        </row>
+                        <row>
+                            <entry>2</entry>
+                            <entry>LCK_relation</entry>
+                            <entry>
+                                <para>Блокировка на таблицу (как объект БД) при чтении или записи
+                                    данных в неё.</para>
+                                <para>При любых операциях таблицы блокируются в разделяемом режиме и
+                                    это не влияет на параллельный доступ. Исключения, накладывающие
+                                    более высокие уровни блокировки: <itemizedlist spacing="compact">
+                                        <listitem>
+                                            <para>создание индекса</para>
+                                        </listitem>
+                                        <listitem>
+                                            <para>онлайн-валидация</para>
+                                        </listitem>
+                                        <listitem>
+                                            <para>операции в транзакции уровня изоляции consistency
+                                                (aka SNAPSHOT TABLE STABILITY), либо при явном
+                                                задании блокировок таблиц в транзакции (фраза
+                                                RESERVING в SET TRANSACTION)</para>
+                                        </listitem>
+                                    </itemizedlist></para>
+                                <para>Также эксклюзивная блокировка <code>LCK_relation</code> со
+                                    специальным ключом -1 берется при генерации нового ID для
+                                    создаваемой таблицы.</para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>3</entry>
+                            <entry>LCK_bdb</entry>
+                            <entry>
+                                <para>Блокировка любой физической страницы, независимо от её
+                                    типа</para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>4</entry>
+                            <entry>LCK_tra</entry>
+                            <entry>
+                                <para>Эксклюзивная блокировка транзакции тем, кто ее стартовал.
+                                    Остальные могут пытаться брать разделяемую блокировку для
+                                    определения состояния (активности) транзакции, либо ждать на
+                                    такой блокировке до окончания текущей транзакции (в режиме
+                                    WAIT).</para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>5</entry>
+                            <entry>LCK_rel_exist</entry>
+                            <entry>Блокировка-защита существования таблицы; в Key записан ID таблицы
+                                (rdb$relations.rdb$relation_id).</entry>
+                        </row>
+                        <row>
+                            <entry>6</entry>
+                            <entry>LCK_idx_exist</entry>
+                            <entry>Блокировка-защита существования индекса; в "Key" записаны:
+                                старшие два байта — ID таблицы, младшие — ID индекса.</entry>
+                        </row>
+                        <row>
+                            <entry>7</entry>
+                            <entry>LCK_attachment</entry>
+                            <entry>Монопольная блокировка, устанавливаемая процессом, соединившимся
+                                с базой, на объект его собственного соединения. Через эту блокировку
+                                происходит уведомление соединения о его принудительном
+                                завершении.</entry>
+                        </row>
+                        <row>
+                            <entry>8</entry>
+                            <entry>LCK_shadow</entry>
+                            <entry>Блокировка для синхронизации добавления теневых копий к
+                                базе.</entry>
+                        </row>
+                        <row>
+                            <entry>9</entry>
+                            <entry>LCK_sweep</entry>
+                            <entry>Блокировка для гарантии существования только одного
+                                sweep-процесса.</entry>
+                        </row>
+                        <row>
+                            <entry>10</entry>
+                            <entry>LCK_expression</entry>
+                            <entry>Блокировка-защита неизменности выражения для вычисляемого
+                                индекса.</entry>
+                        </row>
+                        <row>
+                            <entry>11</entry>
+                            <entry>LCK_prc_exist</entry>
+                            <entry>Блокировка-защита существования хранимой процедуры.</entry>
+                        </row>
+                        <row>
+                            <entry>12</entry>
+                            <entry>LCK_update_shadow</entry>
+                            <entry>Синхронное изменение теневой копии</entry>
+                        </row>
+                        <row>
+                            <entry>13</entry>
+                            <entry>LCK_backup_alloc</entry>
+                            <entry>Блокировка, синхронизирующая доступ к таблице соответствия
+                                страниц внутри дельта-файла.</entry>
+                        </row>
+                        <row>
+                            <entry>14</entry>
+                            <entry>LCK_backup_database</entry>
+                            <entry>Блокировка физического состояния базы данных
+                                (normal/stalled/merge). Управляет направлением чтения/записи между
+                                файлом БД и дельта-файлом.</entry>
+                        </row>
+                        <row>
+                            <entry>15</entry>
+                            <entry>LCK_backup_end</entry>
+                            <entry>Блокировка для обеспечения слияния дельты в основной файл в
+                                единственном процессе.</entry>
+                        </row>
+                        <row>
+                            <entry>16</entry>
+                            <entry>LCK_rel_partners</entry>
+                            <entry>Блокировка-защита существования ограничения ссылочной целостности
+                                (ссылки по внешнему ключу) между таблицами.</entry>
+                        </row>
+                        <row>
+                            <entry>17</entry>
+                            <entry>LCK_dsql_cache</entry>
+                            <entry><para>Блокировка актуальности состояния объектов кеша
+                                    метаданных.</para>
+                                <para>В движке существует два кеша метаданных: на уровне парсера и
+                                    на уровне ядра. Блокировки <code>LCK_dsql_cache</code>
+                                    используются, чтобы инвалидировать объекты в кеше первого
+                                    уровня.</para></entry>
+                        </row>
+                        <row>
+                            <entry>18</entry>
+                            <entry>LCK_page_space</entry>
+                            <entry>
+                                <para>Блокировка для уникальной идентификации пространства страниц
+                                    для GTT.</para>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>19</entry>
+                            <entry>LCK_monitor</entry>
+                            <entry>Блокировка актуальности состояния данных мониторинга.</entry>
+                        </row>
+                        <row>
+                            <entry>20</entry>
+                            <entry>LCK_tt_exist</entry>
+                            <entry>Блокировка-защита существования collate (правила сопоставления
+                                символов для упорядоченного вывода текста).</entry>
+                        </row>
+                        <row>
+                            <entry>21</entry>
+                            <entry>LCK_cancel</entry>
+                            <entry>Блокировка для уведомления об отмене текущей операции.</entry>
+                        </row>
+                        <row>
+                            <entry>22</entry>
+                            <entry>LCK_btr_dont_gc</entry>
+                            <entry>Блокировка-защита от удаления страницы в индексе, расположенной
+                                слева от вставляемой новой страницы.</entry>
+                        </row>
+                        <row>
+                            <entry>23</entry>
+                            <entry>LCK_shared_counter</entry>
+                            <entry>Блокировка, синхронизирующая генерацию уникальных идентификаторов
+                                для запросов (а также для соединений и транзакций в read-only
+                                БД).</entry>
+                        </row>
+                        <row>
+                            <entry>24</entry>
+                            <entry>LCK_tra_pc</entry>
+                            <entry><para>Блокировка-признак precommitted транзакции (для них не
+                                    создается <code>LCK_tra</code> блокировка), используется для
+                                    проверки состояния транзакции.</para></entry>
+                        </row>
+                        <row>
+                            <entry>25</entry>
+                            <entry>LCK_rel_gc</entry>
+                            <entry>Блокировка, разрешающая/запрещающая сборку мусора в определенной
+                                таблице (и ее индексах).</entry>
+                        </row>
+                        <row>
+                            <entry>26</entry>
+                            <entry>LCK_fun_exis</entry>
+                            <entry>Блокировка-защита существования UDF и PSQL-функции.</entry>
+                        </row>
+                        <row>
+                            <entry>27</entry>
+                            <entry>LCK_rel_rescan</entry>
+                            <entry>Блокировка состояния метаданных таблицы, используется для
+                                обновления информации в кеше метаданных (после ALTER TABLE).</entry>
+                        </row>
+                        <row>
+                            <entry>28</entry>
+                            <entry>LCK_crypt</entry>
+                            <entry>Блокировка для обеспечения работы потока шифрования в
+                                единственном экземпляре.</entry>
+                        </row>
+                        <row>
+                            <entry>29</entry>
+                            <entry>LCK_crypt_status</entry>
+                            <entry>Блокировка текущего состояния шифрования БД (зашифрована или
+                                нет).</entry>
+                        </row>
+                        <row>
+                            <entry>30</entry>
+                            <entry>LCK_record_gc</entry>
+                            <entry>Блокировка, разрешающая/запрещающая сборку мусора для конкретной
+                                записи.</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table></para>
+        <para> Ниже представлен вывод группы блокировки ресурса серии 8. Блок LOCK_BLOCK
+            идентифицирует группу описания заблокированного ресурса. </para>
+        <screen>
+LOCK BLOCK  79032
+        Series: 8, State: 2, Size: 8, Length: 4, Data: 0
+        Key: 000000, Flags: 0x00, Pending request count:      0
+        Hash que (5):   forward:  79312, backward:  78896
+        Requests (1):   forward:  78960, backward:  78960
+                Request  78960, Owner:  78328, State: 2 (2), Flags: 0x00            
+        </screen>
+
+        <para>
+            <variablelist>
+                <varlistentry>
+                    <term>Series:</term>
+                    <listitem>
+                        <para>Тип ресурса.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Parent:</term>
+                    <listitem>
+                        <para>Родитель для всех блокировок, связанных с конкретным типом
+                            ресурса.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>State:</term>
+                    <listitem>
+                        <para>Наивысшее текущее состояние блокировки.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Size:</term>
+                    <listitem>
+                        <para>Длина части группы блокировки, содержащей ключ (в байтах).</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Length:</term>
+                    <listitem>
+                        <para>Фактическая длина ключа.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Data:</term>
+                    <listitem>
+                        <para>Данные. Являются целым числом.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Key:</term>
+                    <listitem>
+                        <para>Идентификатор заблокированного ресурса.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Hash queue:</term>
+                    <listitem>
+                        <para>Начало и конец очереди хэш для ключей ресурсов.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Requests:</term>
+                    <listitem>
+                        <para>Показывает число запросов на блокировку этого ресурса и указатели
+                            вперед и назад на группы блокировок.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Request:</term>
+                    <listitem>
+                        <para>Список запросов. Показывает идентификатор запрашиваемой группы,
+                            процесс, выполняющий запрос и фактическое состояние блокировки с
+                            запрашиваемым (в круглых скобках).</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Flags:</term>
+                    <listitem>
+                        <para>Флаг запроса содержит биты: 1 – блокирование, 2 – ожидание завершения,
+                            4 – конвертирование, 8 – отмена. Они могут комбинироваться.</para>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+        </para>
+    </section>
+    <section xml:id="fb_lock_print-history">
+        <title>Блок HISTORY</title>
+        <para>Менеджер блокировок запоминает действия, которые он выполнял для каждого владельца.
+            Эти действия можно просмотреть в блоке History и блоке Event log.</para>
+        
+        <screen>
+History:
+    GRANT:      owner =  78440, lock =  80120, request =  80048
+    ENQ:        owner =  78440, lock =      0, request =  80192
+    GRANT:      owner =  78440, lock =  80264, request =  80192
+    DEQ:        owner =  78440, lock =  80264, request =  80192
+    ENQ:        owner =  78328, lock =      0, request =  80192
+    GRANT:      owner =  78328, lock =  80264, request =  80192
+    DEQ:        owner =  78328, lock =  80264, request =  80192
+    ENQ:        owner =  78440, lock =      0, request =  80192
+    GRANT:      owner =  78440, lock =  80328, request =  80192
+    ENQ:        owner =  78440, lock =      0, request =  80400            
+        </screen>
+        
+        <para>
+            <variablelist>
+                <varlistentry>
+                    <term>GRANT:</term>
+                    <listitem>
+                        <para>Предоставление блокировки на ресурс.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>ENQ:</term>
+                    <listitem>
+                        <para>Помещение в очередь запрос.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>DENY:</term>
+                    <listitem>
+                        <para>Отказ в запросе на ресурс.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>POST:</term>
+                    <listitem>
+                        <para>Отправка сообщения владельцу по поводу ресурса.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>DEQ:</term>
+                    <listitem>
+                        <para>Снятие блокировки владельцем.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>SCAN:</term>
+                    <listitem>
+                        <para>Сканирование взаимных блокировок.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>WAIT:</term>
+                    <listitem>
+                        <para>Владелец в состоянии ожидания.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>CONVERT:</term>
+                    <listitem>
+                        <para>Повышение уровня блокировки.</para>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+        </para>
+    </section>
 </chapter>

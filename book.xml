@@ -5,7 +5,7 @@
     xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="ru" xml:id="fbadmgd" version="5.1">
     <info>
         <title>Руководство администратора Firebird 3.0</title>
-        <edition>18 октября 2020 — v.0000-1</edition>
+        <edition>30 декабря 2020 — v.0000-1</edition>
 
         <authorgroup>
             <author>
@@ -37,7 +37,7 @@
 
     <xi:include href="intro.xml" xpointer="element(/1)"/>
     <part xml:id="install-and-settings">
-        <title>Установка и настройка</title> 
+        <title>Установка и настройка</title>
         <xi:include href="install.xml" xpointer="element(/1)"/>
         <xi:include href="server-files.xml" xpointer="element(/1)"/>
         <chapter>
@@ -98,43 +98,43 @@
                     <para/>
                 </section>
             </section>
-                       
+
         </chapter>
-        
+
         <xi:include href="config.xml" xpointer="element(/1)"/>
     </part>
     <part xml:id="command-line-tools">
-        <title>Утилиты командной строки</title> 
+        <title>Утилиты командной строки</title>
         <!-- ISQL -->
         <xi:include href="isql.xml" xpointer="element(/1)"/>
-        
+
         <!-- GBAK -->
         <xi:include href="gbak.xml" xpointer="element(/1)"/>
 
         <!-- NBACKUP -->
         <xi:include href="nbackup.xml" xpointer="element(/1)"/>
-        
+
         <!-- GFIX -->
         <xi:include href="gfix.xml" xpointer="element(/1)"/>
-        
+
         <!-- GSTAT -->
         <xi:include href="gstat.xml" xpointer="element(/1)"/>
-                
+
         <!-- FB_LOCK_PRINT -->
         <xi:include href="fblockprint.xml" xpointer="element(/1)"/>
-        
+
         <!-- FBTRACEMGR -->
         <xi:include href="fbtracemgr.xml" xpointer="element(/1)"/>
-                
+
         <!-- GSEC -->
         <xi:include href="gsec.xml" xpointer="element(/1)"/>
-        
+
         <!-- FBSVCMGR -->
-        <xi:include href="fbsvcmgr.xml" xpointer="element(/1)"/>        
+        <xi:include href="fbsvcmgr.xml" xpointer="element(/1)"/>
     </part>
 
     <part xml:id="tasks">
-        <title>Практические задачи</title> 
+        <title>Практические задачи</title>
 
         <chapter>
             <title>Типичные проблемы с установкой</title>
@@ -164,7 +164,41 @@
         <chapter>
             <title>Использование инструментов резервного копирования</title>
 
-            <para/>
+            <para>Целью резервного копирования базы данных является защита и сохранение данных в
+                случае сбоя базы данных или машины. При восстановлении базы данных файл резервной
+                копии используется для воссоздания базы данных.</para>
+
+            <para>Firebird поддерживает как логическое, так и физическое резервное
+                копирование.</para>
+
+            <para>Логическое резервное копирование осуществляется с помощью утилиты
+                    <application>gbak</application>. В процессе резервного копирования
+                    <application>gbak</application> читает и сохраняет в специальный файл (или
+                файлы) метаданные (описания таблиц, процедур, триггеров и т. д.) и данные таблиц.
+                    <application>gbak</application> создает непротиворечивую резервную копию базы
+                данных, начиная транзакцию в режиме изолированности SNAPSHOT, которая охватывает
+                весь период резервного копирования. Любые изменения, сделанные транзакциями
+                запущенными после начала резервного копирования, не попадут в файл резервной копии.
+                Таким образом резервная копия будет представлять собой копию всей базы данных на
+                момент начала резервного копирования. Это позволяет приложениям беспрепятственно
+                работать с базой данных во время резервного копирования.</para>
+
+            <para>Физическое резервное копирование осуществляется с помощью утилиты
+                    <application>nbackup</application>. В процессе резервного копирования
+                    <application>nbackup</application> читает страницы базы данных и сохраняет их в
+                специальный файл, при этом изменённые страницы пишутся в специальный файл delta, а
+                после окончания резервной копи файл дельты сливается с основной базой данных. Кроме
+                того, утилита <application>nbackup</application> может быть использована для
+                создания инкрементных копий.</para>
+
+            <para>Чтобы наиболее эффективно защитить базу данных от сбоев питания, сбоев дисков или
+                другой потенциальной потери данных, регулярно выполняйте резервное копирование. Для
+                дополнительной безопасности храните файл резервной копии в физическом месте,
+                отличном от сервера базы данных.</para>
+
+            <para>В этой главе описываются наиболее типичные сценарии создания резервных копий как
+                физических так и логических, а также процесс восстановления базы из резервной
+                копии.</para>
 
             <section>
                 <title>gbak</title>
@@ -202,7 +236,7 @@
         </chapter>
 
         <xi:include href="mon_tools.xml" xpointer="element(/1)"/>
-    </part> 
+    </part>
 
     <index>
         <info>

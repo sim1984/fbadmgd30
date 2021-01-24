@@ -105,7 +105,7 @@ option -t accepts several table names only if used after <database>
                 </row>
                 <row>
                     <entry><code>-e[cryption]</code></entry>
-                    <entry><para>Анализ шифрования базы данных.</para></entry>
+                    <entry><para>Статистика шифрования базы данных.</para></entry>
                 </row>
                 <row>
                     <entry><code>-h[eader]</code></entry>

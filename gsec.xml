@@ -34,7 +34,7 @@ gsec [<replaceable>&lt;options&gt;</replaceable>] <replaceable>&lt;command&gt;</
         </synopsis>
     </para>
 
-    <section>
+    <section xml:id="gsec-options">
         <title>Опции командной строки</title>
 
         <para>Независимо от режима, в котором работает <application>gsec</application>, в командной
@@ -144,7 +144,7 @@ gsec [<replaceable>&lt;options&gt;</replaceable>] <replaceable>&lt;command&gt;</
                 </listitem>
             </itemizedlist></para>
     </section>
-    <section>
+    <section xml:id="gsec-commands">
         <title>Команды GSEC</title>
 
         <para>После различных опций идет команда, которую вы хотите запустить. Следующие команды

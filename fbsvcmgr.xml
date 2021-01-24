@@ -541,165 +541,159 @@ Server implementation: Firebird/Windows/AMD/Intel/x64
             </para>
         </example>
     </section>
-    <section xml:id="fbsvcmgr-actions">
-        <title>Сервисные действия</title>
-        <section xml:id="fbsvcmgr-gbak-backup">
-            <title>Резервная копия (gbak)</title>
 
-            <para>Для создания резервной копии (как создаёт gbak) с помощью утилиты
-                    <application>fbsvcmgr</application> используется действие action_backup. </para>
+    <section xml:id="fbsvcmgr-gbak-backup">
+        <title>Резервная копия (gbak)</title>
 
-            <table frame="topbot">
-                <title>Параметры для создания резервной копии</title>
-                <tgroup cols="2">
-                    <colspec colname="c1" colnum="1" colwidth="0.8*"/>
-                    <colspec colname="c2" colnum="2" colwidth="1.2*"/>
-                    <thead>
-                        <row>
-                            <entry>Опция</entry>
-                            <entry>Описание</entry>
-                        </row>
-                    </thead>
-                    <tbody>
-                        <row>
-                            <entry>
-                                <para><code>dbname [string value]</code></para>
-                            </entry>
-                            <entry><para>Имя первичного файла базы данных или алиас
-                                БД.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>verbose</code></para>
-                            </entry>
-                            <entry><para>Вывод полного лога процесса резервного копирования. Аналог
-                                    ключа <code>-v</code> в gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>bkp_file [string value]</code></para>
-                            </entry>
-                            <entry><para>Задаёт имя файл резервной копии.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>bkp_length [int32 value]</code></para>
-                            </entry>
-                            <entry><para>Размер файла резервной копии в байтах. Используется если вы
-                                    хотите разбить резервную копию на несколько
-                                файлов.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>bkp_factor [int32 value]</code></para>
-                            </entry>
-                            <entry><para>Аналог переключателя <code>-fa[ctor]</code> в gbak.
-                                    Атавизм.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>bkp_ignore_checksums</code></para>
-                            </entry>
-                            <entry><para>Игнорирование ошибок контрольных сумм. Аналог переключателя
-                                        <code>-ig[nore]</code> в gbak. </para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>bkp_ignore_limbo</code></para>
-                            </entry>
-                            <entry><para>Игнорирование версий записей созданных транзакциями в
-                                    состоянии in limbo. Аналог переключателя <code>-L[imbo]</code> в
-                                    gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>bkp_metadata_only</code></para>
-                            </entry>
-                            <entry><para>Сохранение только метаданных. Аналог переключателя
-                                        <code>-m[etadata]</code> в gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>bkp_no_garbage_collect</code></para>
-                            </entry>
-                            <entry><para>Отключение сборки мусора в процессе создания резервной
-                                    копии. Аналог переключателя <code>-g</code> в gbak.
-                                </para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>bkp_old_descriptions</code></para>
-                            </entry>
-                            <entry><para>Налог переключателя <code>-ol[d_descriptions]</code> в
-                                    gbak. Предназначено для совместимости с Interbase 3.3.
-                                    Атавизм.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>bkp_non_transportable</code></para>
-                            </entry>
-                            <entry><para>Создание резервной копии в формате не переносимом между
-                                    платформами. Аналог переключателя <code>-nt</code> из
-                                    gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>bkp_convert</code></para>
-                            </entry>
-                            <entry><para>Конвертирование внешних таблиц (external tables) во
-                                    внутренние. Аналог переключателя <code>-co[nvert]</code> в
-                                    gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>bkp_no_triggers</code></para>
-                            </entry>
-                            <entry><para>Отключение срабатывания триггеров уровня базы данных.
-                                    Аналог переключателя <code>-nodbtriggers</code> в
+        <para>Для создания резервной копии (как создаёт gbak) с помощью утилиты
+                <application>fbsvcmgr</application> используется действие action_backup. </para>
+
+        <table frame="topbot">
+            <title>Параметры для создания резервной копии</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="0.8*"/>
+                <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                <thead>
+                    <row>
+                        <entry>Опция</entry>
+                        <entry>Описание</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry>
+                            <para><code>dbname [string value]</code></para>
+                        </entry>
+                        <entry><para>Имя первичного файла базы данных или алиас БД.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>verbose</code></para>
+                        </entry>
+                        <entry><para>Вывод полного лога процесса резервного копирования. Аналог
+                                ключа <code>-v</code> в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>bkp_file [string value]</code></para>
+                        </entry>
+                        <entry><para>Задаёт имя файл резервной копии.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>bkp_length [int32 value]</code></para>
+                        </entry>
+                        <entry><para>Размер файла резервной копии в байтах. Используется если вы
+                                хотите разбить резервную копию на несколько файлов.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>bkp_factor [int32 value]</code></para>
+                        </entry>
+                        <entry><para>Аналог переключателя <code>-fa[ctor]</code> в gbak.
+                                Атавизм.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>bkp_ignore_checksums</code></para>
+                        </entry>
+                        <entry><para>Игнорирование ошибок контрольных сумм. Аналог переключателя
+                                    <code>-ig[nore]</code> в gbak. </para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>bkp_ignore_limbo</code></para>
+                        </entry>
+                        <entry><para>Игнорирование версий записей созданных транзакциями в состоянии
+                                in limbo. Аналог переключателя <code>-L[imbo]</code> в
+                            gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>bkp_metadata_only</code></para>
+                        </entry>
+                        <entry><para>Сохранение только метаданных. Аналог переключателя
+                                    <code>-m[etadata]</code> в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>bkp_no_garbage_collect</code></para>
+                        </entry>
+                        <entry><para>Отключение сборки мусора в процессе создания резервной копии.
+                                Аналог переключателя <code>-g</code> в gbak. </para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>bkp_old_descriptions</code></para>
+                        </entry>
+                        <entry><para>Налог переключателя <code>-ol[d_descriptions]</code> в gbak.
+                                Предназначено для совместимости с Interbase 3.3.
+                            Атавизм.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>bkp_non_transportable</code></para>
+                        </entry>
+                        <entry><para>Создание резервной копии в формате не переносимом между
+                                платформами. Аналог переключателя <code>-nt</code> из
+                            gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>bkp_convert</code></para>
+                        </entry>
+                        <entry><para>Конвертирование внешних таблиц (external tables) во внутренние.
+                                Аналог переключателя <code>-co[nvert]</code> в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>bkp_no_triggers</code></para>
+                        </entry>
+                        <entry><para>Отключение срабатывания триггеров уровня базы данных. Аналог
+                                переключателя <code>-nodbtriggers</code> в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>verbint [int32 value]</code></para>
+                        </entry>
+                        <entry><para>Вывод информации через заданное количество записей. Аналог
+                                переключателя <code>-verbi[nt]</code> в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>bkp_skip_data [string value]</code></para>
+                        </entry>
+                        <entry><para>Не сохранять в резервную копию таблицы указанные в шаблоне.
+                                Имена таблиц разделяются в списке символом | Аналог переключателя
+                                    <code>-skip_d[ata]</code> в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>bkp_stat [string value]</code></para>
+                        </entry>
+                        <entry><para>Вывод статистики при выполнении различных операций. Задаётся
+                                формате строки <code>[T][D][R][W]</code>, где T - время с момента
+                                старта, D - время выполнения операции, R - чтений страниц, W -
+                                записи страниц. Аналог переключателя <code>-st</code> из
                                 gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>verbint [int32 value]</code></para>
-                            </entry>
-                            <entry><para>Вывод информации через заданное количество записей. Аналог
-                                    переключателя <code>-verbi[nt]</code> в gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>bkp_skip_data [string value]</code></para>
-                            </entry>
-                            <entry><para>Не сохранять в резервную копию таблицы указанные в шаблоне.
-                                    Имена таблиц разделяются в списке символом | Аналог
-                                    переключателя <code>-skip_d[ata]</code> в gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>bkp_stat [string value]</code></para>
-                            </entry>
-                            <entry><para>Вывод статистики при выполнении различных операций.
-                                    Задаётся формате строки <code>[T][D][R][W]</code>, где T - время
-                                    с момента старта, D - время выполнения операции, R - чтений
-                                    страниц, W - записи страниц. Аналог переключателя
-                                        <code>-st</code> из gbak.</para></entry>
-                        </row>
-                    </tbody>
-                </tgroup>
-            </table>
-            <simplesect>
-                <title>Примеры</title>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+        <simplesect>
+            <title>Примеры</title>
 
-                <example>
-                    <title>Создание резервной копии, с выводом лога действий на экран.</title>
+            <example>
+                <title>Создание резервной копии, с выводом лога действий на экран.</title>
 
-                    <para>Создание резервной копии, с выводом лога действий на экран. Копия делается
-                        диск расположенный на сервере.</para>
+                <para>Создание резервной копии, с выводом лога действий на экран. Копия делается
+                    диск расположенный на сервере.</para>
 
-                    <synopsis>
+                <synopsis>
 fbsvcmgr remotehost:service_mgr -user sysdba -password masterkey 
   action_backup -dbname test -bkp_file d:\copy.fbk -verbose -bkp_stat TD                        
                     </synopsis>
-                    <screen>
+                <screen>
 gbak: time     delta
 gbak:    0.199  0.199 readied database test for backup
 gbak:    0.199  0.000 creating file d:\copy.fbk
@@ -711,231 +705,228 @@ gbak:    0.261  0.000     writing domain RDB$2
 gbak:    0.262  0.000     writing domain RDB$3
 ....
                     </screen>
-                </example>
+            </example>
 
-                <example>
-                    <title>Создание многофайловой резервной копии</title>
+            <example>
+                <title>Создание многофайловой резервной копии</title>
 
-                    <para>Для создания такой копии необходимо указывать несколько имён файлов
-                        резервных копий. Каждое имя файла резервной копии должно указываться в
-                        отельном тэге <code>bkp_file</code>. После указания каждого файла резервной
-                        копии, кроме последнего, необходимо указать максимальный размер резервной
-                        копии в байтах с помощью тэга <code>bkp_length</code>.</para>
+                <para>Для создания такой копии необходимо указывать несколько имён файлов резервных
+                    копий. Каждое имя файла резервной копии должно указываться в отельном тэге
+                        <code>bkp_file</code>. После указания каждого файла резервной копии, кроме
+                    последнего, необходимо указать максимальный размер резервной копии в байтах с
+                    помощью тэга <code>bkp_length</code>.</para>
 
-                    <synopsis>
+                <synopsis>
 fbsvcmgr localhost:service_mgr -user sysdba -password masterkey 
   action_backup -dbname horses -bkp_file d:\copy_1.fbk -bkp_length 200000000 
   -bkp_file d:\copy_2.fbk -bkp_length 10000000 -bkp_file d:\copy_3.fbk                        
                     </synopsis>
-                </example>
+            </example>
 
-                <example>
-                    <title>Создание резервной копии на удалённом компьютере</title>
+            <example>
+                <title>Создание резервной копии на удалённом компьютере</title>
 
-                    <para>Создание резервной копии. Копия делается на диск расположенный на
-                        клиентском компьютере.</para>
+                <para>Создание резервной копии. Копия делается на диск расположенный на клиентском
+                    компьютере.</para>
 
-                    <para>Этот способ создания резервных копий особенно эффективен, когда необходимо
-                        выполнить операцию резервного копирования/восстановления для базы данных,
-                        расположенной на сервере, доступ к которому осуществляется через Интернет,
-                        из-за большого преимущества в производительности.</para>
+                <para>Этот способ создания резервных копий особенно эффективен, когда необходимо
+                    выполнить операцию резервного копирования/восстановления для базы данных,
+                    расположенной на сервере, доступ к которому осуществляется через Интернет, из-за
+                    большого преимущества в производительности.</para>
 
-                    <synopsis>
+                <synopsis>
 fbsvcmgr remotehost:service_mgr -user sysdba -password masterkey 
   action_backup -dbname test -bkp_file stdout > d:\copy.fbk                       
                     </synopsis>
 
-                    <note>
-                        <para>Обратите внимание — вы не можете использовать <quote>verbose</quote>
-                            переключатель при выполнении резервного копирования, потому что канал
-                            данных от сервера к клиенту используется для доставки блоков файлов fbk.
-                            Вы получите соответствующее сообщение об ошибке, если попытаетесь это
-                            сделать.</para>
-                    </note>
-                </example>
-            </simplesect>
-        </section>
-        <section xml:id="fbsvcmgr-gbak-restore">
-            <title>Восстановление (gbak)</title>
-            <para>Для восстановления из резервной копии, созданной с помощью gbak, утилитой
-                    <application>fbsvcmgr</application> используется действие action_restore. </para>
+                <note>
+                    <para>Обратите внимание — вы не можете использовать <quote>verbose</quote>
+                        переключатель при выполнении резервного копирования, потому что канал данных
+                        от сервера к клиенту используется для доставки блоков файлов fbk. Вы
+                        получите соответствующее сообщение об ошибке, если попытаетесь это
+                        сделать.</para>
+                </note>
+            </example>
+        </simplesect>
+    </section>
+    <section xml:id="fbsvcmgr-gbak-restore">
+        <title>Восстановление (gbak)</title>
+        <para>Для восстановления из резервной копии, созданной с помощью gbak, утилитой
+                <application>fbsvcmgr</application> используется действие action_restore. </para>
 
-            <table frame="topbot">
-                <title>Параметры для восстановления из резервной копии</title>
-                <tgroup cols="2">
-                    <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
-                    <colspec colname="c2" colnum="2" colwidth="1.2*"/>
-                    <thead>
-                        <row>
-                            <entry>Опция</entry>
-                            <entry>Описание</entry>
-                        </row>
-                    </thead>
-                    <tbody>
-                        <row>
-                            <entry>
-                                <para><code>bkp_file [string value]</code></para>
-                            </entry>
-                            <entry><para>Имя файла резервной копии.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>dbname [string value]</code></para>
-                            </entry>
-                            <entry><para>Имя файла базы данных или алиас БД.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>res_length [int32 value]</code></para>
-                            </entry>
-                            <entry><para>Максимальный размер файла базы данных в страницах.
-                                    Требуется для многофайловых баз данных.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>verbose</code></para>
-                            </entry>
-                            <entry><para>Вывод полного лога процесса восстановления из резервной
-                                    копии. Аналог ключа <code>-v</code> в gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>res_buffers [int32 value]</code></para>
-                            </entry>
-                            <entry><para>Изменить (или указать новый) размер кэша БД. Принимается
-                                    значение больше 0. Аналог ключа -bu[ffers] в
+        <table frame="topbot">
+            <title>Параметры для восстановления из резервной копии</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
+                <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                <thead>
+                    <row>
+                        <entry>Опция</entry>
+                        <entry>Описание</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry>
+                            <para><code>bkp_file [string value]</code></para>
+                        </entry>
+                        <entry><para>Имя файла резервной копии.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>dbname [string value]</code></para>
+                        </entry>
+                        <entry><para>Имя файла базы данных или алиас БД.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>res_length [int32 value]</code></para>
+                        </entry>
+                        <entry><para>Максимальный размер файла базы данных в страницах. Требуется
+                                для многофайловых баз данных.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>verbose</code></para>
+                        </entry>
+                        <entry><para>Вывод полного лога процесса восстановления из резервной копии.
+                                Аналог ключа <code>-v</code> в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>res_buffers [int32 value]</code></para>
+                        </entry>
+                        <entry><para>Изменить (или указать новый) размер кэша БД. Принимается
+                                значение больше 0. Аналог ключа -bu[ffers] в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>res_page_size [int32 value]</code></para>
+                        </entry>
+                        <entry><para>Указывает новый размер страницы для базы данных. Аналог ключа
+                                -p[age_size] в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>res_access_mode [prp_am_readonly |
+                                prp_am_readwrite]</code></para>
+                        </entry>
+                        <entry><para>Восстановление в режиме read_only или read_write (по умолчанию
+                                read_write). Аналог ключа -mo[de] в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>res_deactivate_idx</code></para>
+                        </entry>
+                        <entry><para>Не активировать индексы при восстановлении. Аналог ключа
+                                -i[nactive] в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>res_no_shadow</code></para>
+                        </entry>
+                        <entry><para>Не создавать имеющиеся у базы данных теневые копии (shadow).
+                                Аналог ключа -k[ill] в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>res_no_validity</code></para>
+                        </entry>
+                        <entry><para>Не выполнять контроль данных. Аналог переключателя -no_validity
+                                в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>res_one_at_a_time</code></para>
+                        </entry>
+                        <entry><para>Подтверждать транзакцию после восстановления каждой таблицы.
+                                Аналог переключателя -o[ne_at_a_time] в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>res_replace</code></para>
+                        </entry>
+                        <entry><para>Замена оригинального файла базы данных при восстановлении.
+                                Аналог переключателя -rep[lace_database] в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>res_create</code></para>
+                        </entry>
+                        <entry><para>Создать (восстановить) базу данных из резервной копии. Аналог
+                                переключателя -c[reate] в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>res_use_all_space</code></para>
+                        </entry>
+                        <entry><para>Восстанавливать базу данных из резервной копии с полным
+                                заполнение страниц (по умолчанию заполняется с резервированием
+                                пространства на страницах). Аналог ключа -use_[all_space] в
                                 gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>res_page_size [int32 value]</code></para>
-                            </entry>
-                            <entry><para>Указывает новый размер страницы для базы данных. Аналог
-                                    ключа -p[age_size] в gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>res_access_mode [prp_am_readonly |
-                                        prp_am_readwrite]</code></para>
-                            </entry>
-                            <entry><para>Восстановление в режиме read_only или read_write (по
-                                    умолчанию read_write). Аналог ключа -mo[de] в
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>res_fix_fss_data [string value]</code></para>
+                        </entry>
+                        <entry><para>Исправление кодировки данных. Аналог переключателя
+                                -fix_fss_d[ata] в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>res_fix_fss_metadata [string value]</code></para>
+                        </entry>
+                        <entry><para>Исправление кодировки метаданных. Аналог переключателя
+                                -fix_fss_m[etadata] в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>res_metadata_only</code></para>
+                        </entry>
+                        <entry><para>Восстановление только метаданных, без данных. Аналог
+                                переключателя -m[etadata в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>verbint [int32 value]</code></para>
+                        </entry>
+                        <entry><para>Вывод информации через заданное количество записей. Аналог
+                                переключателя <code>-verbi[nt]</code> в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>res_skip_data [string value]</code></para>
+                        </entry>
+                        <entry><para>Не восстанавливать из резервной копии таблицы указанные в
+                                шаблоне. Имена таблиц разделяются в списке символом | Аналог
+                                переключателя <code>-skip_d[ata]</code> в gbak.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>res_stat [string value]</code></para>
+                        </entry>
+                        <entry><para>Вывод статистики при выполнении различных операций. Задаётся
+                                формате строки <code>[T][D][R][W]</code>, где T - время с момента
+                                старта, D - время выполнения операции, R - чтений страниц, W -
+                                записи страниц. Аналог переключателя <code>-st</code> из
                                 gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>res_deactivate_idx</code></para>
-                            </entry>
-                            <entry><para>Не активировать индексы при восстановлении. Аналог ключа
-                                    -i[nactive] в gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>res_no_shadow</code></para>
-                            </entry>
-                            <entry><para>Не создавать имеющиеся у базы данных теневые копии
-                                    (shadow). Аналог ключа -k[ill] в gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>res_no_validity</code></para>
-                            </entry>
-                            <entry><para>Не выполнять контроль данных. Аналог переключателя
-                                    -no_validity в gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>res_one_at_a_time</code></para>
-                            </entry>
-                            <entry><para>Подтверждать транзакцию после восстановления каждой
-                                    таблицы. Аналог переключателя -o[ne_at_a_time] в
-                                gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>res_replace</code></para>
-                            </entry>
-                            <entry><para>Замена оригинального файла базы данных при восстановлении.
-                                    Аналог переключателя -rep[lace_database] в gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>res_create</code></para>
-                            </entry>
-                            <entry><para>Создать (восстановить) базу данных из резервной копии.
-                                    Аналог переключателя -c[reate] в gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>res_use_all_space</code></para>
-                            </entry>
-                            <entry><para>Восстанавливать базу данных из резервной копии с полным
-                                    заполнение страниц (по умолчанию заполняется с резервированием
-                                    пространства на страницах). Аналог ключа -use_[all_space] в
-                                    gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>res_fix_fss_data [string value]</code></para>
-                            </entry>
-                            <entry><para>Исправление кодировки данных. Аналог переключателя
-                                    -fix_fss_d[ata] в gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>res_fix_fss_metadata [string value]</code></para>
-                            </entry>
-                            <entry><para>Исправление кодировки метаданных. Аналог переключателя
-                                    -fix_fss_m[etadata] в gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>res_metadata_only</code></para>
-                            </entry>
-                            <entry><para>Восстановление только метаданных, без данных. Аналог
-                                    переключателя -m[etadata в gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>verbint [int32 value]</code></para>
-                            </entry>
-                            <entry><para>Вывод информации через заданное количество записей. Аналог
-                                    переключателя <code>-verbi[nt]</code> в gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>res_skip_data [string value]</code></para>
-                            </entry>
-                            <entry><para>Не восстанавливать из резервной копии таблицы указанные в
-                                    шаблоне. Имена таблиц разделяются в списке символом | Аналог
-                                    переключателя <code>-skip_d[ata]</code> в gbak.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>res_stat [string value]</code></para>
-                            </entry>
-                            <entry><para>Вывод статистики при выполнении различных операций.
-                                    Задаётся формате строки <code>[T][D][R][W]</code>, где T - время
-                                    с момента старта, D - время выполнения операции, R - чтений
-                                    страниц, W - записи страниц. Аналог переключателя
-                                        <code>-st</code> из gbak.</para></entry>
-                        </row>
-                    </tbody>
-                </tgroup>
-            </table>
-            <simplesect>
-                <title>Примеры</title>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+        <simplesect>
+            <title>Примеры</title>
 
-                <example>
-                    <title>Создание резервной копии, с выводом лога действий на экран</title>
+            <example>
+                <title>Создание резервной копии, с выводом лога действий на экран</title>
 
-                    <para>База данных восстанавливается из копии расположенной на сервере.</para>
+                <para>База данных восстанавливается из копии расположенной на сервере.</para>
 
-                    <synopsis>
+                <synopsis>
 fbsvcmgr remotehost:service_mgr -user sysdba -password masterkey 
   action_restore -bkp_file d:\copy.fbk -dbname d:\test.fdb -verbose -res_stat TD  
                     </synopsis>
-                    <screen>
+                <screen>
 gbak: time     delta
 gbak:    0.000  0.000 opened file d:\copy.fbk
 gbak:    0.039  0.039 transportable backup -- data in XDR format
@@ -948,19 +939,19 @@ gbak:    0.257  0.004 restoring domain RDB$2
 gbak:    0.257  0.000 restoring domain RDB$3
 ....
                     </screen>
-                </example>
+            </example>
 
-                <example>
-                    <title>Восстановление из удалённой резервной копии.</title>
+            <example>
+                <title>Восстановление из удалённой резервной копии.</title>
 
-                    <para>Восстановление из резервной копии. Копия расположена на клиентском
-                        компьютере, а база данных восстанавливается на сервере.</para>
+                <para>Восстановление из резервной копии. Копия расположена на клиентском компьютере,
+                    а база данных восстанавливается на сервере.</para>
 
-                    <synopsis><![CDATA[                        
+                <synopsis><![CDATA[                        
 fbsvcmgr remotehost:service_mgr -user sysdba -password masterkey 
   action_restore -bkp_file stdin < d:\copy.fbk -dbname d:\test.fdb -verbose -res_stat TD  
 ]]></synopsis>
-                    <screen>
+                <screen>
 gbak: time     delta
 gbak:    0.000  0.000 opened file d:\copy.fbk
 gbak:    0.039  0.039 transportable backup -- data in XDR format
@@ -973,261 +964,599 @@ gbak:    0.257  0.004 restoring domain RDB$2
 gbak:    0.257  0.000 restoring domain RDB$3
 ....
                     </screen>
-                </example>
-            </simplesect>
-        </section>
-        <section>
-            <title>Установка свойств базы данных, её остановка и перевод в онлайн режим
-                (gfix)</title>
+            </example>
+        </simplesect>
+    </section>
+    <section>
+        <title>Установка свойств базы данных, её остановка и перевод в онлайн режим (gfix)</title>
 
-            <para>Для установки некоторых свойств базы данных утилитой
-                    <application>fbsvcmgr</application> используется действие
-                    <code>action_properties</code>. Оно может также использоваться для остановки
-                базы данных (shutdown) или возврата её в онлайн режим. Для установки доступен тот же
-                набор свойств, который можно установить с помощью утилиты gfix.</para>
+        <para>Для установки некоторых свойств базы данных утилитой
+                <application>fbsvcmgr</application> используется действие
+                <code>action_properties</code>. Оно может также использоваться для остановки базы
+            данных (shutdown) или возврата её в онлайн режим. Для установки доступен тот же набор
+            свойств, который можно установить с помощью утилиты gfix.</para>
 
-            <table frame="topbot">
-                <title>Параметры для действия <code>action_properties</code></title>
-                <tgroup cols="2">
-                    <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
-                    <colspec colname="c2" colnum="2" colwidth="1.2*"/>
-                    <thead>
-                        <row>
-                            <entry>Опция</entry>
-                            <entry>Описание</entry>
-                        </row>
-                    </thead>
-                    <tbody>
-                        <row>
-                            <entry>
-                                <para><code>dbname [string value]</code></para>
-                            </entry>
-                            <entry><para>Имя файла базы данных или алиас.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>prp_page_buffers [int32 value]</code></para>
-                            </entry>
-                            <entry><para>Размер кэша базы данных в страницах. Если установлено 0, то
-                                    размер кэша читается из параметра
-                                        <parameter>DefaultDbCachePages</parameter> конфигурационного
-                                    файла <filename>firebird.conf</filename> или
-                                        <filename>databases.conf</filename>. См. также <link
-                                        linkend="gfix-buffers">gfix -buffers</link>.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>prp_sweep_interval [int32 value]</code></para>
-                            </entry>
-                            <entry><para>Установка интервала автоматической чистки (sweep). См.
-                                    также <link linkend="gfix-sweep">gfix -h</link>.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>prp_shutdown_db [int32 value]</code></para>
-                            </entry>
-                            <entry>Закрытие базы данных (перевод базы данных в состояние shutdown).
-                                В качестве параметра тайм-аут в секундах. См. также <link
-                                    linkend="gfix-shutdown">gfix -shutdown</link>.</entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>prp_deny_new_transactions [int32 value]</code></para>
-                            </entry>
-                            <entry>Режим закрытия базы данных (shutdown) с предотвращением новых
+        <table frame="topbot">
+            <title>Параметры для действия <code>action_properties</code></title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
+                <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                <thead>
+                    <row>
+                        <entry>Опция</entry>
+                        <entry>Описание</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry>
+                            <para><code>dbname [string value]</code></para>
+                        </entry>
+                        <entry><para>Имя файла базы данных или алиас.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>prp_page_buffers [int32 value]</code></para>
+                        </entry>
+                        <entry><para>Размер кэша базы данных в страницах. Если установлено 0, то
+                                размер кэша читается из параметра
+                                    <parameter>DefaultDbCachePages</parameter> конфигурационного
+                                файла <filename>firebird.conf</filename> или
+                                    <filename>databases.conf</filename>. См. также <link
+                                    linkend="gfix-buffers">gfix -buffers</link>.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>prp_sweep_interval [int32 value]</code></para>
+                        </entry>
+                        <entry><para>Установка интервала автоматической чистки (sweep). См. также
+                                    <link linkend="gfix-sweep">gfix -h</link>.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>prp_shutdown_db [int32 value]</code></para>
+                        </entry>
+                        <entry>Закрытие базы данных (перевод базы данных в состояние shutdown). В
+                            качестве параметра тайм-аут в секундах. См. также <link
+                                linkend="gfix-shutdown">gfix -shutdown</link>.</entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>prp_deny_new_transactions [int32 value]</code></para>
+                        </entry>
+                        <entry>Режим закрытия базы данных (shutdown) с предотвращением новых
+                            транзакций. См. также <link linkend="gfix-shutdown-tran">gfix -shutdown
+                                -transaction</link></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>prp_deny_new_attachments [int32 value]</code></para>
+                        </entry>
+                        <entry>Режим закрытия базы данных (shutdown) с предотвращением новых
+                            соединений. См. также <link linkend="gfix-shutdown-attach">gfiz
+                                -shutdown -attach</link>.</entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>prp_set_sql_dialect [int32 value]</code></para>
+                        </entry>
+                        <entry>
+                            <para>Изменение SQL диалекта базы данных. См. также <link
+                                    linkend="gfix-dialect">gfix -sql_dialect</link>.</para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>prp_access_mode [prp_am_readonly |
+                                prp_am_readwrite]</code></para>
+                        </entry>
+                        <entry><para>Изменение режима доступа для базы данных. prp_am_readonly —
+                                база данных только для чтения, prp_am_readwrite — база данных для
+                                чтения и записи. См. также <link linkend="gfix-read_write_mode">gfix
+                                    -mode</link>.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>prp_reserve_space [prp_res_use_full | prp_res]</code></para>
+                        </entry>
+                        <entry>
+                            <para>Изменение режима использования пространства страниц.
+                                prp_res_use_full — всё пространство на странице используется
+                                целиком, prp_reserve_space — используется только 80% пространства
+                                страниц под данные, остальное резервируется для фрагментов записей и
+                                версий. См. также <link linkend="gfix-use_space">gfix
+                                -use</link>.</para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>prp_activate</code></para>
+                        </entry>
+                        <entry>
+                            <para>Активация теневой копии. См. также <link linkend="gfix-shadow"
+                                    >gfix -active</link>.</para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry><para><code>prp_db_online</code></para></entry>
+                        <entry><para>Перевод базы данных в состояние online (открытие). См. также
+                                    <link linkend="gfix-online">gfix -online</link>.</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>prp_force_shutdown [int32 value]</code></para></entry>
+                        <entry><para>Режим принудительного закрытия базы данных (shutdown) с отменой
+                                всех активных транзакций. См. также <link
+                                    linkend="gfix-shutdown-force">gfix -shutdown
+                                -force</link>.</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>prp_attachments_shutdown [int32
+                            value]</code></para></entry>
+                        <entry><para>Режим закрытия базы данных (shutdown) с предотвращением новых
+                                соединений. См. также <link linkend="gfix-shutdown-attach">gfix
+                                    -shutdown -attach</link>.</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>prp_transactions_shutdown [int32
+                            value]</code></para></entry>
+                        <entry><para>Режим закрытия базы данных (shutdown) с предотвращением новых
                                 транзакций. См. также <link linkend="gfix-shutdown-tran">gfix
-                                    -shutdown -transaction</link></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>prp_deny_new_attachments [int32 value]</code></para>
-                            </entry>
-                            <entry>Режим закрытия базы данных (shutdown) с предотвращением новых
-                                соединений. См. также <link linkend="gfix-shutdown-attach">gfiz
-                                    -shutdown -attach</link>.</entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>prp_set_sql_dialect [int32 value]</code></para>
-                            </entry>
-                            <entry>
-                                <para>Изменение SQL диалекта базы данных. См. также <link
-                                        linkend="gfix-dialect">gfix -sql_dialect</link>.</para>
-                            </entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>prp_access_mode [prp_am_readonly |
-                                        prp_am_readwrite]</code></para>
-                            </entry>
-                            <entry><para>Изменение режима доступа для базы данных. prp_am_readonly —
-                                    база данных только для чтения, prp_am_readwrite — база данных
-                                    для чтения и записи. См. также <link
-                                        linkend="gfix-read_write_mode">gfix
-                                -mode</link>.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>prp_reserve_space [prp_res_use_full |
-                                    prp_res]</code></para>
-                            </entry>
-                            <entry>
-                                <para>Изменение режима использования пространства страниц.
-                                    prp_res_use_full — всё пространство на странице используется
-                                    целиком, prp_reserve_space — используется только 80%
-                                    пространства страниц под данные, остальное резервируется для
-                                    фрагментов записей и версий. См. также <link
-                                        linkend="gfix-use_space">gfix -use</link>.</para>
-                            </entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>prp_activate</code></para>
-                            </entry>
-                            <entry>
-                                <para>Активация теневой копии. См. также <link linkend="gfix-shadow"
-                                        >gfix -active</link>.</para>
-                            </entry>
-                        </row>
-                        <row>
-                            <entry><para><code>prp_db_online</code></para></entry>
-                            <entry><para>Перевод базы данных в состояние online (открытие). См.
-                                    также <link linkend="gfix-online">gfix
-                                -online</link>.</para></entry>
-                        </row>
-                        <row>
-                            <entry><para><code>prp_force_shutdown [int32
-                                value]</code></para></entry>
-                            <entry><para>Режим принудительного закрытия базы данных (shutdown) с
-                                    отменой всех активных транзакций. См. также <link
-                                        linkend="gfix-shutdown-force">gfix -shutdown
-                                    -force</link>.</para></entry>
-                        </row>
-                        <row>
-                            <entry><para><code>prp_attachments_shutdown [int32
-                                value]</code></para></entry>
-                            <entry><para>Режим закрытия базы данных (shutdown) с предотвращением
-                                    новых соединений. См. также <link linkend="gfix-shutdown-attach"
-                                        >gfiz -shutdown -attach</link>.</para></entry>
-                        </row>
-                        <row>
-                            <entry><para><code>prp_transactions_shutdown [int32
-                                value]</code></para></entry>
-                            <entry><para>Режим закрытия базы данных (shutdown) с предотвращением
-                                    новых транзакций. См. также <link linkend="gfix-shutdown-tran"
-                                        >gfix -shutdown -transaction</link>.</para></entry>
-                        </row>
-                        <row>
-                            <entry><para><code>prp_shutdown_mode [prp_sm_multi | prp_sm_single |
-                                        prp_sm_full]</code></para></entry>
-                            <entry><para>Указывает режим в который база данных перейдёт после
-                                    закрытия: prp_sm_multi - SYSDBA и владелец могу делать
-                                    неограниченное количество подключений; prp_sm_single - только
-                                    один SYSDBA или владелец может подключится к БД, prp_sm_full -
-                                    все соединения с БД запрещены. См. также <link
-                                        linkend="gfix-shutdown">gfix
-                                -shutdown</link>.</para></entry>
-                        </row>
-                        <row>
-                            <entry><para><code>prp_online_mode [prp_sm_normal | prp_sm_multi |
-                                        prp_sm_single]</code></para></entry>
-                            <entry><para>Указывает режим в который база данных перейдёт после
-                                    открытия: prp_sm_multi - SYSDBA и владелец могу делать
-                                    неограниченное количество подключений; prp_sm_single - только
-                                    один SYSDBA или владелец может подключится к БД, prp_sm_normal -
-                                    любое количество соединений с БД с любыми пользователями
-                                    разрешены. См. также <link linkend="gfix-online">gfix
-                                        -online</link>.</para></entry>
-                        </row>
-                        <row>
-                            <entry>
-                                <para><code>prp_nolinger</code></para>
-                            </entry>
-                            <entry>
-                                <para>Позволяет закрыть указанную базу данных, после того как
-                                    последнего соединения не стало, независимо от установок LINGER в
-                                    базе данных.</para>
-                            </entry>
-                        </row>
-                    </tbody>
-                </tgroup>
-            </table>
-            <simplesect>
-                <title>Примеры</title>
+                                    -shutdown -transaction</link>.</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>prp_shutdown_mode [prp_sm_multi | prp_sm_single |
+                                    prp_sm_full]</code></para></entry>
+                        <entry><para>Указывает режим в который база данных перейдёт после закрытия:
+                                prp_sm_multi - SYSDBA и владелец могу делать неограниченное
+                                количество подключений; prp_sm_single - только один SYSDBA или
+                                владелец может подключится к БД, prp_sm_full - все соединения с БД
+                                запрещены. См. также <link linkend="gfix-shutdown">gfix
+                                    -shutdown</link>.</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>prp_online_mode [prp_sm_normal | prp_sm_multi |
+                                    prp_sm_single]</code></para></entry>
+                        <entry><para>Указывает режим в который база данных перейдёт после открытия:
+                                prp_sm_multi - SYSDBA и владелец могу делать неограниченное
+                                количество подключений; prp_sm_single - только один SYSDBA или
+                                владелец может подключится к БД, prp_sm_normal - любое количество
+                                соединений с БД с любыми пользователями разрешены. См. также <link
+                                    linkend="gfix-online">gfix -online</link>.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>prp_nolinger</code></para>
+                        </entry>
+                        <entry>
+                            <para>Позволяет закрыть указанную базу данных, после того как последнего
+                                соединения не стало, независимо от установок LINGER в базе
+                                данных.</para>
+                        </entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+        <simplesect>
+            <title>Примеры</title>
 
-                <example>
-                    <title>Установка кеша для базы данных</title>
+            <example>
+                <title>Установка кеша для базы данных</title>
 
-                    <para>В данном примере для базы данных <filename>d:\test.fdb</filename>
-                        устанавливается размер кеша в 10000 страниц.</para>
+                <para>В данном примере для базы данных <filename>d:\test.fdb</filename>
+                    устанавливается размер кеша в 10000 страниц.</para>
 
-                    <synopsis>
+                <synopsis>
 fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
   action_properties -dbname d:\test.fdb prp_page_buffers 10000  
                     </synopsis>
-                </example>
+            </example>
 
-                <example>
-                    <title>Отключение автоматической чистки базы данных (sweep)</title>
+            <example>
+                <title>Отключение автоматической чистки базы данных (sweep)</title>
 
-                    <synopsis>
+                <synopsis>
 fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
   action_properties -dbname d:\test.fdb prp_sweep_interval 0  
                     </synopsis>
-                </example>
+            </example>
 
-                <example>
-                    <title>Отключение базы данных (shutdown)</title>
+            <example>
+                <title>Отключение базы данных (shutdown)</title>
 
-                    <para>Следующая команда переводит базу данных в закрытое состояние. До закрытия
-                        всей активности проходит 5 секунд. После закрытия база данных переходит в
-                        состояние shutdown full, то есть никакие соединения с БД не
-                        позволены.</para>
+                <para>Следующая команда переводит базу данных в закрытое состояние. До закрытия всей
+                    активности проходит 5 секунд. После закрытия база данных переходит в состояние
+                    shutdown full, то есть никакие соединения с БД не позволены.</para>
 
-                    <synopsis>
+                <synopsis>
 fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
   action_properties -dbname d:\test.fdb prp_shutdown_db 5 prp_shutdown_mode prp_sm_full  
                     </synopsis>
 
-                    <para>Команда ниже переводит базу данных в закрытое состояние, если по истечении
-                        5 секунд не остаётся ни одного активного соединения. Все последующие
-                        соединения с базой данных не позволяются.</para>
-                </example>
+                <para>Команда ниже переводит базу данных в закрытое состояние, если по истечении 5
+                    секунд не остаётся ни одного активного соединения. Все последующие соединения с
+                    базой данных не позволяются.</para>
+            </example>
 
 
-                <example>
-                    <title>Открытие базы данных (online)</title>
+            <example>
+                <title>Открытие базы данных (online)</title>
 
-                    <para>Следующая команда переводит базу данных shutdown multi из shutdown single
-                        или full shutdown</para>
+                <para>Следующая команда переводит базу данных shutdown multi из shutdown single или
+                    full shutdown</para>
 
-                    <synopsis>
+                <synopsis>
 fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
   action_properties -dbname d:\test.fdb prp_db_online prp_online_mode prp_sm_multi  
                     </synopsis>
 
-                </example>
+            </example>
 
-                <example>
-                    <title>Изменение режима доступа к базе данных</title>
+            <example>
+                <title>Изменение режима доступа к базе данных</title>
 
-                    <para>В следующем примере база данных переводится в режим только для
-                        чтения.</para>
+                <para>В следующем примере база данных переводится в режим только для чтения.</para>
 
-                    <synopsis>
+                <synopsis>
 fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
   action_properties -dbname d:\test.fdb prp_access_mode prp_am_readonly 
                     </synopsis>
-                </example>
-            </simplesect>
-        </section>
+            </example>
+        </simplesect>
+    </section>
+    <section>
+        <title>Валидация, ремонт базы данных, sweep (gfix)</title>
+        <para>Действие <code>action_repair</code> используется для валидации и ремонта базы данных,
+            а также её чистке (sweep). </para>
+
+        <table frame="topbot">
+            <title>Параметры для действия <code>action_repair</code></title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
+                <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                <thead>
+                    <row>
+                        <entry>Опция</entry>
+                        <entry>Описание</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry>
+                            <para><code>dbname [string value]</code></para>
+                        </entry>
+                        <entry><para>Имя файла базы данных или алиас.</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>rpr_commit_trans [int32 value]</code></para></entry>
+                        <entry><para>Подтверждение транзакции в состоянии in-limbo (32 битный номер
+                                транзакции).</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>rpr_rollback_trans [int32 value]</code></para></entry>
+                        <entry><para>Откат транзакции в состоянии in-limbo (32 битный номер
+                                транзакции).</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>rpr_recover_two_phase [int32 value]</code></para></entry>
+                        <entry><para>Автоматическое двухфазное восстановление limbo транзакции с
+                                указанным идентификатором (32 битный номер
+                            транзакции).</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>rpr_commit_trans_64 [int64 value]</code></para></entry>
+                        <entry><para>Подтверждение транзакции в состоянии in-limbo (64 битный номер
+                                транзакции).</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>rpr_rollback_trans_64 [int64 value]</code></para></entry>
+                        <entry><para>Откат транзакции в состоянии in-limbo (64 битный номер
+                                транзакции).</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>rpr_recover_two_phase_64 [int64
+                            value]</code></para></entry>
+                        <entry>
+                            <para>Автоматическое двухфазное восстановление limbo транзакции с
+                                указанным идентификатором (64 битный номер
+                            транзакции).</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>rpr_check_db</code></para></entry>
+                        <entry><para/></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>rpr_ignore_checksum</code></para></entry>
+                        <entry><para>Игнорировать ошибки контрольных сумм при
+                            проверке.</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>rpr_kill_shadows</code></para></entry>
+                        <entry><para>Удаляет все неиспользуемые теневые копии базы
+                            данных.</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>rpr_mend_db</code></para></entry>
+                        <entry><para>Помечает разрушенные записи как неиспользуемые.</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>rpr_validate_db</code></para></entry>
+                        <entry><para>Запускает проверку базы данных.</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>rpr_full</code></para></entry>
+                        <entry><para>Используется для проверки структур записей и таблиц;
+                                освобождает неназначенные фрагменты записей.</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>rpr_sweep_db</code></para></entry>
+                        <entry><para>Запускает принудительную чистку БД.</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>rpr_list_limbo_trans</code></para></entry>
+                        <entry><para>Показывает некоторые сведения (в том числе ID) о всех зависших
+                                (in limbo) транзакциях.</para></entry>
+                    </row>
+                    <row>
+                        <entry><para><code>rpr_icu</code></para></entry>
+                        <entry><para>Исправление базы данных для работы с текущей версией
+                                ICU.</para></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+        <simplesect>
+            <title>Примеры</title>
+
+            <example>
+                <title>Запуск принудительной чистки БД</title>
+
+                <para>В данном примере запускается принудительная чистка (sweep) для базы данных
+                        <filename>d:\test.fdb</filename>.</para>
+
+                <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_repair -dbname d:\test.fdb rpr_sweep_db  
+                    </synopsis>
+            </example>
+
+            <example>
+                <title>Запуск полной проверки БД</title>
+
+                <para>В данном примере запускается полная проверка базы данных
+                        <filename>d:\test.fdb</filename>.</para>
+
+                <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_repair -dbname d:\test.fdb rpr_validate_db rpr_full
+                    </synopsis>
+            </example>
+
+            <example>
+                <title>Исправление БД для работы с текущей версией ICU</title>
+
+                <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_repair -dbname d:\test.fdb rpr_icu
+                    </synopsis>
+            </example>
+        </simplesect>
+    </section>
+    <section>
+        <title>Статистика базы данных (gstat)</title>
+
+        <para>Действие <code>action_db_stats</code> используется для получения статистики по базе
+            данных. </para>
+
+        <table frame="topbot">
+            <title>Параметры для действия <code>action_db_stats</code></title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
+                <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                <thead>
+                    <row>
+                        <entry>Опция</entry>
+                        <entry>Описание</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry>
+                            <para><code>dbname [string value]</code></para>
+                        </entry>
+                        <entry><para>Имя файла базы данных или алиас.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>sts_record_versions</code></para>
+                        </entry>
+                        <entry><para>Добавление в статистику по таблицам сведений о средней длине
+                                записи и версии. Аналог <code>gstat -r</code></para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>sts_nocreation</code></para>
+                        </entry>
+                        <entry><para>Исключение из статистики даты создания (восстановления) базы
+                                данных.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>sts_table [string value]</code></para>
+                        </entry>
+                        <entry><para>Указание таблицы или нескольких таблиц, разделённых пробелом,
+                                для которых происходит анализ статистики. Аналог <code>gstat
+                                    -t</code></para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>sts_data_pages</code></para>
+                        </entry>
+                        <entry><para>Статистика данных таблиц. Аналог <code>gstat
+                            -d</code></para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>sts_hdr_pages</code></para>
+                        </entry>
+                        <entry><para>Статистика заголовочной страницы базы данных. Аналог
+                                    <code>gstat -h</code></para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>sts_idx_pages</code></para>
+                        </entry>
+                        <entry><para>Статистика индексов. Аналог <code>gstat
+                            -i</code></para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>sts_sys_relations</code></para>
+                        </entry>
+                        <entry><para>Включение в статистику системных таблиц и индексов. Аналог
+                                    <code>gstat -s</code></para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>sts_encryption</code></para>
+                        </entry>
+                        <entry><para>Статистика шифрования базы данных. Аналог <code>gstat
+                                -e</code></para></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+
+        <simplesect>
+            <title>Примеры</title>
+
+            <example>
+                <title>Получение статистики о заголовочной странице БД</title>
+
+                <para>В данном примере осуществляется получение статистики о заголовочной странице
+                    базы данных <filename>d:\test.fdb</filename>.</para>
+
+                <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_db_stats -dbname d:\test.fdb -sts_hdr_pages  
+                    </synopsis>
+            </example>
+
+            <example>
+                <title>Получение статистики о страницах всех таблиц БД</title>
+
+                <para>В данном примере осуществляется получение статистики о страницах всех таблиц
+                    базы данных <filename>d:\test.fdb</filename>.</para>
+
+                <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_db_stats -dbname d:\test.fdb -sts_data_pages  
+                    </synopsis>
+            </example>
+
+            <example>
+                <title>Получение статистики о страницах указанной таблицы БД</title>
+
+                <para>В данном примере осуществляется получение статистики о страницах таблицы COLOR
+                    базы данных <filename>d:\test.fdb</filename>.</para>
+
+                <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_db_stats -dbname d:\test.fdb -sts_table COLOR -sts_data_pages  
+                    </synopsis>
+            </example>
+
+            <example>
+                <title>Получение статистики о страницах индексов указанной таблицы БД</title>
+
+                <para>В данном примере осуществляется получение статистики о страницах индексов
+                    таблицы COLOR базы данных <filename>d:\test.fdb</filename>.</para>
+
+                <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_db_stats -dbname d:\test.fdb -sts_table COLOR -sts_idx_pages 
+                    </synopsis>
+            </example>
+
+            <example>
+                <title>Получение статистики о страницах указанной таблицы БД, всех её индексах и
+                    средней длине записей и версий</title>
+
+                <para>В данном примере осуществляется получение статистики о страницах таблицы COLOR
+                    базы данных <filename>d:\test.fdb</filename>, всех её индексах и средней длине
+                    записей и версий.</para>
+
+                <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_db_stats -dbname d:\test.fdb -sts_table COLOR -sts_record_versions 
+                    </synopsis>
+            </example>
+
+            <example>
+                <title>Получение статистики о страницах всех таблиц и их индексов</title>
+
+                <para>В данном примере осуществляется статистики о страницах всех таблиц и их
+                    индексов базы данных <filename>d:\test.fdb</filename>.</para>
+
+                <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_db_stats -dbname d:\test.fdb
+                    </synopsis>
+            </example>
+
+            <example>
+                <title>Получение статистики о шифровании страниц</title>
+
+                <para>В данном примере осуществляется статистики о шифровании страниц базы данных
+                        <filename>d:\test.fdb</filename>.</para>
+
+                <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_db_stats -dbname d:\test.fdb -sts_encryption
+                    </synopsis>
+            </example>
+        </simplesect>
+    </section>
+    <section>
+        <title>Получение содержимого лог файла</title>
+
+        <para>Действие <code>action_get_fb_log</code> используется для получения содержимого файла
+            журнала <filename>firebird.log</filename>. Действие <code>action_get_ib_log</code>
+            является псевдонимом для <code>action_get_fb_log</code>, является устаревшим.</para>
+
+        <simplesect>
+            <title>Примеры</title>
+
+            <example>
+                <title>Получение содержимого лог файла</title>
+
+                <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_get_fb_log
+                    </synopsis>
+            </example>
+        </simplesect>
+    </section>
+    <section>
+        <title>Управление пользователями (gsec)</title>
+
+        <warning>
+            <para>Начиная с Firebird 3.0 управление пользователями через менеджер сервисов объявлено
+                устаревшей возможностью. Язык SQL предоставляет более широкие возможности по
+                манипулированию учётными записями пользователей.</para>
+        </warning>
+
         <section>
-            <title>Валидация, ремонт базы данных, sweep (gfix)</title>
-            <para>Действие <code>action_repair</code> используется для валидации и ремонта базы
-                данных, а также её чистке (sweep). </para>
+            <title>Отображение информации о пользователе или пользователях</title>
+
+            <para>Действие <code>action_display_user</code> используется для получения списка
+                пользователей или информации о конкретном пользователе. Если необходимо получать
+                также сведения о том является ли пользователь администратором в базе данных
+                безопасности необходимо использовать действие
+                <code>action_display_user_adm</code>.</para>
 
             <table frame="topbot">
-                <title>Параметры для действия <code>action_repair</code></title>
+                <title>Параметры для действий <code>action_display_user</code> и
+                        <code>action_display_user_adm</code></title>
                 <tgroup cols="2">
                     <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
                     <colspec colname="c2" colnum="2" colwidth="1.2*"/>
@@ -1242,114 +1571,684 @@ fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey
                             <entry>
                                 <para><code>dbname [string value]</code></para>
                             </entry>
-                            <entry><para>Имя файла базы данных или алиас.</para></entry>
+                            <entry><para>Имя файла базы данных безопасности. Требуется в том случае,
+                                    когда используется нестандартная база данных
+                                    безопасности.</para></entry>
                         </row>
                         <row>
-                            <entry><para><code>rpr_commit_trans [int32 value]</code></para></entry>
-                            <entry><para>Подтверждение транзакции в состоянии in-limbo (32 битный номер транзакции).</para></entry>
-                        </row>
-                        <row>
-                            <entry><para><code>rpr_rollback_trans [int32
-                                value]</code></para></entry>
-                            <entry><para>Откат транзакции в состоянии in-limbo (32 битный номер транзакции).</para></entry>
-                        </row>
-                        <row>
-                            <entry><para><code>rpr_recover_two_phase [int32
-                                value]</code></para></entry>
-                            <entry><para>Автоматическое двухфазное восстановление limbo транзакции с указанным идентификатором (32
-                                    битный номер транзакции).</para></entry>
-                        </row>
-                        <row>
-                            <entry><para><code>rpr_commit_trans_64 [int64
-                                value]</code></para></entry>
-                            <entry><para>Подтверждение транзакции в состоянии in-limbo (64 битный номер транзакции).</para></entry>
-                        </row>
-                        <row>
-                            <entry><para><code>rpr_rollback_trans_64 [int64
-                                value]</code></para></entry>
-                            <entry><para>Откат транзакции в состоянии in-limbo (64 битный номер транзакции).</para></entry>
-                        </row>
-                        <row>
-                            <entry><para><code>rpr_recover_two_phase_64 [int64
-                                value]</code></para></entry>
                             <entry>
-                                <para>Автоматическое двухфазное восстановление limbo транзакции с
-                                    указанным идентификатором (64 битный номер транзакции).</para></entry>
+                                <para><code>sec_username [string value]</code></para>
+                            </entry>
+                            <entry><para>Указывает пользователя по которому необходимо получить
+                                    информацию.</para></entry>
                         </row>
                         <row>
-                            <entry><para><code>rpr_check_db</code></para></entry>
-                            <entry><para/></entry>
-                        </row>
-                        <row>
-                            <entry><para><code>rpr_ignore_checksum</code></para></entry>
-                            <entry><para/></entry>
-                        </row>
-                        <row>
-                            <entry><para><code>rpr_kill_shadows</code></para></entry>
-                            <entry><para/></entry>
-                        </row>
-                        <row>
-                            <entry><para><code>rpr_mend_db</code></para></entry>
-                            <entry><para/></entry>
-                        </row>
-                        <row>
-                            <entry><para><code>rpr_validate_db</code></para></entry>
-                            <entry><para/></entry>
-                        </row>
-                        <row>
-                            <entry><para><code>rpr_full</code></para></entry>
-                            <entry><para/></entry>
-                        </row>
-                        <row>
-                            <entry><para><code>rpr_sweep_db</code></para></entry>
-                            <entry><para/></entry>
-                        </row>
-                        <row>
-                            <entry><para><code>rpr_list_limbo_trans</code></para></entry>
-                            <entry><para/></entry>
-                        </row>
-                        <row>
-                            <entry><para><code>rpr_icu</code></para></entry>
-                            <entry><para/></entry>
+                            <entry>
+                                <para><code>sql_role_name [string value]</code></para>
+                            </entry>
+                            <entry><para>Позволяет указать роль, чьи права будет использовать
+                                    указанный пользователь. Роль должна быть выдана пользователю в
+                                    текущей базе данных безопасности.</para></entry>
                         </row>
                     </tbody>
                 </tgroup>
             </table>
-        </section>
-        <section>
-            <title>Статистика базы данных (gstat)</title>
 
-            <para/>
-        </section>
-        <section>
-            <title>Управление пользователями (gsec)</title>
+            <simplesect>
+                <title>Примеры</title>
 
-            <para/>
-        </section>
-        <section>
-            <title>Резервная копия (nbackup)</title>
+                <example>
+                    <title>Получение списка пользователей</title>
 
-            <para/>
-        </section>
-        <section>
-            <title>Восстановление (nbackup)</title>
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_display_user
+                    </synopsis>
+                </example>
 
-            <para/>
-        </section>
-        <section>
-            <title>Управление трассировкой</title>
+                <example>
+                    <title>Получение списка пользователей из базы данных безопасности test</title>
 
-            <para/>
-        </section>
-        <section>
-            <title>Настройка отображения администраторов на RDB$ADMIN</title>
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_display_user -dbname test
+                    </synopsis>
+                </example>
 
-            <para/>
-        </section>
-        <section>
-            <title>Онлайн валидация базы данных</title>
+                <example>
+                    <title>Получение информации о пользователе BOB</title>
 
-            <para/>
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_display_user -sec_username BOB
+                    </synopsis>
+                </example>
+            </simplesect>
+        </section>
+
+        <section>
+            <title>Добавление пользователя</title>
+
+            <para>Действие <code>action_add_user</code> используется для добавления нового
+                пользователя.</para>
+
+            <table frame="topbot">
+                <title>Параметры для действий <code>action_add_user</code></title>
+                <tgroup cols="2">
+                    <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
+                    <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                    <thead>
+                        <row>
+                            <entry>Опция</entry>
+                            <entry>Описание</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                <para><code>dbname [string value]</code></para>
+                            </entry>
+                            <entry><para>Имя файла базы данных безопасности. Требуется в том случае,
+                                    когда используется нестандартная база данных
+                                    безопасности.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_username [string value]</code></para>
+                            </entry>
+                            <entry><para>Указывает пользователя для добавление.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sql_role_name [string value]</code></para>
+                            </entry>
+                            <entry><para>Позволяет указать роль, чьи права будет использовать
+                                    указанный пользователь. Роль должна быть выдана пользователю в
+                                    текущей базе данных безопасности.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_password [string value]</code></para>
+                            </entry>
+                            <entry><para>Пароль пользователя.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_groupname [string value]</code></para>
+                            </entry>
+                            <entry><para>Группа пользователя в системах семейства
+                                POSIX.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_firstname [string value]</code></para>
+                            </entry>
+                            <entry><para>Первое имя (имя) пользователя.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_middlename [string value]</code></para>
+                            </entry>
+                            <entry><para>Второе имя (отчество) пользователя.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_lastname [string value]</code></para>
+                            </entry>
+                            <entry><para>Последнее имя (фамилия) пользователя.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_userid [int32 value]</code></para>
+                            </entry>
+                            <entry><para>Идентификатор пользователя в POSIX.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_groupid [int32 value]</code></para>
+                            </entry>
+                            <entry><para>Идентификатор группы пользователя в POSIX.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_admin [int32 value]</code></para>
+                            </entry>
+                            <entry><para>Является ли пользователь администратором в базе данных
+                                    безопасности.</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <simplesect>
+                <title>Примеры</title>
+
+                <example>
+                    <title>Добавление пользователя BOB</title>
+
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_add_user -sec_username BOB -sec_password sd232f
+                    </synopsis>
+                </example>
+
+                <example>
+                    <title>Добавление пользователя BOBADMIN с правами администратора в БД
+                        безопасности</title>
+
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_add_user -sec_username BOBADMIN -sec_password sd232f -sec_admin 1
+                    </synopsis>
+                </example>
+
+            </simplesect>
+        </section>
+
+        <section>
+            <title>Изменение пользователя</title>
+
+            <para>Действие <code>action_modify_user</code> используется для модификации
+                существующего пользователя.</para>
+
+            <table frame="topbot">
+                <title>Параметры для действий <code>action_modify_user</code></title>
+                <tgroup cols="2">
+                    <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
+                    <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                    <thead>
+                        <row>
+                            <entry>Опция</entry>
+                            <entry>Описание</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                <para><code>dbname [string value]</code></para>
+                            </entry>
+                            <entry><para>Имя файла базы данных безопасности. Требуется в том случае,
+                                    когда используется нестандартная база данных
+                                    безопасности.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_username [string value]</code></para>
+                            </entry>
+                            <entry><para>Указывает пользователя для модификации.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sql_role_name [string value]</code></para>
+                            </entry>
+                            <entry><para>Позволяет указать роль, чьи права будет использовать
+                                    указанный пользователь. Роль должна быть выдана пользователю в
+                                    текущей базе данных безопасности.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_password [string value]</code></para>
+                            </entry>
+                            <entry><para>Пароль пользователя.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_groupname [string value]</code></para>
+                            </entry>
+                            <entry><para>Группа пользователя в системах семейства
+                                POSIX.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_firstname [string value]</code></para>
+                            </entry>
+                            <entry><para>Первое имя (имя) пользователя.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_middlename [string value]</code></para>
+                            </entry>
+                            <entry><para>Второе имя (отчество) пользователя.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_lastname [string value]</code></para>
+                            </entry>
+                            <entry><para>Последнее имя (фамилия) пользователя.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_userid [int32 value]</code></para>
+                            </entry>
+                            <entry><para>Идентификатор пользователя в POSIX.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_groupid [int32 value]</code></para>
+                            </entry>
+                            <entry><para>Идентификатор группы пользователя в POSIX.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_admin [int32 value]</code></para>
+                            </entry>
+                            <entry><para>Является ли пользователь администратором в базе данных
+                                    безопасности.</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <simplesect>
+                <title>Примеры</title>
+
+                <example>
+                    <title>Изменение пароля пользователя BOB</title>
+
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_modify_user -sec_username BOB -sec_password sd232f
+                    </synopsis>
+                </example>
+            </simplesect>
+        </section>
+
+        <section>
+            <title>Удаление пользователя</title>
+
+            <para>Действие <code>action_delete_user</code> используется для удаления
+                пользователя.</para>
+
+            <table frame="topbot">
+                <title>Параметры для действий <code>action_delete_user</code></title>
+                <tgroup cols="2">
+                    <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
+                    <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                    <thead>
+                        <row>
+                            <entry>Опция</entry>
+                            <entry>Описание</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                <para><code>dbname [string value]</code></para>
+                            </entry>
+                            <entry><para>Имя файла базы данных безопасности. Требуется в том случае,
+                                    когда используется нестандартная база данных
+                                    безопасности.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sec_username [string value]</code></para>
+                            </entry>
+                            <entry><para>Указывает пользователя для удаления.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sql_role_name [string value]</code></para>
+                            </entry>
+                            <entry><para>Позволяет указать роль, чьи права будет использовать
+                                    указанный пользователь. Роль должна быть выдана пользователю в
+                                    текущей базе данных безопасности.</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <simplesect>
+                <title>Примеры</title>
+
+                <example>
+                    <title>Удаление пользователя BOB</title>
+
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_delete_user -sec_username BOB
+                    </synopsis>
+                </example>
+            </simplesect>
         </section>
     </section>
+    <section>
+        <title>Резервная копия (nbackup)</title>
+
+        <para>Действие <code>action_nbak</code> используется для создания физической резервной
+            копии.</para>
+
+        <table frame="topbot">
+            <title>Параметры для действия <code>action_nbak</code></title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
+                <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                <thead>
+                    <row>
+                        <entry>Опция</entry>
+                        <entry>Описание</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry>
+                            <para><code>dbname [string value]</code></para>
+                        </entry>
+                        <entry><para>Имя файла базы данных или алиас.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>nbk_file [string value]</code></para>
+                        </entry>
+                        <entry><para>Имя файла резервной копии.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>nbk_level [int32 value]</code></para>
+                        </entry>
+                        <entry><para>Уровень резервной копии.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>nbk_no_triggers</code></para>
+                        </entry>
+                        <entry><para>Отключение триггеров уровня базы данных.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>nbk_direct [string value]</code></para>
+                        </entry>
+                        <entry><para>Прямой ввод-вывод включить (on) или выключить
+                            (off).</para></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+
+        <simplesect>
+            <title>Примеры</title>
+
+            <example>
+                <title>Создание резервной копи базы данных test уровня 0</title>
+
+                <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_nbak -dbname d:\test.fdb -nbk_file e:\test.nbk -nbk_level 0
+                    </synopsis>
+            </example>
+
+            <example>
+                <title>Создание резервной копи базы данных test уровня 1</title>
+
+                <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_nbak -dbname d:\test.fdb -nbk_file e:\test_1.nbk -nbk_level 1
+                    </synopsis>
+            </example>
+        </simplesect>
+    </section>
+    <section>
+        <title>Восстановление (nbackup)</title>
+
+        <para>Действие <code>action_nrest</code> используется для восстановления из физической
+            резервной копии.</para>
+
+        <table frame="topbot">
+            <title>Параметры для действия <code>action_nrest</code></title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
+                <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                <thead>
+                    <row>
+                        <entry>Опция</entry>
+                        <entry>Описание</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry>
+                            <para><code>dbname [string value]</code></para>
+                        </entry>
+                        <entry><para>Имя файла базы данных или алиас для
+                            восстановления.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>nbk_file [string value]</code></para>
+                        </entry>
+                        <entry><para>Имя файла или файлов резервных копии. Каждый файл резервной
+                                копии указывается в отдельном переключателе.</para></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+
+        <simplesect>
+            <title>Примеры</title>
+
+            <example>
+                <title>Восстановление из резервной копии</title>
+
+                <para>В данном примере происходит восстановление из файлов резервных копий уровня 1
+                    и уровня 0.</para>
+
+                <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_nrest -dbname d:\test.fdb -nbk_file e:\test.nbk -nbk_file e:\test_1.nbk
+                    </synopsis>
+            </example>
+        </simplesect>
+    </section>
+    <section>
+        <title>Управление трассировкой</title>
+
+        <section>
+            <title>Старт сеанса пользовательской трассировки</title>
+
+            <para>Действие <code>action_trace_start</code> используется для старта сеанса
+                пользовательской трассировки.</para>
+
+            <table frame="topbot">
+                <title>Параметры для действия <code>action_trace_start</code></title>
+                <tgroup cols="2">
+                    <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
+                    <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                    <thead>
+                        <row>
+                            <entry>Опция</entry>
+                            <entry>Описание</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                <para><code>trc_cfg [file name]</code></para>
+                            </entry>
+                            <entry><para>Задаёт имя файла с конфигурацией пользовательской
+                                    трассировки.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>trc_name [string value]</code></para>
+                            </entry>
+                            <entry><para>Задаёт имя сеансу пользовательской
+                                трассировки.</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            
+            <simplesect>
+                <title>Примеры</title>
+                
+                <example>
+                    <title>Старт сеанса трассировки</title>
+                    
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_trace_start -trc_cfg d:\trace.conf  
+                    </synopsis>
+                </example>
+            </simplesect>
+        </section>
+
+        <section>
+            <title>Приостановка сеанса пользовательской трассировки</title>
+
+            <para>Действие <code>action_trace_suspend</code> используется для приостановки сеанса
+                пользовательской трассировки.</para>
+
+            <table frame="topbot">
+                <title>Параметры для действия <code>action_trace_suspend</code></title>
+                <tgroup cols="2">
+                    <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
+                    <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                    <thead>
+                        <row>
+                            <entry>Опция</entry>
+                            <entry>Описание</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                <para><code>trc_id [int32 value]</code></para>
+                            </entry>
+                            <entry><para>Задаёт идентификатор сеанса трассировки, который необходимо
+                                    приостановить.</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            
+            <simplesect>
+                <title>Примеры</title>
+                
+                <example>
+                    <title>Приостановка заданного сеанса трассировки</title>
+                    
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_trace_suspend -trc_id 51  
+                    </synopsis>
+                </example>
+            </simplesect>
+        </section>
+
+        <section>
+            <title>Возобновление сеанса пользовательской трассировки</title>
+
+            <para>Действие <code>action_trace_resume</code> используется для возобновления сеанса
+                пользовательской трассировки.</para>
+            
+            <table frame="topbot">
+                <title>Параметры для действия <code>action_trace_resume</code></title>
+                <tgroup cols="2">
+                    <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
+                    <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                    <thead>
+                        <row>
+                            <entry>Опция</entry>
+                            <entry>Описание</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                <para><code>trc_id [int32 value]</code></para>
+                            </entry>
+                            <entry><para>Задаёт идентификатор сеанса трассировки, который необходимо
+                                возобновить.</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            
+            <simplesect>
+                <title>Примеры</title>
+                
+                <example>
+                    <title>Возобновление заданного сеанса трассировки</title>
+                    
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_trace_resume -trc_id 51  
+                    </synopsis>
+                </example>
+            </simplesect>
+        </section>
+
+        <section>
+            <title>Завершение сеанса пользовательской трассировки</title>
+
+            <para>Действие <code>action_trace_stop</code> используется для завершения сеанса
+                пользовательской трассировки.</para>
+            
+            <table frame="topbot">
+                <title>Параметры для действия <code>action_trace_stop</code></title>
+                <tgroup cols="2">
+                    <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
+                    <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                    <thead>
+                        <row>
+                            <entry>Опция</entry>
+                            <entry>Описание</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                <para><code>trc_id [int32 value]</code></para>
+                            </entry>
+                            <entry><para>Задаёт идентификатор сеанса трассировки, который необходимо
+                                завершить.</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            
+            <simplesect>
+                <title>Примеры</title>
+                
+                <example>
+                    <title>Завершение заданного сеанса трассировки</title>
+                    
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_trace_stop -trc_id 51  
+                    </synopsis>
+                </example>
+            </simplesect>
+        </section>
+
+        <section>
+            <title>Получение списка сеансов пользовательской трассировки</title>
+
+            <para>Действие <code>action_trace_list</code> используется для получения списка сеансов
+                пользовательской трассировки.</para>
+            
+            <simplesect>
+                <title>Примеры</title>
+                
+                <example>
+                    <title>Получение списка запущенных сеансов трассировки</title>
+                                        
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_trace_list  
+                    </synopsis>
+                </example>
+            </simplesect>
+        </section>
+    </section>
+    <section>
+        <title>Настройка отображения администраторов на RDB$ADMIN</title>
+
+        <para/>
+    </section>
+    <section>
+        <title>Онлайн валидация базы данных</title>
+
+        <para/>
+    </section>
+
 </chapter>

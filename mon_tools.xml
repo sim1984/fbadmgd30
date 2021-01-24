@@ -421,8 +421,8 @@ min >= 5, avg >= 8...10, max >= 13...15
                     <listitem>
                         <para><code>LCK_prc_exist</code> — Procedure existence lock</para>
                         <para>Блокировка-защита существования хранимой процедуры. Применяется только
-                            процедур. Для функций <code>LCK_fun_exist</code>. Для триггеров такой
-                            защиты нет.</para>
+                            процедур. Для функций используется <code>LCK_fun_exist</code>. Для
+                            триггеров такой защиты нет.</para>
                     </listitem>
                     <listitem>
                         <para><code>LCK_update_shadow</code> — shadow update sync lock</para>

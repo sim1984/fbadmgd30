@@ -1179,7 +1179,5 @@ task before</String>
     </meta>
     <projectTree name="fbadmgd30.xpr">
         <folder path="."/>
-        <file name="fblockprint.xml"/>
-        <file name="nbackup.xml"/>
     </projectTree>
 </project>

@@ -4,7 +4,7 @@
         <title>Состав файлов сервера</title>
     </info>
 
-    <section>
+    <section xml:id="files-conf">
         <title>Файлы конфигурации</title>
 
         <simplesect>

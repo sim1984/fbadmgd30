@@ -364,7 +364,7 @@ sudo dnf install libfbclient2
                 <para>При установке из tar-архива сервер будет установлен в директорию
                         <filename>/opt/firebird</filename></para>
 
-                <para>В отличие от установке из репозиториев утилита <application>isql</application>
+                <para>В отличие от установки из репозиториев утилита <application>isql</application>
                     не переименована и расположена в <filename>/opt/firebird/bin</filename>.</para>
             </note>
 
@@ -501,12 +501,12 @@ sudo systemctl start firebird-superserver
                 </para>
             </section>
 
-            <section>
+            <section xml:id="install-linux-tar-change-mode">
                 <title>Изменение режима работы Firebird</title>
 
-                <para>При установки сервера из tar-архива Firebird по умолчанию устанавливается в
+                <para>При установке сервера из tar-архива Firebird по умолчанию устанавливается в
                     архитектуре SuperServer. Если вам необходимо изменить режим работы сервера, то
-                    сделать это можно при помощи скрита
+                    сделать это можно при помощи скрипта
                         <filename>/opt/firebird/bin/changeServerMode.sh</filename>
                     <synopsis>
 sudo /opt/firebird/bin/changeServerMode.sh                        
@@ -537,7 +537,7 @@ Done.
         <title>Установка на ОС Windows</title>
 
         <para>Firebird под Windows распространяется в двух вариантах: в виде выполняемого файла
-            установщика с расширением exe и в виде zip архивов. Для 32-разрядного варианта в имени
+            установщика с расширением exe и в виде zip или 7z архивов. Для 32-разрядного варианта в имени
             файла содержится суффикс Win32, для 64-разрядного — x64. Отладочный вариант имеет
             дополнительный суффикс pdb.</para>
 
@@ -545,7 +545,7 @@ Done.
             <title>Установка из исполняемого пакета</title>
 
             <para>Скачайте и запустите инсталяционный пакет разрядности, соответствующей разрядности
-                операционной системы (Win32 может работать на 64-разярдной Windows, но это не имеет
+                операционной системы (Win32 может работать на 64-разрядной Windows, но это не имеет
                 смысла). Инсталляция СУБД Firebird осуществляется с помощью стандартного мастера
                 установки программ. В ходе установки мастер собирает всю необходимую для установки
                 сервера информацию, производит копирование файлов и регистрацию программных модулей
@@ -648,7 +648,7 @@ Done.
                                     spacing="compact">
                                     <listitem>
                                         <para> один процесс с общей областью памяти для всех
-                                            пользовательских соединений (общий странчный кеш и
+                                            пользовательских соединений (общий страничный кеш и
                                             память под сортировки); </para>
                                     </listitem>
                                     <listitem>
@@ -996,7 +996,7 @@ RemoteServicePort = 3051
             <section xml:id="install-windows-instreg">
                 <title>Запись в реестре</title>
 
-                <para>Утилита утилита <application>instreg.exe</application> позволяет прописывать в
+                <para>Утилита <application>instreg.exe</application> позволяет прописывать в
                     реестр Windows путь к корневому каталогу сервера. Для этого необходимо запустить
                     команду
                     <programlisting>
@@ -1074,7 +1074,7 @@ instsvc install -n fb30
 instsvc start                    
                 </programlisting>
                 </para>
-                <para>Если службы была установлена с именем отличным от умолчательного, то
+                <para>Если служба была установлена с именем отличным от умолчательного, то
                     необходимо воспользоваться переключателем <code>-n</code>
                     <programlisting>
 instsvc start -n fb30                    
@@ -1085,7 +1085,7 @@ instsvc start -n fb30
 instsvc stop                    
                 </programlisting>
                 </para>
-                <para>Если службы была установлена с именем отличным от умолчательного, то
+                <para>Если служба была установлена с именем отличным от умолчательного, то
                     необходимо воспользоваться переключателем <code>-n</code>
                     <programlisting>
 instsvc stop -n fb30                    
@@ -1096,7 +1096,7 @@ instsvc stop -n fb30
 instsvc remove    
 </programlisting>
                 </para>
-                <para>Если службы была установлена с именем отличным от умолчательного, то
+                <para>Если служба была установлена с именем отличным от умолчательного, то
                     необходимо воспользоваться переключателем <code>-n</code>
                     <programlisting>
 instsvc remove -n fb30                    
@@ -1147,7 +1147,7 @@ install_service.bat fb30
 uninstall_service.bat                        
                     </programlisting>
                 </para>
-                <para>Если службы была установлена с именем отличным от умолчательного, то указываем
+                <para>Если служба была установлена с именем отличным от умолчательного, то указываем
                     это имя в качестве аргумента
                     <programlisting>
 uninstall_service.bat fb30                       
@@ -1363,7 +1363,7 @@ gfix -shut -force <replaceable>n</replaceable> <replaceable>databasename</replac
                             <para>Запустить обновленный сервер</para>
                         </listitem>
                         <listitem>
-                            <para>Перевести базы данных в онлайн режим
+                            <para>Перевести базы данных в онлайн-режим
                                 <programlisting>
 gfix -online <replaceable>databasename</replaceable>                      
 </programlisting>
@@ -1375,7 +1375,7 @@ gfix -online <replaceable>databasename</replaceable>
                 <title>Встроенный сервер</title>
 
                 <para>Начиная с Firebird 3.0 встроенная (embedded) версия не распространяется
-                    отдельно. Всё что необходимо для развертывания Firebird Embedded находится в том
+                    отдельно. Всё, что необходимо для развертывания Firebird Embedded, находится в том
                     же самом ZIP архиве, что и обычная версия.</para>
 
                 <para>Для функционирования Firebird Embedded необходимы следующие файлы: <itemizedlist>
@@ -1419,7 +1419,7 @@ gfix -online <replaceable>databasename</replaceable>
                 <section xml:id="install-windows-embedded-config">
                     <title>Конфигурация</title>
 
-                    <para>По умолчанию Firebird работает в режиме Super сервера в том числе и в
+                    <para>По умолчанию Firebird работает в режиме Super сервера, в том числе и в
                         embedded варианте. Это не очень удобно, поскольку Super открывает файл базы
                         данных в монопольном режиме, что обозначает что только один процесс может
                         работать с базой данных. Для изменения режима запуска необходимо

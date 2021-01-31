@@ -2076,13 +2076,13 @@ fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey
                     </tbody>
                 </tgroup>
             </table>
-            
+
             <simplesect>
                 <title>Примеры</title>
-                
+
                 <example>
                     <title>Старт сеанса трассировки</title>
-                    
+
                     <synopsis>
 fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
   action_trace_start -trc_cfg d:\trace.conf  
@@ -2119,13 +2119,13 @@ fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey
                     </tbody>
                 </tgroup>
             </table>
-            
+
             <simplesect>
                 <title>Примеры</title>
-                
+
                 <example>
                     <title>Приостановка заданного сеанса трассировки</title>
-                    
+
                     <synopsis>
 fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
   action_trace_suspend -trc_id 51  
@@ -2139,7 +2139,7 @@ fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey
 
             <para>Действие <code>action_trace_resume</code> используется для возобновления сеанса
                 пользовательской трассировки.</para>
-            
+
             <table frame="topbot">
                 <title>Параметры для действия <code>action_trace_resume</code></title>
                 <tgroup cols="2">
@@ -2157,18 +2157,18 @@ fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey
                                 <para><code>trc_id [int32 value]</code></para>
                             </entry>
                             <entry><para>Задаёт идентификатор сеанса трассировки, который необходимо
-                                возобновить.</para></entry>
+                                    возобновить.</para></entry>
                         </row>
                     </tbody>
                 </tgroup>
             </table>
-            
+
             <simplesect>
                 <title>Примеры</title>
-                
+
                 <example>
                     <title>Возобновление заданного сеанса трассировки</title>
-                    
+
                     <synopsis>
 fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
   action_trace_resume -trc_id 51  
@@ -2182,7 +2182,7 @@ fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey
 
             <para>Действие <code>action_trace_stop</code> используется для завершения сеанса
                 пользовательской трассировки.</para>
-            
+
             <table frame="topbot">
                 <title>Параметры для действия <code>action_trace_stop</code></title>
                 <tgroup cols="2">
@@ -2200,18 +2200,18 @@ fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey
                                 <para><code>trc_id [int32 value]</code></para>
                             </entry>
                             <entry><para>Задаёт идентификатор сеанса трассировки, который необходимо
-                                завершить.</para></entry>
+                                    завершить.</para></entry>
                         </row>
                     </tbody>
                 </tgroup>
             </table>
-            
+
             <simplesect>
                 <title>Примеры</title>
-                
+
                 <example>
                     <title>Завершение заданного сеанса трассировки</title>
-                    
+
                     <synopsis>
 fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
   action_trace_stop -trc_id 51  
@@ -2225,13 +2225,13 @@ fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey
 
             <para>Действие <code>action_trace_list</code> используется для получения списка сеансов
                 пользовательской трассировки.</para>
-            
+
             <simplesect>
                 <title>Примеры</title>
-                
+
                 <example>
                     <title>Получение списка запущенных сеансов трассировки</title>
-                                        
+
                     <synopsis>
 fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
   action_trace_list  
@@ -2243,12 +2243,230 @@ fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey
     <section>
         <title>Настройка отображения администраторов на RDB$ADMIN</title>
 
-        <para/>
+        <section>
+            <title>Включение отображения администраторов Windows на RDB$ADMIN</title>
+
+            <para>Действие <code>action_set_mapping</code> используется для включения отображения
+                администраторов Windows на роль RDB$ADMIN.</para>
+
+            <table frame="topbot">
+                <title>Параметры для действий <code>action_set_mapping</code></title>
+                <tgroup cols="2">
+                    <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
+                    <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                    <thead>
+                        <row>
+                            <entry>Опция</entry>
+                            <entry>Описание</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                <para><code>dbname [string value]</code></para>
+                            </entry>
+                            <entry><para>Имя файла базы данных или алиас. Задаёт базу данных для
+                                    которой будет включено отображение.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sql_role_name [string value]</code></para>
+                            </entry>
+                            <entry><para>Позволяет указать роль, чьи права будет использовать
+                                    указанный пользователь. Роль должна быть выдана пользователю в
+                                    указанной базе данных.</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <simplesect>
+                <title>Примеры</title>
+
+                <example>
+                    <title>Включение отображения администраторов Windows на роль RDB$ADMIN</title>
+
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_set_mapping -dbname d:\test.fdb
+                    </synopsis>
+                </example>
+            </simplesect>
+        </section>
+
+        <section>
+            <title>Отключение отображения администраторов Windows на RDB$ADMIN</title>
+
+            <para>Действие <code>action_drop_mapping</code> используется для включения отображения
+                администраторов Windows на роль RDB$ADMIN.</para>
+
+            <table frame="topbot">
+                <title>Параметры для действий <code>action_drop_mapping</code></title>
+                <tgroup cols="2">
+                    <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
+                    <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                    <thead>
+                        <row>
+                            <entry>Опция</entry>
+                            <entry>Описание</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>
+                                <para><code>dbname [string value]</code></para>
+                            </entry>
+                            <entry><para>Имя файла базы данных или алиас. Задаёт базу данных для
+                                    которой будет отключено отображение.</para></entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <para><code>sql_role_name [string value]</code></para>
+                            </entry>
+                            <entry><para>Позволяет указать роль, чьи права будет использовать
+                                    указанный пользователь. Роль должна быть выдана пользователю в
+                                    указанной базе данных.</para></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+
+            <simplesect>
+                <title>Примеры</title>
+
+                <example>
+                    <title>Отключение отображения администраторов Windows на роль RDB$ADMIN</title>
+
+                    <synopsis>
+fbsvcmgr inet://remotehost/service_mgr -user sysdba -password masterkey 
+  action_drop_mapping -dbname d:\test.fdb
+                    </synopsis>
+                </example>
+            </simplesect>
+        </section>
     </section>
     <section>
         <title>Онлайн валидация базы данных</title>
 
-        <para/>
+        <para>Действие <code>action_validate</code> используется для проверки базы данных в
+            онлайн-режиме.</para>
+
+        <table frame="topbot">
+            <title>Параметры для действий <code>action_validate</code></title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="0.8*" align="left"/>
+                <colspec colname="c2" colnum="2" colwidth="1.2*"/>
+                <thead>
+                    <row>
+                        <entry>Опция</entry>
+                        <entry>Описание</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry>
+                            <para><code>dbname [string value]</code></para>
+                        </entry>
+                        <entry><para>Имя файла базы данных или алиас. Задаёт базу данных для
+                                проверки.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>val_tab_incl [string value]</code></para>
+                        </entry>
+                        <entry><para>Шаблон для имен таблиц для включения в проверку.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>val_tab_excl [string value]</code></para>
+                        </entry>
+                        <entry><para>Шаблон для имен таблиц, которые нужно исключить из
+                                проверки.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>val_idx_incl [string value]</code></para>
+                        </entry>
+                        <entry><para>Шаблон для имен индексов для включения в валидацию, по
+                                умолчанию %, т.е. все индексы.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>val_idx_excl [string value]</code></para>
+                        </entry>
+                        <entry><para>Шаблон для имен индексов, исключаемых из
+                            проверки.</para></entry>
+                    </row>
+                    <row>
+                        <entry>
+                            <para><code>val_lock_timeout [int32 value]</code></para>
+                        </entry>
+                        <entry><para>Время ожидания блокировки, используемое для получения
+                                блокировок таблицы для проверки, в секундах, по умолчанию — 10
+                                секунд.</para>
+                            <para>0 — нет ожидания.</para>
+                            <para>-1 — бесконечное ожидание.</para>
+                        </entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+
+        <para>Шаблоны — это регулярные выражения, они обрабатываются по тем же правилам, что и
+            выражения <quote>SIMILAR TO</quote>. Все шаблоны чувствительны к регистру (несмотря на
+            диалект базы данных!).</para>
+        <para>Если шаблон для таблиц опущен, будут проверены все пользовательские таблицы.</para>
+        <para>Если шаблон для индексов опущен, то будут проверены все индексы таблиц для
+            проверки.</para>
+        <para>Системные таблицы не проверены. </para>
+
+        <simplesect>
+            <title>Примеры</title>
+
+            <example>
+                <title>Проверка всех пользовательских таблиц начинающихся с буквы A</title>
+
+                <para>Проверка индексов не осуществляется. Ожидание блокировки не
+                    выполняется.</para>
+
+                <synopsis>
+fbsvcmgr inet://remotehost/service_mgr user SYSDBA password masterkey 
+		action_validate dbname c:\db.fdb
+		val_tab_incl A% 
+		val_idx_excl % 
+		val_lock_timeout 0
+                    </synopsis>
+            </example>
+
+            <example>
+                <title>Проверка таблиц TAB1 и TAB2</title>
+
+                <para>Проверка таблиц TAB1 и TAB2 и всех их индексов. Таймаут ожидания блокировки
+                    составляет 10 секунд. </para>
+
+                <synopsis>
+fbsvcmgr inet://remotehost/service_mgr user SYSDBA password masterkey 
+		action_validate dbname c:\db.fdb
+		val_tab_incl "TAB1|TAB2"
+                    </synopsis>
+
+                <note>
+                    <para>Обратите внимание: чтобы указать список таблиц/индексов, необходимо: <itemizedlist>
+                            <listitem>
+                                <para>разделять имена знаком "|"</para>
+                            </listitem>
+                            <listitem>
+                                <para>не используйте пробелы: TAB1 | TAB2 неверен</para>
+                            </listitem>
+                            <listitem>
+                                <para>весь список должен быть заключен в двойные кавычки, чтобы не
+                                    запутать интерпретатор команд</para>
+                            </listitem>
+                        </itemizedlist>
+                    </para>
+                </note>
+            </example>
+        </simplesect>
     </section>
 
 </chapter>

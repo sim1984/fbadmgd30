@@ -52,7 +52,7 @@
         </simplesect>
     </section>
 
-    <section>
+    <section xml:id="files-exe">
         <title>Инструменты администрирования и сервисы</title>
 
         <para>В Windows исполняемые файлы имеют расширение <filename>.exe</filename>, в других
@@ -204,7 +204,7 @@
         </simplesect>
     </section>
 
-    <section>
+    <section xml:id="files-lib">
         <title>Динамические библиотеки</title>
 
         <para>В Windows динамические библиотеки имеют расширение <filename>.dll</filename>, в Linux
@@ -273,7 +273,7 @@
         </simplesect>
     </section>
 
-    <section>
+    <section xml:id="files-plugins">
         <title>Плагины</title>
 
         <para>Модули плагинов размещаются в динамических библиотеках. В Firebird для модулей
@@ -343,27 +343,27 @@
         </simplesect>
     </section>
 
-    <section>
+    <section xml:id="files-include">
         <title>Включаемые файлы</title>
 
         <para>В директории <filename>include</filename> расположены заголовочные C файлы с
             функциями, константами, структурами и интерфейсами API Firebird.</para>
     </section>
 
-    <section>
+    <section xml:id="files-examples">
         <title>Примеры</title>
 
         <para>В директории <filename>examples</filename> расположены примеры работы с Firebird API,
             написания плагинов, UDF и UDR.</para>
     </section>
 
-    <section>
-        <title>Документации</title>
+    <section xml:id="files-doc">
+        <title>Документация</title>
 
         <para>В директории <filename>doc</filename> расположены файлы документации.</para>
     </section>
 
-    <section>
+    <section xml:id="files-other">
         <title>Другие файлы</title>
         <simplesect>
             <title>security3.fdb</title>
@@ -376,7 +376,7 @@
         </simplesect>
         <simplesect>
             <title>firebird.msg</title>
-            <para>Файл с сообщениями сервера (в основном об ошибках)</para>
+            <para>Файл с сообщениями сервера (в основном об ошибках).</para>
         </simplesect>
     </section>
 </chapter>

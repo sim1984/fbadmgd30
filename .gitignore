@@ -1,4 +1,5 @@
-/*.pdf
+/asciidoc/*.pdf
+/asciidoc/*.html
 
 # output documents
 /docbook/out/*

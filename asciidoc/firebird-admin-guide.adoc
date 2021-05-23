@@ -1,1 +1,12 @@
-fgdfg
+[[fbadmgd]]
+= Руководство администратора Firebird 3.0
+
+toc::[]
+
+include::_fbadmgd-intro.adoc[leveloffset=1]
+
+include::_fbadmgd-install.adoc[leveloffset=1]
+
+include::_fbadmgd-server-files.adoc[leveloffset=1]
+
+include::_fbadmgd-config.adoc[leveloffset=1]

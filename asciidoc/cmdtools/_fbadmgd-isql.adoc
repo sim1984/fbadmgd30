@@ -1024,8 +1024,6 @@ INPUT _file_name_
 
 Данный оператор позволяет включить один файл сценария внутрь другого. Операторы сценариев выполняются в том порядке, в котором они появляются в файле сценариев. Настройка по умолчанию в `isql` для `AUTODDL` установлена на `ON`. Вы можете использовать команду `SET AUTODDL`, чтобы контролировать, где или когда будут подтверждены операторы изменения метаданных.
 
-[NOTE]
-====
 Параметр `AUTODDL` влияет только на операторы DDL. Он не фиксирует транзакцию для операторов DML. Если вы смешиваете инструкции DDL и DML в одном и том же интерактивном сеансе, то фиксации транзакций для DDL с помощью `AUTODDL` не фиксируют ваши транзакции для операторов DML. Например:
 
 [source,sql]
@@ -1058,7 +1056,6 @@ A
 ============
 666
 ----
-====
 
 Скрипты могут перенаправить свои выходные данные в файл журнала с помощью команды `OUTPUT _file_name_`. Это можно ввести непосредственно в приглашении `isql` или как часть самого файла скрипта.
 
@@ -1101,9 +1098,9 @@ All commands may be abbreviated to letters in CAPitals
 [[fbadmgd-isql-commands-blobdump]]
 === BLOBDUMP
 
+.Назначение
+Сохранение данных BLOB в указанном файле.
 (((ISQL, BLOBDUMP)))
-
-*Назначение:* Сохранение данных BLOB в указанном файле.
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -1111,7 +1108,7 @@ All commands may be abbreviated to letters in CAPitals
 BLOBDUMP _blob_id_ _filename_
 ----
 
-.Параметры оператора `BLOBDUMP`
+.Параметры команды `BLOBDUMP`
 [cols="<1,<3", options="header",stripes="none"]
 |===
 ^|Параметр
@@ -1149,4 +1146,695 @@ SQL> blobdump 85:10 c:\project.jpg;
 Идентификатор BLOB-объекта, необходимый в приведенном выше примере, равен `85:10`.
 
 // TODO: ссылки
-Смотри также: SET BLOBDISPLAY, BLOBVIEW.
+Смотри также: SET BLOBDISPLAY, <<fbadmgd-isql-commands-blobview>>.
+
+[[fbadmgd-isql-commands-blobview]]
+=== BLOBVIEW
+
+.Назначение
+Отображение данных BLOB в текстовом редакторе по умолчанию.
+(((ISQL, BLOBVIEW)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+BLOBVIEW _blob_id_
+----
+
+.Параметры команды `BLOBVIEW`
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|blob_id
+|Идентификатор BLOB.
+
+|===
+
+Команда `BLOBVIEW` отображает данные BLOB в текстовом редакторе по умолчанию.
+
+.Открытие BLOB во внешнем текстовом редакторе
+[example]
+====
+[source,sql]
+----
+SQL> set blobdisplay off;
+
+SQL> select proj_id, proj_desc
+CON> from project
+CON> where proj_id = 'MKTPR';
+
+PROJ_ID PROJ_DESC
+======= =================
+MKTPR   85:10
+
+SQL> blobview 85:10;
+----
+====
+
+В примере выше содержимое выбранного BLOB будет отображено во внешнем редакторе. Когда редактор закрыт, управление возвращается в `isql`. Вы не можете использовать `isql`, пока редактор открыт.
+
+[NOTE]
+====
+`BLOBVIEW` может вернуть ошибку "`Invalid transaction handle`" после закрытия редактора. Для исправления ситуации запустите транзакцию вручную с помощью команды `SET TRANSACTION`.
+====
+
+Смотри также: <<fbadmgd-isql-commands-blobdump>>
+
+[[fbadmgd-isql-commands-edit]]
+=== EDIT
+
+.Назначение
+Вызов текстового редактора по умолчанию для скрипта.
+(((ISQL, EDIT)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+EDIT [_filename_]
+----
+
+.Параметры команды `EDIT`
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|filename
+|Имя файла для редактирования.
+
+|===
+
+Команда `EDIT` позволяет редактировать существующий файл. Это может быть файл команд SQL, который будет использоваться командой ввода `isql` (см. ниже), или любой другой текстовый файл. Файл должен существовать.
+
+Если имя файла не указано, история всех ваших предыдущих команд будет отображаться для редактирования.
+
+[NOTE]
+====
+Обратите внимание, что при выходе из редактора в этом случае команды, оставленные в буфере в конце редактирования, будут выполняться как файл сценария.
+====
+
+[[fbadmgd-isql-commands-help]]
+=== HELP
+
+.Назначение
+Отображение список команд `isql` с их описанием.
+(((ISQL, HELP)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+HELP [SET]
+----
+
+Команда `HELP` отображает список основных команд `isql` с их описанием.
+
+[listing]
+----
+SQL> HELP;
+Frontend commands:
+BLOBDUMP <blobid> <file>   -- dump BLOB to a file
+BLOBVIEW <blobid>          -- view BLOB in text editor
+EDIT     [<filename>]      -- edit SQL script file and execute
+EDIT                       -- edit current command buffer and execute
+HELP                       -- display this menu
+INput    <filename>        -- take input from the named SQL file
+OUTput   [<filename>]      -- write output to named file
+OUTput                     -- return output to stdout
+SET      <option>          -- (Use HELP SET for complete list)
+SHELL    <command>         -- execute Operating System command in sub-shell
+SHOW     <object> [<name>] -- display system information
+    <object> = CHECK, COLLATION, DATABASE, DOMAIN, EXCEPTION, FILTER, FUNCTION,
+               GENERATOR, GRANT, INDEX, PACKAGE, PROCEDURE, ROLE, SQL DIALECT,
+               SYSTEM, TABLE, TRIGGER, VERSION, USERS, VIEW
+EXIT                       -- exit and commit changes
+QUIT                       -- exit and roll back changes
+
+All commands may be abbreviated to letters in CAPitals
+----
+
+Если после `HELP` присутствует необязательное ключевое слово `SET`, то будет отображена справка по набору команд начинающихся с `SET`.
+
+[listing]
+----
+SQL> help set;
+Set commands:
+    SET                    -- display current SET options
+    SET AUTOddl            -- toggle autocommit of DDL statements
+    SET BAIL               -- toggle bailing out on errors in non-interactive mode
+    SET BLOB [ALL|<n>]     -- display BLOBS of subtype <n> or ALL
+    SET BLOB               -- turn off BLOB display
+    SET COUNT              -- toggle count of selected rows on/off
+    SET MAXROWS [<n>]      -- limit select stmt to <n> rows, zero is no limit
+    SET ECHO               -- toggle command echo on/off
+    SET EXPLAIN            -- toggle display of query access plan in the explained form
+    SET HEADING            -- toggle display of query column titles
+    SET LIST               -- toggle column or table display format
+    SET NAMES <csname>     -- set name of runtime character set
+    SET PLAN               -- toggle display of query access plan
+    SET PLANONLY           -- toggle display of query plan without executing
+    SET SQL DIALECT <n>    -- set sql dialect to <n>
+    SET STATs              -- toggle display of performance statistics
+    SET TIME               -- toggle display of timestamp with DATE values
+    SET TERM <string>      -- change statement terminator string
+    SET WIDTH <col> [<n>]  -- set/unset print width to <n> for column <col>
+
+All commands may be abbreviated to letters in CAPitals
+----
+
+[NOTE]
+====
+Обратите внимание на последнюю строку вывода команды `help`. Это объясняет, что каждая из команд может быть сокращена до букв, отображаемых заглавными буквами. В следующем обсуждении дополнительные символы будут отображаться, как указано выше, строчными буквами. Например, команда ввода будет показана как `INput`, чтобы указать, что символы 'put' являются необязательными.
+====
+
+[[fbadmgd-isql-commands-add]]
+=== ADD
+
+.Назначение
+Добавление записей в таблицу.
+(((ISQL, ADD)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+ADD [_tablename_]
+----
+
+.Параметры команды `ADD`
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|tablename
+|Имя таблицы для добавления данных.
+
+|===
+
+Команда `ADD` запрашивает данные для каждого столбца, указанной таблицы, и добавляет запись в таблицу. Вы можете добавить столько записей, сколько пожелаете, так как команда продолжается до тех пор, пока не произойдет ошибка или не будет нажата клавиша btn:[ENTER] без данных. Если вы хотите установить для столбца значение `NULL`, введите его в точности так, как показано.
+
+.Добавление данных в таблицу с помощью команды ADD
+[example]
+====
+[listing]
+----
+SQL> add country;
+
+Enter data or NULL for each column. RETURN to end.
+Enter COUNTRY>Scotland
+Enter CURRENCY>GBP
+Enter COUNTRY>
+
+SQL> commit;
+----
+====
+
+[[fbadmgd-isql-commands-copy]]
+=== COPY
+
+.Назначение
+Копирование структуры таблицы.
+(((ISQL, COPY)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+COPY _from_tablename_ _to_tablename_ [_other_database_]
+----
+
+.Параметры команды `COPY`
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|from_tablename
+|Имя таблицы из которой делается копия.
+
+|to_tablename
+|Имя таблицы в которую будет сделана копия.
+
+|other_database
+|Спецификация для подключения к другой базе данных, в которую будет производится копирование.
+
+|===
+
+Команда `COPY` позволяет скопировать большую часть структуры таблицы в новую таблицу в текущей базе данных или другой. К сожалению, у неё есть проблемы:
+
+* Она выполняет командную строку для выполнения работы и подключается к принимающей базе данных с помощью приложения с именем `isql`. Если ваша система переименовала `isql` в `isql-fb`, вы на самом деле в конечном итоге запустите неправильное приложение `isql`, и единственным результатом будет запутанная ошибка.
+
+* Предполагается, что `isql` будет находится в `$PATH` или `%PATH%`.
+
+* Вам необходимо определить `ISC_USER` и `ISC_PASSWORD` для дочернего процесса `isql` для входа в получающую базу данных для создания таблицы. Это очень небезопасно.
+
+* Из-за необходимости в `ISC_USER` и `ISC_PASSWORD` принимающая база данных должна работать на том же сервере, что и исходная база данных.
+
+* Данные таблицы не копируются в принимающую базу данных (или таблицу). Копируются только следующие части структур таблицы:
+** Домены, необходимые для воссоздания таблицы. Это применимо, только если копия находится в другой базе данных.
+** Сама таблица будет создана.
+** Ограничение первичного ключа, если оно есть.
+
+* Копируется не вся структура таблицы. Отсутствуют:
+** Ограничения внешнего ключа.
+** Ограничения проверок (CHECK).
+** Индексы, за исключением индекса необходимого для поддержки первичного ключа.
+** Триггеры.
+** Все данные таблицы.
+
+Если вы хотите скопировать в другую базу данных, то другая база данных должна быть на том же сервере, что и текущая. Например, вы не можете подключиться к базе данных на сервере с именем tux и скопировать таблицу в базу данных, работающую на сервере tuxrep. Команда `COPY` не может передать имя пользователя и/или пароль, установка `ISC_USER` и `ISC_PASSWORD` влияет сразу на все подключения, пользователь может отсутствовать на другом сервере или у него может быть другой пароль.
+
+.Копирование структуры таблицы командой COPY
+[example]
+====
+[listing]
+----
+tux>$ export ISC_USER=SYSDBA
+tux>$ export ISC_PASSWORD=secret
+tux>$ isql employee
+
+Database: employee, User: sysdba
+
+SQL> -- MAke a copy of the employee table into this database.
+SQL> copy employee employee_2;
+
+SQL> -- Compare table structures...
+SQL> show table employee;
+
+EMP_NO              (EMPNO) SMALLINT Not Null
+FIRST_NAME          (FIRSTNAME) VARCHAR(15) Not Null
+LAST_NAME           (LASTNAME) VARCHAR(20) Not Null
+PHONE_EXT           VARCHAR(4) Nullable
+HIRE_DATE           TIMESTAMP Not Null DEFAULT 'NOW'
+DEPT_NO             (DEPTNO) CHAR(3) Not Null
+                    CHECK (VALUE = '000' OR
+                    (VALUE > '0' AND VALUE <= '999') OR VALUE IS NULL)
+JOB_CODE            (JOBCODE) VARCHAR(5) Not Null
+                    CHECK (VALUE > '99999')
+JOB_GRADE           (JOBGRADE) SMALLINT Not Null
+CHECK               (VALUE BETWEEN 0 AND 6)
+JOB_COUNTRY         (COUNTRYNAME) VARCHAR(15) Not Null
+SALARY              (SALARY) NUMERIC(10, 2) Not Null DEFAULT 0
+                    CHECK (VALUE > 0)
+FULL_NAME           Computed by: (last_name || ', ' || first_name)
+CONSTRAINT INTEG_28:
+  Foreign key (DEPT_NO) References DEPARTMENT (DEPT_NO)
+CONSTRAINT INTEG_29:
+  Foreign key (JOB_CODE, JOB_GRADE, JOB_COUNTRY)
+  References JOB (JOB_CODE, JOB_GRADE, JOB_COUNTRY)
+CONSTRAINT INTEG_27:
+  Primary key (EMP_NO)
+CONSTRAINT INTEG_30:
+  CHECK ( salary >= (SELECT min_salary FROM job WHERE
+                     job.job_code = employee.job_code AND
+                     job.job_grade = employee.job_grade AND
+                     job.job_country = employee.job_country) AND
+          salary <= (SELECT max_salary FROM job WHERE
+                     job.job_code = employee.job_code AND
+                     job.job_grade = employee.job_grade AND
+                     job.job_country = employee.job_country))
+Triggers on Table EMPLOYEE:
+SET_EMP_NO, Sequence: 0, Type: BEFORE INSERT, Active
+SAVE_SALARY_CHANGE, Sequence: 0, Type: AFTER UPDATE, Active
+
+SQL> show table employee_2;
+
+EMP_NO              (EMPNO) SMALLINT Not Null
+FIRST_NAME          (FIRSTNAME) VARCHAR(15) Not Null
+LAST_NAME           (LASTNAME) VARCHAR(20) Not Null
+PHONE_EXT           VARCHAR(4) Nullable
+HIRE_DATE           TIMESTAMP Not Null DEFAULT 'NOW'
+DEPT_NO             (DEPTNO) CHAR(3) Not Null
+                    CHECK (VALUE = '000' OR
+                          (VALUE > '0' AND VALUE <= '999') OR VALUE IS NULL)
+JOB_CODE            (JOBCODE) VARCHAR(5) Not Null
+                    CHECK (VALUE > '99999')
+JOB_GRADE           (JOBGRADE) SMALLINT Not Null
+                    CHECK (VALUE BETWEEN 0 AND 6)
+JOB_COUNTRY         (COUNTRYNAME) VARCHAR(15) Not Null
+SALARY              (SALARY) NUMERIC(10, 2) Not Null DEFAULT 0
+CHECK               (VALUE > 0)
+FULL_NAME           Computed by: (last_name || ', ' || first_name)
+CONSTRAINT INTEG_93:
+  Primary key (EMP_NO)
+
+SQL> -- Check indices on both tables...
+SQL> show indices employee;
+
+NAMEX INDEX ON EMPLOYEE(LAST_NAME, FIRST_NAME)
+RDB$FOREIGN8 INDEX ON EMPLOYEE(DEPT_NO)
+RDB$FOREIGN9 INDEX ON EMPLOYEE(JOB_CODE, JOB_GRADE, JOB_COUNTRY)
+RDB$PRIMARY7 UNIQUE INDEX ON EMPLOYEE(EMP_NO)
+
+SQL> show indices employee_2;
+RDB$PRIMARY27 UNIQUE INDEX ON EMPLOYEE_2(EMP_NO)
+
+SQL> -- Check data counts on both tables...
+SQL> select count(*) from employee;
+
+       COUNT
+============
+          42
+
+SQL> select count(*) from employee_2;
+
+       COUNT
+============
+           0
+----
+====
+
+Команда `COPY` работает только при условии, что ваше приложение `isql` действительно называется `isql`. Кроме того, если в таблице много данных, вам все равно придется копировать их вручную, так как команда копирования будет копировать только структуру таблицы. Помните, что в новой таблице не будет ни триггеров, ни внешних ключей, ни индексов, кроме первичного ключа, ни данных.
+
+[NOTE]
+====
+Возможно команда `COPY` будет удалена из `isql` в следующих версиях.
+====
+
+[[fbadmgd-isql-commands-input]]
+=== INPUT
+
+.Назначение
+Подключение файла скрипта.
+(((ISQL, INPUT)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+INPUT _filename_
+----
+
+.Параметры команды `INPUT`
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|filename
+|Имя файла с SQL скриптом.
+
+|===
+
+Команда `INPUT` читает и выполняет блок команд из указанного текстового файла (скрипта SQL). Входные файлы могут содержать другие команды `INPUT`, предоставляя таким образом возможность проектирования цепочного или структурированного набора скриптов DDL.
+
+.Использование команды INPUT для включения скрипта
+[example]
+====
+[listing]
+----
+SQL> shell;
+
+$ cat test.sql
+drop table fred;
+commit;
+
+$ exit;
+
+SQL> show table fred;
+
+A       INTEGER Nullable
+B       INTEGER Not Null
+
+SQL> input test.sql;
+
+SQL> show table fred;
+There is no table FRED in this database
+----
+====
+
+Смотри также: <<fbadmgd-isql-commands-shell>>
+
+[[fbadmgd-isql-commands-output]]
+=== OUTPUT
+
+.Назначение
+Перенаправление вывода.
+(((ISQL, OUTPUT)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+OUTPUT [_filename_]
+----
+
+.Параметры команды `OUTPUT`
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|filename
+|Имя файла для вывода.
+
+|===
+
+Команда `OUTPUT` перенаправляет весь вывод, который обычно отображается на экране, в определенный файл. Если указано имя файла, все последующие выходные данные отправляются в этот файл и не отображаются на экране. Если имя файла не указано, вывод снова перенаправляется на экран.
+
+.Использование команды OUTPUT
+[example]
+====
+[listing]
+----
+SQL> output test.log;
+
+SQL> show tables;
+
+SQL> output;
+
+SQL> shell;
+
+$ cat test.log
+
+COUNTRY              CUSTOMER
+DEPARTMENT           EMPLOYEE
+EMPLOYEE_PROJECT     FRED
+JOB                  PROJECT
+PROJ_DEPT_BUDGET     SALARY_HISTORY
+SALES
+----
+====
+
+Смотри также: <<fbadmgd-isql-commands-shell>>
+
+[[fbadmgd-isql-commands-set]]
+=== SET
+
+.Назначение
+Отображение текущий установок.
+(((ISQL, SET)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET
+----
+
+Команда `SET` выводит текущие опции установленные с помощью команд `SET`.
+
+.Использование команды SET
+[example]
+====
+[listing]
+----
+SQL> SET;
+
+Print statistics:        OFF
+Echo commands:           OFF
+List format:             OFF
+Show Row Count:          OFF
+Select maxrows limit:    0
+Autocommit DDL:          ON
+Access Plan:             OFF
+Access Plan only:        OFF
+Explain Access Plan:     OFF
+Display BLOB type:       1
+Column headings:         ON
+Terminator:              ;
+Time:                    OFF
+Warnings:                ON
+Bail on error:           OFF
+Keep transaction params: OFF
+
+SQL>
+----
+====
+
+[[fbadmgd-isql-commands-shell]]
+=== SHELL
+
+.Назначение
+Предоставление доступа к командной строке.
+(((ISQL, SHELL)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHELL [<command>]
+----
+
+.Параметры команды `SHELL`
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|command
+|Команда системной консоли.
+
+|===
+
+Команда `SHELL` позволяет вам временно выйти из `isql` и использовать сеанс системной оболочки для дальнейшей обработки. При этом не происходит подтверждение или откат любой транзакции.
+
+Аргумент `&lt;command&gt;` является необязательным, это команда или вызов, допустимый в командной строке, из которой была запущена `isql`. Команда будет выполнена, а управление возвращено `isql`. Если команда не указана, `isql` открывает интерактивную сессию в командной строке. При выходе из оболочки вы вернетесь в `isql`. Вы не можете использовать сеанс `isql`, который активировал оболочку, пока сеанс оболочки остается открытым.
+
+.Использование команды SHELL
+[example]
+====
+[listing]
+----
+SQL> shell;
+
+$ cat test.log
+
+  COUNTRY              CUSTOMER
+  DEPARTMENT           EMPLOYEE
+  EMPLOYEE_PROJECT     FRED
+  JOB                  PROJECT
+  PROJ_DEPT_BUDGET     SALARY_HISTORY
+  SALES
+$ exit
+SQL>
+----
+====
+
+[[fbadmgd-isql-commands-exit]]
+=== EXIT
+
+.Назначение
+Выход из `isql` с подтверждение текущей транзакции.
+(((ISQL, EXIT)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+EXIT
+----
+
+Команда `EXIT` подтверждает текущую транзакцию без подсказки, закрывает базу данных и завершает сессию `isql`.
+
+Смотри также: <<fbadmgd-isql-commands-quit>>.
+
+[[fbadmgd-isql-commands-quit]]
+=== QUIT
+
+.Назначение
+Выход из `isql` с откатом текущей транзакции.
+(((ISQL, QUIT)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+QUIT
+----
+
+Команда `QUIT` отменяет текущую транзакцию и закрывает базу данных и завершает сессию `isql`.
+
+Смотри также: <<fbadmgd-isql-commands-exit>>.
+
+[[fbadmgd-isql-commands_set]]
+== ISQL SET команды
+
+Как объясняется в команде `HELP`, вы можете ввести команду `HELP SET,` чтобы перейти к различным опциям доступных для `SET` команды. Команда `HELP SET` выводит следующую справку.
+
+[listing]
+----
+SQL> help set;
+
+Set commands:
+    SET                    -- display current SET options
+    SET AUTOddl            -- toggle autocommit of DDL statements
+    SET BAIL               -- toggle bailing out on errors in non-interactive mode
+    SET BLOB [ALL|<n>]     -- display BLOBS of subtype <n> or ALL
+    SET BLOB               -- turn off BLOB display
+    SET COUNT              -- toggle count of selected rows on/off
+    SET MAXROWS [<n>]      -- limit select stmt to <n> rows, zero is no limit
+    SET ECHO               -- toggle command echo on/off
+    SET EXPLAIN            -- toggle display of query access plan in the explained form
+    SET HEADING            -- toggle display of query column titles
+    SET LIST               -- toggle column or table display format
+    SET NAMES <csname>     -- set name of runtime character set
+    SET PLAN               -- toggle display of query access plan
+    SET PLANONLY           -- toggle display of query plan without executing
+    SET SQL DIALECT <n>    -- set sql dialect to <n>
+    SET STATs              -- toggle display of performance statistics
+    SET TIME               -- toggle display of timestamp with DATE values
+    SET TERM <string>      -- change statement terminator string
+    SET WIDTH <col> [<n>]  -- set/unset print width to <n> for column <col>
+
+All commands may be abbreviated to letters in CAPitals
+----
+
+[NOTE]
+====
+В выше приведённом примере команды BLOB являются неполными. Они должны быть отображены как `BLOBdisplay`. Далее мы будем использовать полную версию команды.
+====
+
+Последняя строка вышеприведенного вывода указывает, что эти команды могут быть сокращены до заглавных букв. К сожалению, кроме команды `SET AUTOddl`, ни одна из других не имеет краткой формы.
+
+[[fbadmgd-isql-commands_set-set]]
+=== SET
+
+.Назначение
+Отображение текущий установок.
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET
+----
+
+Команда `SET` выводит текущие опции, установленные с помощью команд `SET`.
+
+.Использование команды SET
+[example]
+====
+[listing]
+----
+SQL> SET;
+
+Print statistics:        OFF
+Echo commands:           OFF
+List format:             OFF
+Show Row Count:          OFF
+Select maxrows limit:    0
+Autocommit DDL:          ON
+Access Plan:             OFF
+Access Plan only:        OFF
+Explain Access Plan:     OFF
+Display BLOB type:       1
+Column headings:         ON
+Terminator:              ;
+Time:                    OFF
+Warnings:                ON
+Bail on error:           OFF
+Keep transaction params: OFF
+
+SQL>
+----
+====
+
+[[fbadmgd-isql-commands_set-set_autoddl]]
+=== SET AUTODDL
+
+.Назначение
+Установка или отключение автоматического подтверждения для DDL операторов.
+(((SQL, SET AUTODDL)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET AUTOddl [ON | OFF]
+----
+
+Команда `SET AUTODDL` устанавливает будет ли автоматически подтверждаться транзакция для DDL операторов. Команда без каких-либо параметров действует как переключатель, она отключает функцию `AUTODLL`, если она включена или наоборот. Вы можете указать конкретный параметр, чтобы прояснить свои намерения. Параметр должен быть одним из двух `ON` или `OFF`. Команда `SET` без параметров отобразит текущую настройку. По умолчанию функция `AUTODDL` включена.
+

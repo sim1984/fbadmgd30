@@ -449,9 +449,9 @@ CONNECT <database>
 
 Вместо полного пути к первичному файлу базы можно использовать псевдонимы (aliases). Псевдонимы описываются в файле `databases.conf` в формате:
 
-[listing]
+[listing,subs="+quotes,attributes"]
 ----
-alias = filepath
+_alias_ = _filepath_
 ----
 
 [NOTE]
@@ -1008,3 +1008,145 @@ SET TRANSACTION WAIT READ COMMITTED LOCK TIMEOUT 10;
 
 // TODO: ссылка
 См. также: SET KEEP_TRAN
+
+[[fbadmgd-isql-script_handling]]
+== Обработка скрипта
+
+Пакет операторов DDL и/или DML в текстовом файле называется сценарием (скриптом). Скрипты могут быть использованы для создания и изменения объектов базы данных (метаданных). Они называются сценариями языка определения данных (DDL). Скрипты, которые манипулируют данными путем выбора, вставки, обновления, удаления или выполнения преобразований данных, называются скриптами языка манипулирования данными (DML).
+
+Одной из наиболее важных задач, выполняемых `isql`, является обработка скриптов. Он может обрабатывать как сценарии DDL, так и сценарии DML. Большие файлы сценариев можно разбить на несколько файлов скриптов поменьше с помощью инструкции `INPUT`.
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+INPUT _file_name_
+----
+
+Данный оператор позволяет включить один файл сценария внутрь другого. Операторы сценариев выполняются в том порядке, в котором они появляются в файле сценариев. Настройка по умолчанию в `isql` для `AUTODDL` установлена на `ON`. Вы можете использовать команду `SET AUTODDL`, чтобы контролировать, где или когда будут подтверждены операторы изменения метаданных.
+
+[NOTE]
+====
+Параметр `AUTODDL` влияет только на операторы DDL. Он не фиксирует транзакцию для операторов DML. Если вы смешиваете инструкции DDL и DML в одном и том же интерактивном сеансе, то фиксации транзакций для DDL с помощью `AUTODDL` не фиксируют ваши транзакции для операторов DML. Например:
+
+[source,sql]
+----
+SQL> set autoddl on;
+
+SQL> insert into test(a) values (666);
+SQL> commit;
+
+SQL> select * from test;
+
+A
+============
+666
+
+SQL> insert into test(a) values (999);
+SQL> select * from test;
+
+A
+============
+666
+999
+
+SQL> create table another_test(b integer);
+SQL> rollback;
+
+SQL> select * from test;
+
+A
+============
+666
+----
+====
+
+Скрипты могут перенаправить свои выходные данные в файл журнала с помощью команды `OUTPUT _file_name_`. Это можно ввести непосредственно в приглашении `isql` или как часть самого файла скрипта.
+
+[[fbadmgd-isql-commands]]
+== ISQL команды
+
+Команды `isql` влияют на работу самого `isql` и никак не влияют на базу данных или данные. Эти команды используются для отображения справки, чтения, записи и запуска сценариев, а также выполнение инструкций командной строки. Вы можете легко увидеть список доступных команд, набрав команду `HELP`, которая выдаст следующий вывод:
+
+[listing]
+----
+SQL> HELP;
+Frontend commands:
+BLOBDUMP <blobid> <file>   -- dump BLOB to a file
+BLOBVIEW <blobid>          -- view BLOB in text editor
+EDIT     [<filename>]      -- edit SQL script file and execute
+EDIT                       -- edit current command buffer and execute
+HELP                       -- display this menu
+INput    <filename>        -- take input from the named SQL file
+OUTput   [<filename>]      -- write output to named file
+OUTput                     -- return output to stdout
+SET      <option>          -- (Use HELP SET for complete list)
+SHELL    <command>         -- execute Operating System command in sub-shell
+SHOW     <object> [<name>] -- display system information
+    <object> = CHECK, COLLATION, DATABASE, DOMAIN, EXCEPTION, FILTER, FUNCTION,
+               GENERATOR, GRANT, INDEX, PACKAGE, PROCEDURE, ROLE, SQL DIALECT,
+               SYSTEM, TABLE, TRIGGER, VERSION, USERS, VIEW
+EXIT                       -- exit and commit changes
+QUIT                       -- exit and roll back changes
+
+All commands may be abbreviated to letters in CAPitals
+----
+
+Теперь обсудим каждую из команд отдельно.
+
+[NOTE]
+====
+Обратите внимание на последнюю строку вывода команды `help`. Это объясняет, что каждая из команд может быть сокращена до букв, отображаемых заглавными буквами. В следующем обсуждении дополнительные символы будут отображаться, как указано выше, строчными буквами. Например, команда ввода будет показана как INput, чтобы указать, что символы 'put' являются необязательными.
+====
+
+[[fbadmgd-isql-commands-blobdump]]
+=== BLOBDUMP
+
+(((ISQL, BLOBDUMP)))
+
+*Назначение:* Сохранение данных BLOB в указанном файле.
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+BLOBDUMP _blob_id_ _filename_
+----
+
+.Параметры оператора `BLOBDUMP`
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|blob_id
+|Идентификатор BLOB.
+
+|filename
+|Имя файла в который необходимо сохранить BLOB.
+
+|===
+
+Эта команда позволяет вам скопировать BLOB из базы данных во внешний файл. Оператор `BLOBDUMP` требует два параметра, идентификатор BLOB-объекта и имя файла. Вам необходимо передать идентификатор BLOB-объекта в виде пары шестнадцатеричных чисел, разделенных двоеточием. Первое число -- это идентификатор таблицы, а второе -- последовательный номер в базе данных. Для получения этого идентификатора выполните любой оператор `SELECT`, который выбирает столбец BLOB. Вывод покажет шестнадцатеричный идентификатор BLOB выше или на месте столбца BLOB в зависимости от того, установлен ли `SET BLOBDISPLAY` в `ON` или `OFF`.
+
+.Сохранение BLOB во внешний файл
+[example]
+====
+[source,sql]
+----
+SQL> set blobdisplay off;
+
+SQL> select proj_id, proj_desc
+CON> from project
+CON> where proj_id = 'MKTPR';
+
+PROJ_ID PROJ_DESC
+======= =================
+MKTPR   85:10
+
+SQL> blobdump 85:10 c:\project.jpg;
+----
+====
+
+Идентификатор BLOB-объекта, необходимый в приведенном выше примере, равен `85:10`.
+
+// TODO: ссылки
+Смотри также: SET BLOBDISPLAY, BLOBVIEW.

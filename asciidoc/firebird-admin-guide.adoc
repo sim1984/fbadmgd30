@@ -1,5 +1,30 @@
 [[fbadmgd]]
 = Руководство администратора Firebird 3.0
+Денис Симонов; Дмитрий Еманов; Mark Rotteveel
+0.0.1, от 21.07.2025
+:doctype: book
+:sectnums:
+:sectanchors:
+:toc: left
+:toclevels: 4
+:outlinelevels: 6:0
+:icons: font
+:experimental:
+:lang: ru
+ifdef::backend-pdf[]
+:source-highlighter: coderay
+endif::[]
+ifdef::backend-html5[]
+:source-highlighter: highlight.js
+endif::[]
+:imagesdir: images
+//include::../../attributes-ru.adoc[]
+:fb-full-version: 3.0.12
+:secdb: security3.fdb
+
+Авторские права (C) 2017-2025 Firebird Project и всех участвующих авторов на https://www.firebirdsql.org/manual/pdl.html[Public Documentation License Version 1.0].
+
+//Пожалуйста, обратитесь к <<fblangref-license,License Notice in the Appendix>>
 
 toc::[]
 
@@ -10,3 +35,5 @@ include::_fbadmgd-install.adoc[leveloffset=1]
 include::_fbadmgd-server-files.adoc[leveloffset=1]
 
 include::_fbadmgd-config.adoc[leveloffset=1]
+
+include::_fbadmgd-command-line-tools.adoc[leveloffset=1]

@@ -94,16 +94,16 @@
             каталог с isql добавлен в PATH, то нет необходимости переходить в него. </para>
         <para>Синтаксис запуска isql следующий:
             <programlisting>
-isql [<replaceable>&lt;options&gt;</replaceable>] [<replaceable>&lt;database&gt;</replaceable>]  
-                
-<replaceable>&lt;database&gt;</replaceable> ::= [<replaceable>&lt;server spec&gt;</replaceable>] {<replaceable>&lt;db_filename&gt;</replaceable> | <replaceable>&lt;db_alias&gt;</replaceable>}  
-                
-<replaceable>&lt;server spec&gt;</replaceable> ::= 
-    <replaceable>&lt;host&gt;</replaceable>[\{<replaceable>&lt;port&gt;</replaceable> | <replaceable>&lt;service&gt;</replaceable>}]:       
-  | \\<replaceable>&lt;host&gt;</replaceable>[@{<replaceable>&lt;port&gt;</replaceable> | <replaceable>&lt;service&gt;</replaceable>}]\     
-  | <replaceable>&lt;protocol&gt;</replaceable>://[<replaceable>&lt;host&gt;</replaceable>[:{<replaceable>&lt;port&gt;</replaceable> | <replaceable>&lt;service&gt;</replaceable>}]/]  
-                
-<replaceable>&lt;protocol&gt;</replaceable> ::= inet | inet4 | inet6 | wnet | xnet                
+isql [<replaceable>&lt;options&gt;</replaceable>] [<replaceable>&lt;database&gt;</replaceable>]
+
+<replaceable>&lt;database&gt;</replaceable> ::= [<replaceable>&lt;server spec&gt;</replaceable>] {<replaceable>&lt;db_filename&gt;</replaceable> | <replaceable>&lt;db_alias&gt;</replaceable>}
+
+<replaceable>&lt;server spec&gt;</replaceable> ::=
+    <replaceable>&lt;host&gt;</replaceable>[\{<replaceable>&lt;port&gt;</replaceable> | <replaceable>&lt;service&gt;</replaceable>}]:
+  | \\<replaceable>&lt;host&gt;</replaceable>[@{<replaceable>&lt;port&gt;</replaceable> | <replaceable>&lt;service&gt;</replaceable>}]\
+  | <replaceable>&lt;protocol&gt;</replaceable>://[<replaceable>&lt;host&gt;</replaceable>[:{<replaceable>&lt;port&gt;</replaceable> | <replaceable>&lt;service&gt;</replaceable>}]/]
+
+<replaceable>&lt;protocol&gt;</replaceable> ::= inet | inet4 | inet6 | wnet | xnet
         </programlisting>
         </para>
         <para>Если параметры <replaceable>&lt;options&gt;</replaceable> не указаны,
@@ -121,7 +121,7 @@ isql [<replaceable>&lt;options&gt;</replaceable>] [<replaceable>&lt;database&gt;
 
         <para>Когда вы запускаете интерактивный сеанс isql, появляется следующее приглашение:
             <screen>
-SQL>            
+SQL>
         </screen>
         </para>
 
@@ -134,21 +134,21 @@ SQL>
         <para>Ниже приведен самый простой способ запуска isql. После перехода в интерактивный режим
             вы должны начать с создания новой базы данных или подключения к ней. Сообщение, выданное
             isql, является подсказкой относительно того, что вы должны делать дальше. <programlisting>
-<![CDATA[            
+<![CDATA[
 c:\Firebird\3.0>isql
 
 Use CONNECT or CREATE DATABASE to specify a database
 SQL> CONNECT "inet://localhost:3053/employee"
 CON> user "SYSDBA" password 'masterkey';
 Database: "inet://localhost:3053/employee", User: SYSDBA
-SQL>    
+SQL>
 ]]>
         </programlisting>
         </para>
 
         <para>В следующем примере показано, как передать имя базы данных и учетные данные
             пользователя в командной строке. <programlisting>
-<![CDATA[            
+<![CDATA[
 c:\Firebird\3.0>isql -user sysdba -password masterkey "inet://localhost:3053/employee"
 
 Database: inet://localhost:3053/employee, User: SYSDBA
@@ -202,7 +202,7 @@ usage:    isql [options] [<database>]
         -u(ser) <user>          user name
         -x                      extract metadata
         -z                      show program and server version
-]]>                        
+]]>
         </programlisting>
         </para>
 
@@ -417,7 +417,7 @@ usage:    isql [options] [<database>]
 
                     <para>
                         <programlisting>
-isql -input createdb.sql                            
+isql -input createdb.sql
                         </programlisting>
                     </para>
                 </example>
@@ -429,7 +429,7 @@ isql -input createdb.sql
                         данных. Удаленный сервер jupiter, принимает указанную комбинацию
                         пользователя и пароля с привилегиями, назначенными роли STAFF:
                         <programlisting>
-isql -user sales -password mycode -role staff 'jupiter:/usr/customer.fdb'                            
+isql -user sales -password mycode -role staff 'jupiter:/usr/customer.fdb'
                         </programlisting>
                     </para>
                 </example>
@@ -440,7 +440,7 @@ isql -user sales -password mycode -role staff 'jupiter:/usr/customer.fdb'
                         данных. Все введенные команды <application>isql</application> выводятся на
                         печать, а результаты запроса печатают заголовки столбцов каждые 30 строк:
                         <programlisting>
-isql -echo -page 30                            
+isql -echo -page 30
                         </programlisting>
                     </para>
                 </example>
@@ -453,7 +453,7 @@ isql -echo -page 30
         <para>Чтобы начать сеанс <application>isql</application>, введите параметры командной строки
             и имя базы данных в оболочке Linux/Unix или командной консоли Windows. Например:
             <programlisting>
-isql [<replaceable>&lt;options&gt;</replaceable>] [<replaceable>&lt;database&gt;</replaceable>]                          
+isql [<replaceable>&lt;options&gt;</replaceable>] [<replaceable>&lt;database&gt;</replaceable>]
                         </programlisting>
         </para>
 
@@ -462,20 +462,20 @@ isql [<replaceable>&lt;options&gt;</replaceable>] [<replaceable>&lt;database&gt;
                 параметры -user и -password в свои параметры, если только пользователи не объявили
                 ISC_USER и ISC_PASSWORD в качестве переменных операционной системы. Например:
                 <programlisting>
-isql -user SYSDBA -password masterkey inet4://localhost/mydatabase                            
+isql -user SYSDBA -password masterkey inet4://localhost/mydatabase
                         </programlisting>
             </para>
             <para>При подключении к локальной базе данных в embedded варианте достаточно указать
                 только имя пользователя (пароль будет проигнорирован):
                 <programlisting>
-isql -user SYSDBA employee.db                           
+isql -user SYSDBA employee.db
                         </programlisting>
             </para>
             <para>В Windows вы можете использовать доверительную аутентификацию, при условии что она
                 настроена в <filename>firebird.conf</filename> или
                     <filename>databases.conf</filename>:
                 <programlisting>
-isql -trusted inet4://localhost/mydatabase                            
+isql -trusted inet4://localhost/mydatabase
                         </programlisting>
             </para>
         </note>
@@ -518,7 +518,7 @@ isql -trusted inet4://localhost/mydatabase
                     <para>Если вы хотите откатить всю неподтвержденную работу и выйти из isql,
                         введите в командной строке следующую команду:
                         <programlisting>
-SQL> QUIT;                        
+SQL> QUIT;
                     </programlisting>
                     </para>
                 </listitem>
@@ -526,7 +526,7 @@ SQL> QUIT;
                     <para>Если вы хотите зафиксировать всю свою работу перед выходом из isql,
                         введите следующую команду:
                         <programlisting>
-SQL> EXIT;                      
+SQL> EXIT;
                     </programlisting>
                     </para>
                 </listitem>
@@ -543,7 +543,7 @@ SQL> EXIT;
             команд. Команда HELP также позволяет перейти к более подробной информации. Чтобы
             активировать справочную систему, просто введите HELP в командной строке, как показано
             ниже: <programlisting>
-SQL> HELP;                      
+SQL> HELP;
                     </programlisting>
             <screen>
 <![CDATA[
@@ -566,7 +566,7 @@ EXIT                       -- exit and commit changes
 QUIT                       -- exit and roll back changes
 
 All commands may be abbreviated to letters in CAPitals
-]]>                
+]]>
             </screen>
         </para>
         <indexterm>
@@ -577,7 +577,7 @@ All commands may be abbreviated to letters in CAPitals
         <para>Большинство из этих команд не имеют дальнейших уровней детализации, в то время как
             команда SET имеет. Чтобы углубиться в эти дополнительные уровни, выполните следующие
             действия: <programlisting>
-SQL> HELP SET;                      
+SQL> HELP SET;
                     </programlisting>
             <screen>
 <![CDATA[
@@ -603,7 +603,7 @@ Set commands:
     SET WIDTH <col> [<n>]  -- set/unset print width to <n> for column <col>
 
 All commands may be abbreviated to letters in CAPitals
-]]>                
+]]>
             </screen>
         </para>
         <para>Если вы попытаетесь углубиться в какую-либо другую команду, эффект будет точно таким
@@ -632,20 +632,20 @@ All commands may be abbreviated to letters in CAPitals
         <formalpara>
             <title>Синтаксис:</title>
             <para>
-                <programlisting> 
-CONNECT <replaceable>&lt;database&gt;</replaceable> 
+                <programlisting>
+CONNECT <replaceable>&lt;database&gt;</replaceable>
 [USER <replaceable>&lt;username&gt;</replaceable> [PASSWORD <replaceable>&lt;password&gt;</replaceable>]]
-[CACHE <replaceable>&lt;cache size&gt;</replaceable>] 
-[ROLE <replaceable>&lt;rolename&gt;</replaceable>]                    
-                    
-<replaceable>&lt;database&gt;</replaceable> ::= [<replaceable>&lt;server spec&gt;</replaceable>] {<replaceable>&lt;db_filename&gt;</replaceable> | <replaceable>&lt;db_alias&gt;</replaceable>}  
-                
-<replaceable>&lt;server spec&gt;</replaceable> ::= 
-    <replaceable>&lt;host&gt;</replaceable>[\{<replaceable>&lt;port&gt;</replaceable> | <replaceable>&lt;service&gt;</replaceable>}]:       
-  | \\<replaceable>&lt;host&gt;</replaceable>[@{<replaceable>&lt;port&gt;</replaceable> | <replaceable>&lt;service&gt;</replaceable>}]\     
-  | <replaceable>&lt;protocol&gt;</replaceable>://[<replaceable>&lt;host&gt;</replaceable>[:{<replaceable>&lt;port&gt;</replaceable> | <replaceable>&lt;service&gt;</replaceable>}]/]  
-                
-<replaceable>&lt;protocol&gt;</replaceable> ::= inet | inet4 | inet6 | wnet | xnet                         
+[CACHE <replaceable>&lt;cache size&gt;</replaceable>]
+[ROLE <replaceable>&lt;rolename&gt;</replaceable>]
+
+<replaceable>&lt;database&gt;</replaceable> ::= [<replaceable>&lt;server spec&gt;</replaceable>] {<replaceable>&lt;db_filename&gt;</replaceable> | <replaceable>&lt;db_alias&gt;</replaceable>}
+
+<replaceable>&lt;server spec&gt;</replaceable> ::=
+    <replaceable>&lt;host&gt;</replaceable>[\{<replaceable>&lt;port&gt;</replaceable> | <replaceable>&lt;service&gt;</replaceable>}]:
+  | \\<replaceable>&lt;host&gt;</replaceable>[@{<replaceable>&lt;port&gt;</replaceable> | <replaceable>&lt;service&gt;</replaceable>}]\
+  | <replaceable>&lt;protocol&gt;</replaceable>://[<replaceable>&lt;host&gt;</replaceable>[:{<replaceable>&lt;port&gt;</replaceable> | <replaceable>&lt;service&gt;</replaceable>}]/]
+
+<replaceable>&lt;protocol&gt;</replaceable> ::= inet | inet4 | inet6 | wnet | xnet
                     </programlisting>
             </para>
         </formalpara>
@@ -741,8 +741,8 @@ CONNECT <replaceable>&lt;database&gt;</replaceable>
             <para>Вместо полного пути к первичному файлу базы можно использовать псевдонимы
                 (aliases). Псевдонимы описываются в файле <filename>databases.conf</filename> в
                 формате:
-                <programlisting>  
-<replaceable>alias</replaceable> = <replaceable>filepath</replaceable>                    
+                <programlisting>
+<replaceable>alias</replaceable> = <replaceable>filepath</replaceable>
                 </programlisting>
             </para>
             <note>
@@ -760,15 +760,15 @@ CONNECT <replaceable>&lt;database&gt;</replaceable>
                 протокола. </para>
             <para>Если вы при соединении с базой данных используете протокол TCP/IP, то спецификация
                 первичного файла должна выглядеть следующим образом:
-                <programlisting>  
-<replaceable>host</replaceable>[/<replaceable>port</replaceable> | <replaceable>service</replaceable>]:{<replaceable>filepath</replaceable> | <replaceable>db_alias</replaceable>}                   
+                <programlisting>
+<replaceable>host</replaceable>[/<replaceable>port</replaceable> | <replaceable>service</replaceable>]:{<replaceable>filepath</replaceable> | <replaceable>db_alias</replaceable>}
                 </programlisting>
             </para>
             <para>Если вы при соединении с базой данных используете протокол под названием
                 именованные каналы (Name Pipes), то спецификация первичного файла должна выглядеть
                 следующим образом.
-                <programlisting>  
-\\<replaceable>host</replaceable>[@<replaceable>port</replaceable> | <replaceable>service</replaceable>]\{<replaceable>filepath</replaceable> | <replaceable>db_alias</replaceable>}                   
+                <programlisting>
+\\<replaceable>host</replaceable>[@<replaceable>port</replaceable> | <replaceable>service</replaceable>]\{<replaceable>filepath</replaceable> | <replaceable>db_alias</replaceable>}
                 </programlisting>
             </para>
             <para>Существует также унифицированный URL-подобный синтаксис спецификации удалённого
@@ -792,8 +792,8 @@ CONNECT <replaceable>&lt;database&gt;</replaceable>
                         <para>XNET — локальный протокол.</para>
                     </listitem>
                 </itemizedlist>
-                <programlisting>  
-<replaceable>protocol</replaceable>://[<replaceable>host</replaceable>[:<replaceable>port</replaceable> | <replaceable>service</replaceable>]/]{<replaceable>filepath</replaceable> | <replaceable>db_alias</replaceable>}                   
+                <programlisting>
+<replaceable>protocol</replaceable>://[<replaceable>host</replaceable>[:<replaceable>port</replaceable> | <replaceable>service</replaceable>]/]{<replaceable>filepath</replaceable> | <replaceable>db_alias</replaceable>}
                 </programlisting>
             </para>
         </section>
@@ -831,24 +831,24 @@ CONNECT <replaceable>&lt;database&gt;</replaceable>
                 <para>В следующем примере происходит подключение к базе данных в embedded варианте с
                     использованием имени пользователя из переменной среды <envar>ISC_USER</envar>.
                     <programlisting>
-SQL> CONNECT "C:\DATABASES\FIREBIRD\MY_EMPLOYEE.FDB";                    
+SQL> CONNECT "C:\DATABASES\FIREBIRD\MY_EMPLOYEE.FDB";
                 </programlisting>
                 </para>
                 <para>В Linux это будет выглядеть следующим образом:
                     <programlisting>
-SQL> CONNECT "/databases/firebird/MY_EMPLOYEE.FDB";                  
+SQL> CONNECT "/databases/firebird/MY_EMPLOYEE.FDB";
                 </programlisting>
                 </para>
                 <para>При использовании псевдонимов, настроенных в
                         <filename>databases.conf</filename>:
                     <programlisting>
-SQL> CONNECT MY_EMPLOYEE;                  
+SQL> CONNECT MY_EMPLOYEE;
                 </programlisting>
                 </para>
                 <para>Если переменная окружения <envar>ISC_USER</envar> не задана, или требуется
                     указать другого пользователя, то необходимо использовать предложение USER:
                     <programlisting>
-SQL> CONNECT MY_EMPLOYEE USER SYSDBA;                  
+SQL> CONNECT MY_EMPLOYEE USER SYSDBA;
                 </programlisting>
                 </para>
             </example>
@@ -857,13 +857,13 @@ SQL> CONNECT MY_EMPLOYEE USER SYSDBA;
 
                 <para>На Windows можно использовать локальный протокол XNET
                     <programlisting>
-SQL> CONNECT xnet://MY_EMPLOYEE USER SYSDBA PASSWORD 'masterkey';                  
+SQL> CONNECT xnet://MY_EMPLOYEE USER SYSDBA PASSWORD 'masterkey';
                 </programlisting>
                 </para>
 
                 <para>Во всех операционных системах через TCP
                     <programlisting>
-SQL> CONNECT inet://localhost/MY_EMPLOYEE USER SYSDBA PASSWORD 'masterkey';                  
+SQL> CONNECT inet://localhost/MY_EMPLOYEE USER SYSDBA PASSWORD 'masterkey';
                 </programlisting>
                 </para>
             </example>
@@ -872,7 +872,7 @@ SQL> CONNECT inet://localhost/MY_EMPLOYEE USER SYSDBA PASSWORD 'masterkey';
 
                 <para>
                     <programlisting>
-SQL> CONNECT inet://dbserver/MY_EMPLOYEE USER BOB PASSWORD 'W45xs' ROLE RDB$ADMIN;                  
+SQL> CONNECT inet://dbserver/MY_EMPLOYEE USER BOB PASSWORD 'W45xs' ROLE RDB$ADMIN;
                 </programlisting>
                 </para>
             </example>
@@ -881,8 +881,8 @@ SQL> CONNECT inet://dbserver/MY_EMPLOYEE USER BOB PASSWORD 'W45xs' ROLE RDB$ADMI
 
                 <para>
                     <programlisting>
-SQL> SET NAMES WIN1251;                        
-SQL> CONNECT inet://dbserver/MY_EMPLOYEE USER BOB PASSWORD 'W45xs';                  
+SQL> SET NAMES WIN1251;
+SQL> CONNECT inet://dbserver/MY_EMPLOYEE USER BOB PASSWORD 'W45xs';
                 </programlisting>
                 </para>
             </example>
@@ -905,7 +905,7 @@ SQL> CONNECT inet://dbserver/MY_EMPLOYEE USER BOB PASSWORD 'W45xs';
         <formalpara>
             <title>Синтаксис:</title>
             <para>
-                <programlisting>                     
+                <programlisting>
 CREATE {DATABASE | SCHEMA} '<replaceable>&lt;filespec&gt;</replaceable>'
   [USER <replaceable>username</replaceable> [PASSWORD '<replaceable>password</replaceable>'] [ROLE <replaceable>rolename</replaceable>]]
   [PAGE_SIZE [=] <replaceable>size</replaceable>]
@@ -918,16 +918,16 @@ CREATE {DATABASE | SCHEMA} '<replaceable>&lt;filespec&gt;</replaceable>'
 
 <replaceable>&lt;filespec&gt;</replaceable> ::= [<replaceable>&lt;server_spec&gt;</replaceable>]{<replaceable>filepath</replaceable> | <replaceable>db_alias</replaceable>}
 
-<replaceable>&lt;server_spec&gt;</replaceable> ::= 
-    <replaceable>host</replaceable>[\<replaceable>port</replaceable> | <replaceable>service</replaceable>]: 
-  | \\<replaceable>host</replaceable>[@<replaceable>port</replaceable> | <replaceable>service</replaceable>]\ 
+<replaceable>&lt;server_spec&gt;</replaceable> ::=
+    <replaceable>host</replaceable>[\<replaceable>port</replaceable> | <replaceable>service</replaceable>]:
+  | \\<replaceable>host</replaceable>[@<replaceable>port</replaceable> | <replaceable>service</replaceable>]\
   | <replaceable>&lt;protocol&gt;</replaceable>://[<replaceable>host</replaceable>[:<replaceable>port</replaceable> | <replaceable>service</replaceable>]/]
 
 <replaceable>&lt;protocol&gt;</replaceable> = inet | inet4 | inet6 | wnet | xnet
 
 <replaceable>&lt;sec_file&gt;</replaceable> ::= FILE '<replaceable>filepath</replaceable>'
-  [LENGTH [=] <replaceable>num</replaceable> [PAGE[S]] [STARTING [AT [PAGE]] <replaceable>pagenum</replaceable>]              
-                  
+  [LENGTH [=] <replaceable>num</replaceable> [PAGE[S]] [STARTING [AT [PAGE]] <replaceable>pagenum</replaceable>]
+
 </programlisting>
             </para>
         </formalpara>
@@ -935,7 +935,7 @@ CREATE {DATABASE | SCHEMA} '<replaceable>&lt;filespec&gt;</replaceable>'
             сохранена в директории <filename>test</filename> на диске <filename>С</filename>.
             <programlisting>
 SQL>CREATE DATABASE 'C:\test\monkey.fdb' page_size 8192
-CON>user 'SYSDBA' password 'masterkey';            
+CON>user 'SYSDBA' password 'masterkey';
         </programlisting>
         </para>
 
@@ -965,48 +965,48 @@ CON>user 'SYSDBA' password 'masterkey';
                 который ссылается псевдоним test, описанный в файле
                     <filename>databases.conf</filename>. Используется протокол TCP. Владельцем базы
                 данных будет пользователь wizard.
-                <programlisting language="sql">  
+                <programlisting language="sql">
 CREATE DATABASE 'baseserver:test'
 USER wizard PASSWORD 'player' ROLE RDB$ADMIN
-DEFAULT CHARACTER SET UTF8;                 
+DEFAULT CHARACTER SET UTF8;
 </programlisting>
                 То же самое с использованием унифицированного URL-подобного синтаксиса задания
                 спецификации удалённого сервера.
-                <programlisting language="sql">  
+                <programlisting language="sql">
 CREATE DATABASE 'inet://baseserver:3050/test'
 USER wizard PASSWORD 'player' ROLE RDB$ADMIN
-DEFAULT CHARACTER SET UTF8;                 
+DEFAULT CHARACTER SET UTF8;
 </programlisting>
                 или
-                <programlisting language="sql">  
+                <programlisting language="sql">
 CREATE DATABASE 'inet://baseserver:gds_db/test'
 USER wizard PASSWORD 'player' ROLE RDB$ADMIN
-DEFAULT CHARACTER SET UTF8;                 
+DEFAULT CHARACTER SET UTF8;
 </programlisting>
                 Начиная с Firebird 3.0.1 можно указать какой именно из протоколов IP v4 или IP v6 вы
                 хотите использовать.
-                <programlisting language="sql">  
+                <programlisting language="sql">
 CREATE DATABASE 'inet4://baseserver/test'
 USER wizard PASSWORD 'player' ROLE RDB$ADMIN
-DEFAULT CHARACTER SET UTF8;                 
+DEFAULT CHARACTER SET UTF8;
 </programlisting>
                 или
-                <programlisting language="sql">  
+                <programlisting language="sql">
 CREATE DATABASE 'inet6://baseserver/test'
 USER wizard PASSWORD 'player' ROLE RDB$ADMIN
-DEFAULT CHARACTER SET UTF8;                 
+DEFAULT CHARACTER SET UTF8;
 </programlisting>
                 Создание базы данных с указанием IP адреса (IPv4) вместо указания имени сервера.
-                <programlisting language="sql">  
+                <programlisting language="sql">
 CREATE DATABASE '127:0:0:1:test'
 USER wizard PASSWORD 'player' ROLE RDB$ADMIN
-DEFAULT CHARACTER SET UTF8;                 
+DEFAULT CHARACTER SET UTF8;
 </programlisting>
                 Создание базы данных с указанием IP адреса (IPv6) вместо указания имени сервера.
-                <programlisting language="sql">  
+                <programlisting language="sql">
 CREATE DATABASE '[::1]:test'
 USER wizard PASSWORD 'player' ROLE RDB$ADMIN
-DEFAULT CHARACTER SET UTF8;                 
+DEFAULT CHARACTER SET UTF8;
 </programlisting>
             </para>
         </example>
@@ -1025,7 +1025,7 @@ RDB$RELATION_ID
 ===============
 128
 
-SQL> commit;            
+SQL> commit;
         </programlisting>
         </para>
         <para>Чтобы вернуться в командную строку введите команду <code>exit</code> или
@@ -1075,7 +1075,7 @@ C:\> set ISC_USER=sysdba
 C:\> set ISC_PASSWORD=secret
 C:\> isql my_employee
 
-SQL>                        
+SQL>
                     </programlisting>
                     </para>
                 </listitem>
@@ -1089,7 +1089,7 @@ cosmos> export ISC_USER=sysdba
 cosmos> export ISC_PASSWORD=secret
 cosmos> /opt/firebird/bin/isql my_employee
 
-SQL>                        
+SQL>
                     </programlisting>
                     </para>
                 </listitem>
@@ -1186,7 +1186,7 @@ SQL>
                     <para>При старте isql укажите диалект с использованием переключателя
                         -sql_dialect
                         <programlisting>
-cosmos> isql -sql_dialect 3                        
+cosmos> isql -sql_dialect 3
                     </programlisting>
                     </para>
                 </listitem>
@@ -1194,7 +1194,7 @@ cosmos> isql -sql_dialect 3
                     <para>Внутри sql скрипта или в isql сессии с помощью команды <code>SET SQL
                             DIALECT</code>
                         <programlisting>
-SQL> SET SQL DIALECT 3;                       
+SQL> SET SQL DIALECT 3;
                     </programlisting>
                     </para>
                 </listitem>
@@ -1218,7 +1218,7 @@ SQL> SET SQL DIALECT 3;
 
         <para>Для изменения символа терминатора на тильду <quote>~</quote> введите следующую
             команду: <programlisting>
-    SQL> SET TERM ~ ;        
+    SQL> SET TERM ~ ;
         </programlisting>
         </para>
 
@@ -1246,7 +1246,7 @@ SQL> select * from test_proc;
 
      OOUTPUT
 ============
-         666            
+         666
         </programlisting>
         </para>
 
@@ -1257,14 +1257,14 @@ SQL> select * from test_proc;
             операторов PSQL:
             <programlisting>
 oOutput = iInput;
-suspend;                
+suspend;
             </programlisting>
         </para>
 
         <para>Они имеют точку с запятой, как того требует PSQL. Конец команды CREATE PROCEDURE
             обозначается использованием тильды в качестве терминатора:
             <programlisting>
-end~               
+end~
             </programlisting>
         </para>
 
@@ -1313,7 +1313,7 @@ Dynamic SQL Error
 -Unexpected end of command - line 1, column 8
 ...
 
-SQL> set term ; +                
+SQL> set term ; +
             </programlisting>
         </para>
 
@@ -1328,7 +1328,7 @@ SQL> select 600+60+6 as The_Beast from rdb$database!!
 
 THE_BEAST
 =====================
-666              
+666
             </programlisting>
         </para>
     </section>
@@ -1352,7 +1352,7 @@ THE_BEAST
                 без завершения оператора SQL с помощью терминатора. Например:
                 <programlisting>
 SQL> HELP
-CON>                
+CON>
             </programlisting>
             </para>
         </formalpara>
@@ -1394,9 +1394,9 @@ SQL> select 1/0 from rdb$database;
 =====================
 Statement failed, SQLSTATE = 22012
 arithmetic exception, numeric overflow, or string truncation
--Integer divide by zero.  The code attempted to divide an integer value by an 
+-Integer divide by zero.  The code attempted to divide an integer value by an
 integer divisor of zero.
-]]>                    
+]]>
                 </programlisting>
             </para>
         </example>
@@ -1452,7 +1452,7 @@ integer divisor of zero.
 
             <para>
                 <programlisting language="sql">
-SET TRANSACTION WAIT READ COMMITTED LOCK TIMEOUT 10;                    
+SET TRANSACTION WAIT READ COMMITTED LOCK TIMEOUT 10;
                 </programlisting>
             </para>
         </example>
@@ -1512,8 +1512,8 @@ SET TRANSACTION WAIT READ COMMITTED LOCK TIMEOUT 10;
         <formalpara>
             <title>Синтаксис:</title>
             <para>
-                <programlisting> 
-INPUT <replaceable>&lt;filespec&gt;</replaceable>                      
+                <programlisting>
+INPUT <replaceable>&lt;filespec&gt;</replaceable>
                     </programlisting>
             </para>
         </formalpara>
@@ -1556,7 +1556,7 @@ SQL> select * from test;
 
 A
 ============
-666                
+666
             </programlisting>
             </para>
         </note>
@@ -1595,7 +1595,7 @@ EXIT                       -- exit and commit changes
 QUIT                       -- exit and roll back changes
 
 All commands may be abbreviated to letters in CAPitals
-]]>            
+]]>
         </screen>
         </para>
 
@@ -1626,8 +1626,8 @@ All commands may be abbreviated to letters in CAPitals
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-BLOBDUMP <replaceable>&lt;blob_id&gt;</replaceable> <replaceable>&lt;filename&gt;</replaceable>                      
+                    <programlisting>
+BLOBDUMP <replaceable>&lt;blob_id&gt;</replaceable> <replaceable>&lt;filename&gt;</replaceable>
                     </programlisting>
                 </para>
             </formalpara>
@@ -1688,7 +1688,7 @@ PROJ_ID PROJ_DESC
 MKTPR   85:10
 
 SQL> blobdump 85:10 c:\project.jpg;
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -1721,8 +1721,8 @@ SQL> blobdump 85:10 c:\project.jpg;
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-BLOBVIEW <replaceable>&lt;blob_id&gt;</replaceable>                      
+                    <programlisting>
+BLOBVIEW <replaceable>&lt;blob_id&gt;</replaceable>
                     </programlisting>
                 </para>
             </formalpara>
@@ -1771,7 +1771,7 @@ PROJ_ID PROJ_DESC
 MKTPR   85:10
 
 SQL> blobview 85:10;
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -1810,8 +1810,8 @@ SQL> blobview 85:10;
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-EDIT [<replaceable>&lt;filename&gt;</replaceable>]                      
+                    <programlisting>
+EDIT [<replaceable>&lt;filename&gt;</replaceable>]
                     </programlisting>
                 </para>
             </formalpara>
@@ -1873,8 +1873,8 @@ EDIT [<replaceable>&lt;filename&gt;</replaceable>]
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-HELP [SET]                    
+                    <programlisting>
+HELP [SET]
                     </programlisting>
                 </para>
             </formalpara>
@@ -1902,7 +1902,7 @@ EXIT                       -- exit and commit changes
 QUIT                       -- exit and roll back changes
 
 All commands may be abbreviated to letters in CAPitals
-]]>            
+]]>
         </screen>
             </para>
 
@@ -1932,7 +1932,7 @@ Set commands:
     SET WIDTH <col> [<n>]  -- set/unset print width to <n> for column <col>
 
 All commands may be abbreviated to letters in CAPitals
-]]>            
+]]>
         </screen>
             </para>
 
@@ -1962,8 +1962,8 @@ All commands may be abbreviated to letters in CAPitals
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-ADD <replaceable>&lt;tablename&gt;</replaceable>                    
+                    <programlisting>
+ADD <replaceable>&lt;tablename&gt;</replaceable>
                     </programlisting>
                 </para>
             </formalpara>
@@ -2013,7 +2013,7 @@ Enter CURRENCY>GBP
 Enter COUNTRY>
 
 SQL> commit;
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -2036,8 +2036,8 @@ SQL> commit;
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-COPY <replaceable>&lt;from_tablename&gt;</replaceable> <replaceable>&lt;to_tablename&gt;</replaceable> [<replaceable>&lt;other_database&gt;</replaceable>]                  
+                    <programlisting>
+COPY <replaceable>&lt;from_tablename&gt;</replaceable> <replaceable>&lt;to_tablename&gt;</replaceable> [<replaceable>&lt;other_database&gt;</replaceable>]
                     </programlisting>
                 </para>
             </formalpara>
@@ -2228,7 +2228,7 @@ CHECK               (VALUE > 0)
 FULL_NAME           Computed by: (last_name || ', ' || first_name)
 CONSTRAINT INTEG_93:
   Primary key (EMP_NO)
-  
+
 SQL> -- Check indices on both tables...
 SQL> show indices employee;
 
@@ -2252,7 +2252,7 @@ SQL> select count(*) from employee_2;
        COUNT
 ============
            0
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -2286,8 +2286,8 @@ SQL> select count(*) from employee_2;
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-INPUT <replaceable>&lt;filename&gt;</replaceable>                    
+                    <programlisting>
+INPUT <replaceable>&lt;filename&gt;</replaceable>
                     </programlisting>
                 </para>
             </formalpara>
@@ -2343,7 +2343,7 @@ B       INTEGER Not Null
 SQL> input test.sql;
 
 SQL> show table fred;
-There is no table FRED in this database                        
+There is no table FRED in this database
                     </programlisting>
                 </para>
             </example>
@@ -2372,8 +2372,8 @@ There is no table FRED in this database
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-OUTPUT [<replaceable>&lt;filename&gt;</replaceable>]                    
+                    <programlisting>
+OUTPUT [<replaceable>&lt;filename&gt;</replaceable>]
                     </programlisting>
                 </para>
             </formalpara>
@@ -2430,7 +2430,7 @@ EMPLOYEE_PROJECT     FRED
 JOB                  PROJECT
 PROJ_DEPT_BUDGET     SALARY_HISTORY
 SALES
-]]>                       
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -2459,8 +2459,8 @@ SALES
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET                  
+                    <programlisting>
+SET
                     </programlisting>
                 </para>
             </formalpara>
@@ -2493,7 +2493,7 @@ Bail on error:           OFF
 Keep transaction params: OFF
 
 SQL>
-]]>                       
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -2516,8 +2516,8 @@ SQL>
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHELL [<replaceable>&lt;command&gt;</replaceable>]                  
+                    <programlisting>
+SHELL [<replaceable>&lt;command&gt;</replaceable>]
                     </programlisting>
                 </para>
             </formalpara>
@@ -2579,7 +2579,7 @@ $ cat test.log
   SALES
 $ exit
 SQL>
-]]>                       
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -2602,8 +2602,8 @@ SQL>
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-EXIT                  
+                    <programlisting>
+EXIT
                     </programlisting>
                 </para>
             </formalpara>
@@ -2629,8 +2629,8 @@ EXIT
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-QUIT                  
+                    <programlisting>
+QUIT
                     </programlisting>
                 </para>
             </formalpara>
@@ -2645,7 +2645,7 @@ QUIT
 
         <para>Как объясняется в команде HELP, вы можете ввести команду HELP SET, чтобы перейти к
             различным опциям доступных для SET команды. Команда HELP SET выводит следующую справку. <screen>
-<![CDATA[            
+<![CDATA[
 SQL> help set;
 
 Set commands:
@@ -2669,7 +2669,7 @@ Set commands:
     SET TERM <string>      -- change statement terminator string
     SET WIDTH <col> [<n>]  -- set/unset print width to <n> for column <col>
 
-All commands may be abbreviated to letters in CAPitals        
+All commands may be abbreviated to letters in CAPitals
 ]]>
         </screen>
         </para>
@@ -2700,8 +2700,8 @@ All commands may be abbreviated to letters in CAPitals
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET                  
+                    <programlisting>
+SET
                     </programlisting>
                 </para>
             </formalpara>
@@ -2734,7 +2734,7 @@ Bail on error:           OFF
 Keep transaction params: OFF
 
 SQL>
-]]>                       
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -2758,8 +2758,8 @@ SQL>
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET AUTOddl [ON | OFF]                 
+                    <programlisting>
+SET AUTOddl [ON | OFF]
                     </programlisting>
                 </para>
             </formalpara>
@@ -2789,8 +2789,8 @@ SET AUTOddl [ON | OFF]
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET BAIL [ON | OFF]                 
+                    <programlisting>
+SET BAIL [ON | OFF]
                     </programlisting>
                 </para>
             </formalpara>
@@ -2826,10 +2826,10 @@ SET BAIL [ON | OFF]
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET BLOB [<replaceable>&lt;n&gt;</replaceable> |ALL | OFF] 
-                        
-SET BLOBDISPLAY [<replaceable>&lt;n&gt;</replaceable> |ALL | OFF]                         
+                    <programlisting>
+SET BLOB [<replaceable>&lt;n&gt;</replaceable> |ALL | OFF]
+
+SET BLOBDISPLAY [<replaceable>&lt;n&gt;</replaceable> |ALL | OFF]
                     </programlisting>
                 </para>
             </formalpara>
@@ -2940,7 +2940,7 @@ CON> where proj_id = 'HWRII';
 PROJ_DESC:
 BLOB display set to subtype 7. This BLOB: subtype = 1
 ==============================================================================
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -2974,8 +2974,8 @@ BLOB display set to subtype 7. This BLOB: subtype = 1
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET BULK_INSERT <replaceable>&lt;prepared insert statement&gt;</replaceable>                                             
+                    <programlisting>
+SET BULK_INSERT <replaceable>&lt;prepared insert statement&gt;</replaceable>
                     </programlisting>
                 </para>
             </formalpara>
@@ -3040,7 +3040,7 @@ SQL> select * from t1;
            1 a
            2 b
            3 c
-           
+
 SQL> set bulk_insert insert into t1(id, name) values(?, ?);
 BULK> -- insert 4 record
 BULK> (4, 'abcd')
@@ -3058,8 +3058,8 @@ SQL> select * from t1;
            2 b
            3 c
            4 abcd
-           5 efg           
-]]>                        
+           5 efg
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -3083,8 +3083,8 @@ SQL> select * from t1;
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET COUNT [ON|OFF]                                            
+                    <programlisting>
+SET COUNT [ON|OFF]
                     </programlisting>
                 </para>
             </formalpara>
@@ -3105,7 +3105,7 @@ SQL> select count(*) from employee;
                    42
 
 Records affected: 1
-]]>                    
+]]>
                 </programlisting>
             </para>
 
@@ -3125,7 +3125,7 @@ SQL> delete from fred;
 Records affected: 1
 
 SQL> commit;
-]]>                    
+]]>
                 </programlisting>
             </para>
 
@@ -3153,8 +3153,8 @@ SQL> commit;
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET ECHO [ON|OFF]                                            
+                    <programlisting>
+SET ECHO [ON|OFF]
                     </programlisting>
                 </para>
             </formalpara>
@@ -3190,7 +3190,7 @@ SQL> select count(*) from rdb$database;
                     1
 
 Records affected: 1
-]]>                    
+]]>
                 </programlisting>
                 </para>
             </example>
@@ -3218,8 +3218,8 @@ Records affected: 1
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET EXPLAIN [ON|OFF]                                            
+                    <programlisting>
+SET EXPLAIN [ON|OFF]
                     </programlisting>
                 </para>
             </formalpara>
@@ -3245,7 +3245,7 @@ Select Expression
         -> Table "RDB$DATABASE" Full Scan
         -> Table "EMPLOYEE" Full Scan
 SQL>
-]]>                    
+]]>
                 </programlisting>
                 </para>
             </example>
@@ -3280,8 +3280,8 @@ SQL>
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET HEADING [ON|OFF]                                            
+                    <programlisting>
+SET HEADING [ON|OFF]
                     </programlisting>
                 </para>
             </formalpara>
@@ -3308,7 +3308,7 @@ SQL> select count(*) from employee;
                 COUNT
 =====================
                    42
-]]>                    
+]]>
                 </programlisting>
                 </para>
             </example>
@@ -3331,8 +3331,8 @@ SQL> select count(*) from employee;
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET KEEP_TRAN[_PARAMS] [ON|OFF]                                            
+                    <programlisting>
+SET KEEP_TRAN[_PARAMS] [ON|OFF]
                     </programlisting>
                 </para>
             </formalpara>
@@ -3368,7 +3368,7 @@ SET KEEP_TRAN[_PARAMS] [ON|OFF]
                 <title>Использование SET KEEP_TRAN_PARAMS</title>
 
                 <programlisting>
-SQL> SET;                        
+SQL> SET;
                     </programlisting>
                 <screen>
 ...
@@ -3381,22 +3381,22 @@ Committing.
 
 SQL> SELECT RDB$GET_CONTEXT('SYSTEM', 'ISOLATION_LEVEL') FROM RDB$DATABASE;
 
-RDB$GET_CONTEXT                                                                                                                                                                                                                                 
+RDB$GET_CONTEXT
 ===============================================================================
-READ COMMITTED                                                                                                                                                                                                                                  
+READ COMMITTED
 
 SQL> commit;
 SQL> SELECT RDB$GET_CONTEXT('SYSTEM', 'ISOLATION_LEVEL') FROM RDB$DATABASE;
 
-RDB$GET_CONTEXT                                                                                                                                                                                                                                 
+RDB$GET_CONTEXT
 ===============================================================================
-SNAPSHOT                                                                                                
+SNAPSHOT
                     </programlisting>
 
                 <para>Как видите после COMMIT новая транзакция стартует с параметрами по умолчанию.
                     Теперь установим режим сохранения параметров транзакции.</para>
                 <programlisting>
-SQL> SET KEEP_TRAN_PARAMS ON; 
+SQL> SET KEEP_TRAN_PARAMS ON;
 SQL> SET;
                     </programlisting>
                 <screen>
@@ -3409,16 +3409,16 @@ Commit current transaction (y/n)?y
 Committing.
 SQL> SELECT RDB$GET_CONTEXT('SYSTEM', 'ISOLATION_LEVEL') FROM RDB$DATABASE;
 
-RDB$GET_CONTEXT                                                                                                                                                                                                                                 
+RDB$GET_CONTEXT
 ===============================================================================
-READ COMMITTED                                                                                                                                                                                                                                  
+READ COMMITTED
 
 SQL> commit;
 SQL> SELECT RDB$GET_CONTEXT('SYSTEM', 'ISOLATION_LEVEL') FROM RDB$DATABASE;
 
-RDB$GET_CONTEXT                                                                                                                                                                                                                                 
+RDB$GET_CONTEXT
 ===============================================================================
-READ COMMITTED                                                                                                                                                                   
+READ COMMITTED
                     </programlisting>
             </example>
 
@@ -3448,8 +3448,8 @@ READ COMMITTED
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET LIST [ON|OFF]                                            
+                    <programlisting>
+SET LIST [ON|OFF]
                     </programlisting>
                 </para>
             </formalpara>
@@ -3498,7 +3498,7 @@ LAST_NAME                       Young
 SALARY                          97500.00
 
 ..........
-]]>                    
+]]>
                 </programlisting>
                 </para>
             </example>
@@ -3521,8 +3521,8 @@ SALARY                          97500.00
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET NAMES [<replaceable>&lt;character_set&gt;</replaceable>]                                         
+                    <programlisting>
+SET NAMES [<replaceable>&lt;character_set&gt;</replaceable>]
                     </programlisting>
                 </para>
             </formalpara>
@@ -3559,7 +3559,7 @@ SET NAMES [<replaceable>&lt;character_set&gt;</replaceable>]
 
             <para>Используйте команду SET NAMES перед подключением к базе данных для того, чтобы
                 указать требуемый набор символов. Список поддерживаемых наборов символов можно
-                посмотреть выполнив запрос: <programlisting> 
+                посмотреть выполнив запрос: <programlisting>
 <![CDATA[
 SQL> select RDB$CHARACTER_SET_NAME
 CON> from RDB$CHARACTER_SETS
@@ -3586,7 +3586,7 @@ WIN1250
 WIN1251
 WIN1252
 ...
-]]>                                        
+]]>
                     </programlisting>
             </para>
 
@@ -3620,8 +3620,8 @@ WIN1252
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET PLAN [ON | OFF]                                         
+                    <programlisting>
+SET PLAN [ON | OFF]
                     </programlisting>
                 </para>
             </formalpara>
@@ -3663,7 +3663,7 @@ PLAN (EMPLOYEE NATURAL)
                 COUNT
 =====================
                    42
-]]>                            
+]]>
                         </programlisting>
                 </para>
             </example>
@@ -3700,8 +3700,8 @@ PLAN (EMPLOYEE NATURAL)
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET PLANONLY [ON | OFF]                                         
+                    <programlisting>
+SET PLANONLY [ON | OFF]
                     </programlisting>
                 </para>
             </formalpara>
@@ -3725,7 +3725,7 @@ SQL> set planonly on;
 SQL> select count(*) from employee;
 
 PLAN (EMPLOYEE NATURAL)
-]]>                            
+]]>
                         </programlisting>
                 </para>
             </example>
@@ -3750,7 +3750,7 @@ SQL> select count(*) from employee;
 Select Expression
     -> Aggregate
         -> Table "EMPLOYEE" Full Scan
-]]>                            
+]]>
                         </programlisting>
                 </para>
             </example>
@@ -3781,8 +3781,8 @@ Select Expression
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET SQLDA_DISPLAY [ON | OFF]                                         
+                    <programlisting>
+SET SQLDA_DISPLAY [ON | OFF]
                     </programlisting>
                 </para>
             </formalpara>
@@ -3813,7 +3813,7 @@ OUTPUT message field count: 1
                 COUNT
 =====================
                    42
-                   
+
 SQL> select emp_no as id, first_name from employee fetch first row only;
 
 INPUT message field count: 0
@@ -3828,9 +3828,9 @@ OUTPUT message field count: 2
 
      ID FIRST_NAME
 ======= ===============
-      2 Robert       
-      
-SQL> select emp_no as id, first_name from employee 
+      2 Robert
+
+SQL> select emp_no as id, first_name from employee
 CON> where emp_no = ? fetch first row only;
 
 INPUT message field count: 1
@@ -3848,8 +3848,8 @@ OUTPUT message field count: 2
 Statement failed, SQLSTATE = 07002
 Dynamic SQL Error
 -SQLDA error
--No SQLDA for input values provided      
-]]>                            
+-No SQLDA for input values provided
+]]>
                         </programlisting>
                 </para>
             </example>
@@ -3885,8 +3885,8 @@ Dynamic SQL Error
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET SQL DIALECT {1 | 2 | 3}                                       
+                    <programlisting>
+SET SQL DIALECT {1 | 2 | 3}
                     </programlisting>
                 </para>
             </formalpara>
@@ -3903,11 +3903,11 @@ SET SQL DIALECT {1 | 2 | 3}
                     <programlisting>
 <![CDATA[
 SQL> set sql dialect 1;
-WARNING: Client SQL dialect has been set to 1 when 
+WARNING: Client SQL dialect has been set to 1 when
 connecting to Database SQL dialect 3 database.
 ...
-SQL> set sql dialect 3;                
-]]>                            
+SQL> set sql dialect 3;
+]]>
                         </programlisting>
                 </para>
                 <note>
@@ -3935,8 +3935,8 @@ SQL> set sql dialect 3;
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET STATs [ON | OFF]                                       
+                    <programlisting>
+SET STATs [ON | OFF]
                     </programlisting>
                 </para>
             </formalpara>
@@ -3965,8 +3965,8 @@ Elapsed time= 0.103 sec
 Buffers = 2048
 Reads = 28
 Writes = 0
-Fetches = 360              
-]]>                            
+Fetches = 360
+]]>
                         </programlisting>
                 </para>
             </example>
@@ -3990,8 +3990,8 @@ Fetches = 360
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET TIME [ON | OFF]                                       
+                    <programlisting>
+SET TIME [ON | OFF]
                     </programlisting>
                 </para>
             </formalpara>
@@ -4020,7 +4020,7 @@ SQL> select localtimestamp from rdb$database;
 23-FEB-2020 13:25:30.7800
 
 SQL>
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -4043,8 +4043,8 @@ SQL>
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET TERM <replaceable>&lt;new_terminator&gt;</replaceable> <replaceable>&lt;current_terminator&gt;</replaceable>                                     
+                    <programlisting>
+SET TERM <replaceable>&lt;new_terminator&gt;</replaceable> <replaceable>&lt;current_terminator&gt;</replaceable>
                     </programlisting>
                 </para>
             </formalpara>
@@ -4116,8 +4116,8 @@ SQL> select * from test_proc;
 
      OOUTPUT
 ============
-         666             
-]]>                            
+         666
+]]>
                         </programlisting>
                 </para>
             </example>
@@ -4151,8 +4151,8 @@ SQL> select * from test_proc;
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET {WARNINGS | WNG} [ON | OFF]                                  
+                    <programlisting>
+SET {WARNINGS | WNG} [ON | OFF]
                     </programlisting>
                 </para>
             </formalpara>
@@ -4178,8 +4178,8 @@ SET {WARNINGS | WNG} [ON | OFF]
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SET WIDTH <replaceable>&lt;column_name&gt;</replaceable> [<replaceable>&lt;width&gt;</replaceable>]                                  
+                    <programlisting>
+SET WIDTH <replaceable>&lt;column_name&gt;</replaceable> [<replaceable>&lt;width&gt;</replaceable>]
                     </programlisting>
                 </para>
             </formalpara>
@@ -4224,7 +4224,7 @@ SET WIDTH <replaceable>&lt;column_name&gt;</replaceable> [<replaceable>&lt;width
                 отображается с настройками по умолчанию. В этом случае ширина столбца last_name
                 составляет 20 символов (считайте количество символов <quote>=</quote> в заголовке).
                 Она задаётся определением столбца last_name в таблице employee. Второй пример
-                показывает таблицу с шириной, уменьшенной до 10 символов. <programlisting> 
+                показывает таблицу с шириной, уменьшенной до 10 символов. <programlisting>
 <![CDATA[
 SQL> select emp_no, last_name
 CON> from employee
@@ -4253,7 +4253,7 @@ CON> fetch first 5 rows only;
      28 Bennet
      83 Bishop
     109 Brown
-]]>                             
+]]>
                     </programlisting>
             </para>
             <para>Столбец emp_no имеет тип SMALLINT. ISQL не может изменить ширину столбцов, которые
@@ -4277,7 +4277,7 @@ CON> fetch first 5 rows only;
      28 Bennet
      83 Bishop
     109 Brown
-]]>                     
+]]>
                 </programlisting>
             </para>
         </section>
@@ -4288,7 +4288,7 @@ CON> fetch first 5 rows only;
         <para>Как объясняется в команде HELP, в isql есть несколько отдельных команд SHOW. Общий
             синтаксис следующий:
             <programlisting>
-SHOW <replaceable>&lt;object&gt;</replaceable> [<replaceable>&lt;name&gt;</replaceable>]   
+SHOW <replaceable>&lt;object&gt;</replaceable> [<replaceable>&lt;name&gt;</replaceable>]
 </programlisting>
         </para>
 
@@ -4345,7 +4345,7 @@ SEQuences                SECURITY CLAsses         SECCLAsses
 SCHEmas                  TABLEs                   TRIGgers
 USERS                    VIEWs
 Command error: show
-        ]]>    
+        ]]>
         </programlisting>
         </para>
 
@@ -4385,8 +4385,8 @@ Command error: show
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHOW CHECKs <replaceable>&lt;table_name&gt;</replaceable>                                                          
+                    <programlisting>
+SHOW CHECKs <replaceable>&lt;table_name&gt;</replaceable>
                     </programlisting>
                 </para>
             </formalpara>
@@ -4439,7 +4439,7 @@ CONSTRAINT INTEG_30:
                         job.job_code = employee.job_code AND
                         job.job_grade = employee.job_grade AND
                         job.job_country = employee.job_country))
-]]>    
+]]>
 </programlisting>
                 </para>
             </example>
@@ -4467,10 +4467,10 @@ CONSTRAINT INTEG_30:
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHOW {COLLATIONs | COLLATION <replaceable>&lt;collate_name&gt;</replaceable> }   
-                        
-SHOW {COLLATEs | COLLATE <replaceable>&lt;collate_name&gt;</replaceable> }                         
+                    <programlisting>
+SHOW {COLLATIONs | COLLATION <replaceable>&lt;collate_name&gt;</replaceable> }
+
+SHOW {COLLATEs | COLLATE <replaceable>&lt;collate_name&gt;</replaceable> }
                     </programlisting>
                 </para>
             </formalpara>
@@ -4520,7 +4520,7 @@ UNICODE_ENUS_CS, CHARACTER SET UTF8, FROM EXTERNAL ('UNICODE'), PAD SPACE,
 SQL> show collation unicode_enus_ci;
 UNICODE_ENUS_CI, CHARACTER SET UTF8, FROM EXTERNAL ('UNICODE'), PAD SPACE,
 CASE INSENSITIVE, 'COLL-VERSION=58.0.6.48'
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -4548,8 +4548,8 @@ CASE INSENSITIVE, 'COLL-VERSION=58.0.6.48'
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHOW COMMENTs                        
+                    <programlisting>
+SHOW COMMENTs
                     </programlisting>
                 </para>
             </formalpara>
@@ -4569,7 +4569,7 @@ SQL> show comments;
 
 COMMENT ON DATABASE IS This is the demonstration EMPLOYEE database.;
 COMMENT ON TABLE EMPLOYEE IS The EMPLOYEE table has details of our employees.;
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -4600,8 +4600,8 @@ COMMENT ON TABLE EMPLOYEE IS The EMPLOYEE table has details of our employees.;
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHOW {DATABASE | DB}                       
+                    <programlisting>
+SHOW {DATABASE | DB}
                     </programlisting>
                 </para>
             </formalpara>
@@ -4634,7 +4634,7 @@ Transaction - Next = 218
 ODS = 12.0
 Database not encrypted
 Default Character set: NONE
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -4661,7 +4661,7 @@ Default Character set: NONE
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
+                    <programlisting>
 SHOW DEPENdencies <replaceable>&lt;object_name&gt;</replaceable>
 
 SHOW DEPENdency <replaceable>&lt;object_name&gt;</replaceable>
@@ -4708,7 +4708,7 @@ SQL> show dependencies SET_CUST_NO;
         [SET_CUST_NO:Trigger]
 CUSTOMER:Table<-CUST_NO, CUST_NO_GEN:Generator
 +++
-]]>                
+]]>
             </programlisting>
             </para>
 
@@ -4729,7 +4729,7 @@ BEGIN
     new.cust_no = gen_id(cust_no_gen, 1);
 END
 =============================================================================
-]]>                
+]]>
             </programlisting>
             </para>
 
@@ -4755,7 +4755,7 @@ END
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
+                    <programlisting>
 SHOW {DOMAINs | DOMAIN <replaceable>&lt;domain_name&gt;</replaceable>}
                     </programlisting>
                 </para>
@@ -4808,11 +4808,11 @@ SQL> show domains;
        PHONENUMBER                            PONUMBER
        PRODTYPE                               PROJNO
        SALARY
-       
+
 SQL> show domain addressline;
 
 ADDRESSLINE                     VARCHAR(30) Nullable
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -4835,7 +4835,7 @@ ADDRESSLINE                     VARCHAR(30) Nullable
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
+                    <programlisting>
 SHOW {EXCEPTIONs | EXCEPTION <replaceable>&lt;exception_name&gt;</replaceable>}
                     </programlisting>
                 </para>
@@ -4906,7 +4906,7 @@ Exception Name                  Used by, Type
 CUSTOMER_ON_HOLD                SHIP_ORDER, Stored procedure
 Msg: This customer is on hold.
 
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -4929,7 +4929,7 @@ Msg: This customer is on hold.
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
+                    <programlisting>
 SHOW {FILTERs | FILTER <replaceable>&lt;filter_name&gt;</replaceable>}
                     </programlisting>
                 </para>
@@ -4974,13 +4974,13 @@ SQL> show filter;
     FUNNEL
 ...
 
-SQL> show filter funnel; 
+SQL> show filter funnel;
 
 BLOB Filter: FUNNEL
 Input subtype: 2 Output subtype: 1
 Filter library is myfilterlib
 Entry point is blr2asc
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -5004,7 +5004,7 @@ Entry point is blr2asc
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
+                    <programlisting>
 SHOW {FUNCTIONs | FUNCTION <replaceable>&lt;function_name&gt;</replaceable>}
                     </programlisting>
                 </para>
@@ -5103,7 +5103,7 @@ end
 =============================================================================
 Parameters:
                                   OUTPUT INTEGER
-                                  
+
 
 SQL> show function sum_args;
 External name: myudr!sum_args
@@ -5113,7 +5113,7 @@ Parameters:
 N1                                INPUT INTEGER
 N2                                INPUT INTEGER
 N3                                INPUT INTEGER
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -5145,10 +5145,10 @@ N3                                INPUT INTEGER
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
+                    <programlisting>
 SHOW {GENERATORs | GENERATOR <replaceable>&lt;generator_name&gt;</replaceable>}
-                        
-SHOW {SEQUENCEs | SEQUENCE <replaceable>&lt;sequence_name&gt;</replaceable>}                        
+
+SHOW {SEQUENCEs | SEQUENCE <replaceable>&lt;sequence_name&gt;</replaceable>}
                     </programlisting>
                 </para>
             </formalpara>
@@ -5200,7 +5200,7 @@ Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
 
 SQL> show generator emp_no_gen;
 Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -5231,8 +5231,8 @@ Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHOW {GRANTs | GRANT {<replaceable>&lt;object_name&gt;</replaceable> | <replaceable>&lt;role_name&gt;</replaceable>}}                        
+                    <programlisting>
+SHOW {GRANTs | GRANT {<replaceable>&lt;object_name&gt;</replaceable> | <replaceable>&lt;role_name&gt;</replaceable>}}
                     </programlisting>
                 </para>
             </formalpara>
@@ -5286,9 +5286,9 @@ SHOW {GRANTs | GRANT {<replaceable>&lt;object_name&gt;</replaceable> | <replacea
 SQL> show grants;
 
 /* Grant permissions for this database */
-GRANT DELETE, INSERT, SELECT, UPDATE, REFERENCES ON COUNTRY 
+GRANT DELETE, INSERT, SELECT, UPDATE, REFERENCES ON COUNTRY
 TO PUBLIC WITH GRANT OPTION
-GRANT DELETE, INSERT, SELECT, UPDATE, REFERENCES 
+GRANT DELETE, INSERT, SELECT, UPDATE, REFERENCES
 ON CUSTOMER TO PUBLIC WITH GRANT OPTION
 ...
 GRANT EXECUTE ON PROCEDURE SHIP_ORDER TO PUBLIC WITH GRANT OPTION
@@ -5296,7 +5296,7 @@ GRANT EXECUTE ON PROCEDURE SHOW_LANGS TO PUBLIC WITH GRANT OPTION
 GRANT EXECUTE ON PROCEDURE SUB_TOT_BUDGET TO PUBLIC WITH GRANT OPTION
 
 SQL> show grants employee;
-GRANT DELETE, INSERT, SELECT, UPDATE, REFERENCES 
+GRANT DELETE, INSERT, SELECT, UPDATE, REFERENCES
 ON EMPLOYEE TO PUBLIC WITH GRANT OPTION
 
 SQL> show grants ship_order;
@@ -5304,7 +5304,7 @@ GRANT EXECUTE ON PROCEDURE SHIP_ORDER TO PUBLIC WITH GRANT OPTION
 
 SQL> show grants default_user;
 GRANT DEFAULT_USER TO SYSDBA
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -5332,12 +5332,12 @@ GRANT DEFAULT_USER TO SYSDBA
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
+                    <programlisting>
 SHOW {INDexes | INDICES}
 
 SHOW {INDICES | INDexes} <replaceable>&lt;table_name&gt;</replaceable>
-                        
-SHOW INDex <replaceable>&lt;index_name&gt;</replaceable>                     
+
+SHOW INDex <replaceable>&lt;index_name&gt;</replaceable>
                     </programlisting>
                 </para>
             </formalpara>
@@ -5407,7 +5407,7 @@ RDB$PRIMARY7 UNIQUE INDEX ON EMPLOYEE(EMP_NO)
 
 SQL> show index namex;
 NAMEX INDEX ON EMPLOYEE(LAST_NAME, FIRST_NAME)
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -5431,8 +5431,8 @@ NAMEX INDEX ON EMPLOYEE(LAST_NAME, FIRST_NAME)
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHOW {MAPping | MAPping <replaceable>&lt;mapping_name&gt;</replaceable> }                                       
+                    <programlisting>
+SHOW {MAPping | MAPping <replaceable>&lt;mapping_name&gt;</replaceable> }
                     </programlisting>
                 </para>
             </formalpara>
@@ -5480,7 +5480,7 @@ TRUSTED_AUTH USING PLUGIN WIN_SSPI FROM ANY USER TO USER
 
 SQL> show mapping win_admins;
 WIN_ADMINS USING PLUGIN WIN_SSPI FROM PREDEFINED_GROUP DOMAIN_ANY_RID_ADMINS TO ROLE RDB$ADMIN
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -5503,8 +5503,8 @@ WIN_ADMINS USING PLUGIN WIN_SSPI FROM PREDEFINED_GROUP DOMAIN_ANY_RID_ADMINS TO 
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHOW {PACKages | PACKage <replaceable>&lt;package_name&gt;</replaceable> }                                       
+                    <programlisting>
+SHOW {PACKages | PACKage <replaceable>&lt;package_name&gt;</replaceable> }
                     </programlisting>
                 </para>
             </formalpara>
@@ -5546,16 +5546,16 @@ SHOW {PACKages | PACKage <replaceable>&lt;package_name&gt;</replaceable> }
 <![CDATA[
 SQL> show packages;
 
-       CHECK_NAME_UTILS                       DATE_UTILS                            
+       CHECK_NAME_UTILS                       DATE_UTILS
        REPL_APPLY_UTILS                       REPL_LOG_UTILS
        REPL_TRIGGERS_UTILS                    REPL_WRITE_LOG
-       
+
 SQL> show package date_utils;
 
 DATE_UTILS
 Header source:
 BEGIN
-  ...  
+  ...
   -- Возвращает строковое представление даты в формате dd MMM yyyy
   FUNCTION DateToChar_Rus(ADate DATE) RETURNS VARCHAR(35);
   -- Возвращает строковое представление даты в формате dd MMM yyyy
@@ -5614,8 +5614,8 @@ BEGIN
                EXTRACT(YEAR FROM ADate);
   END
   ...
-END  
-]]>                        
+END
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -5647,8 +5647,8 @@ END
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHOW {PROCedures | PROCedure <replaceable>&lt;procedure_name&gt;</replaceable> }                                       
+                    <programlisting>
+SHOW {PROCedures | PROCedure <replaceable>&lt;procedure_name&gt;</replaceable> }
                     </programlisting>
                 </para>
             </formalpara>
@@ -5728,7 +5728,7 @@ CODE                              OUTPUT VARCHAR(5)
 GRADE                             OUTPUT VARCHAR(5)
 COUNTRY                           OUTPUT VARCHAR(15)
 LANG                              OUTPUT VARCHAR(15)
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -5761,8 +5761,8 @@ LANG                              OUTPUT VARCHAR(15)
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHOW {ROLEs | ROLE <replaceable>&lt;role_name&gt;</replaceable> }                                       
+                    <programlisting>
+SHOW {ROLEs | ROLE <replaceable>&lt;role_name&gt;</replaceable> }
                     </programlisting>
                 </para>
             </formalpara>
@@ -5806,12 +5806,12 @@ SHOW {ROLEs | ROLE <replaceable>&lt;role_name&gt;</replaceable> }
 SQL> show roles;
        R1                                     R2
        R3
-       
+
 SQL> show role r1;
 Role R1 is granted to:
 U1
-U2       
-]]>                        
+U2
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -5834,8 +5834,8 @@ U2
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHOW SECCLAsses <replaceable>&lt;object_name&gt;</replaceable>                                      
+                    <programlisting>
+SHOW SECCLAsses <replaceable>&lt;object_name&gt;</replaceable>
                     </programlisting>
                 </para>
             </formalpara>
@@ -5879,8 +5879,8 @@ SHOW SECCLAsses <replaceable>&lt;object_name&gt;</replaceable>
 SQL> show secclasses employee;
 
 Table's main sec class SQL$440
-Table's default sec class SQL$DEFAULT54    
-]]>                        
+Table's default sec class SQL$DEFAULT54
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -5905,10 +5905,10 @@ Table's default sec class SQL$DEFAULT54
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHOW {SEQUENCEs | SEQUENCE <replaceable>&lt;sequence_name&gt;</replaceable>} 
+                    <programlisting>
+SHOW {SEQUENCEs | SEQUENCE <replaceable>&lt;sequence_name&gt;</replaceable>}
 
-SHOW {GENERATORs | GENERATOR <replaceable>&lt;generator_name&gt;</replaceable>}                                               
+SHOW {GENERATORs | GENERATOR <replaceable>&lt;generator_name&gt;</replaceable>}
                     </programlisting>
                 </para>
             </formalpara>
@@ -5960,7 +5960,7 @@ Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
 
 SQL> show sequence emp_no_gen;
 Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -5991,8 +5991,8 @@ Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHOW SQL DIALECT                                              
+                    <programlisting>
+SHOW SQL DIALECT
                     </programlisting>
                 </para>
             </formalpara>
@@ -6008,7 +6008,7 @@ SHOW SQL DIALECT
 <![CDATA[
 SQL> show sql dialect;
         Client SQL dialect is set to: 3 and database SQL dialect is: 3
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -6031,8 +6031,8 @@ SQL> show sql dialect;
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHOW SYStem [{TABLEs | FUNCTIONs | COLLATIONs | COLLATEs}]                                              
+                    <programlisting>
+SHOW SYStem [{TABLEs | FUNCTIONs | COLLATIONs | COLLATEs}]
                     </programlisting>
                 </para>
             </formalpara>
@@ -6067,15 +6067,15 @@ Collations:
        WIN1257_LV                             WIN1258
        WIN_CZ                                 WIN_CZ_CI_AI
        WIN_PTBR
-       
+
 SQL> show system tables;
 
        MON$ATTACHMENTS                        MON$CALL_STACK
        MON$CONTEXT_VARIABLES                  MON$DATABASE
 ...
        SEC$DB_CREATORS                        SEC$GLOBAL_AUTH_MAPPING
-       SEC$USERS                              SEC$USER_ATTRIBUTES       
-]]>                        
+       SEC$USERS                              SEC$USER_ATTRIBUTES
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -6101,7 +6101,7 @@ Collations:
 ....
        WIN_CZ                                 WIN_CZ_CI_AI
        WIN_PTBR
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </note>
@@ -6121,7 +6121,7 @@ MON$PAGE_MARKS                  (RDB$COUNTER) BIGINT Nullable
 SQL> show collation ascii;
 
 ASCII, CHARACTER SET ASCII, PAD SPACE, SYSTEM
-]]>                        
+]]>
                     </programlisting>
             </para>
         </section>
@@ -6143,8 +6143,8 @@ ASCII, CHARACTER SET ASCII, PAD SPACE, SYSTEM
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHOW {TABLEs | TABLE <replaceable>&lt;table_name&gt;</replaceable>}                                             
+                    <programlisting>
+SHOW {TABLEs | TABLE <replaceable>&lt;table_name&gt;</replaceable>}
                     </programlisting>
                 </para>
             </formalpara>
@@ -6197,8 +6197,8 @@ SQL> show table country;
 COUNTRY                         (COUNTRYNAME) VARCHAR(15) Not Null
 CURRENCY                        VARCHAR(10) Not Null
 CONSTRAINT INTEG_2:
-  Primary key (COUNTRY)   
-]]>                        
+  Primary key (COUNTRY)
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -6222,7 +6222,7 @@ COUNTRY                         (COUNTRYNAME) VARCHAR(15) Not Null
 CURRENCY                        VARCHAR(10) Not Null
 CONSTRAINT INTEG_2:
   Primary key (COUNTRY)
-  
+
 SQL> select rdb$description
 CON> from rdb$relations
 CON> where rdb$relation_name = 'COUNTRY';
@@ -6233,8 +6233,8 @@ CON> where rdb$relation_name = 'COUNTRY';
 ==============================================================================
 RDB$DESCRIPTION:
 This table holds details about countries.
-============================================================================== 
-]]>                        
+==============================================================================
+]]>
                     </programlisting>
             </para>
 
@@ -6260,8 +6260,8 @@ This table holds details about countries.
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHOW {TRIGgers | TRIGger <replaceable>&lt;trig_name&gt;</replaceable>}                                             
+                    <programlisting>
+SHOW {TRIGgers | TRIGger <replaceable>&lt;trig_name&gt;</replaceable>}
                     </programlisting>
                 </para>
             </formalpara>
@@ -6314,7 +6314,7 @@ AGE                              AGE_BU
 AIMTYPE                          TR_AIMTYPE_BI
 ALGORITHM                        TR_ALGORITHM_BI
 ......
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -6341,7 +6341,7 @@ BEGIN
     new.cust_no = gen_id(cust_no_gen, 1);
 END
 =============================================================================
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -6372,8 +6372,8 @@ END
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHOW USERs                                           
+                    <programlisting>
+SHOW USERs
                     </programlisting>
                 </para>
             </formalpara>
@@ -6395,7 +6395,7 @@ SQL> show users;
 Users in the database
   1 #SYSDBA                              2  U1
   0  U3
-]]>                        
+]]>
                     </programlisting>
                 </para>
 
@@ -6421,8 +6421,8 @@ Users in the database
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHOW VERsion                                         
+                    <programlisting>
+SHOW VERsion
                     </programlisting>
                 </para>
             </formalpara>
@@ -6440,14 +6440,14 @@ SQL> show version;
 
 ISQL Version: WI-V3.0.5.33168 Firebird 3.0
 Server version:
-Firebird/Windows/AMD/Intel/x64 (access method), 
+Firebird/Windows/AMD/Intel/x64 (access method),
 version "WI-V3.0.5.33168 Firebird 3.0"
-Firebird/Windows/AMD/Intel/x64 (remote server), 
+Firebird/Windows/AMD/Intel/x64 (remote server),
 version "WI-V3.0.5.33168 Firebird 3.0/tcp (DESKTOP-E3INAFT)/P15:C"
-Firebird/Windows/AMD/Intel/x64 (remote interface), 
+Firebird/Windows/AMD/Intel/x64 (remote interface),
 version "WI-V3.0.5.33168 Firebird 3.0/tcp (DESKTOP-E3INAFT)/P15:C"
 on disk structure version 12.0
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>
@@ -6476,8 +6476,8 @@ on disk structure version 12.0
             <formalpara>
                 <title>Синтаксис:</title>
                 <para>
-                    <programlisting> 
-SHOW {VIEWs | VIEW <replaceable>&lt;view_name&gt;</replaceable>}                                        
+                    <programlisting>
+SHOW {VIEWs | VIEW <replaceable>&lt;view_name&gt;</replaceable>}
                     </programlisting>
                 </para>
             </formalpara>
@@ -6520,7 +6520,7 @@ SHOW {VIEWs | VIEW <replaceable>&lt;view_name&gt;</replaceable>}
 SQL> show views;
 
        PHONE_LIST
-       
+
 SQL> show view phone_list;
 
 EMP_NO                          (EMPNO) SMALLINT Not Null
@@ -6535,7 +6535,7 @@ SELECT
     emp_no, first_name, last_name, phone_ext, location, phone_no
     FROM employee, department
     WHERE employee.dept_no = department.dept_no
-]]>                        
+]]>
                     </programlisting>
                 </para>
             </example>

@@ -1,0 +1,6 @@
+[[fbadmgd-command-line-tools]]
+= Утилиты командной строки
+
+В данном разделе рассматриваются утилиты поставляемые в составе сервера Firebird 3.0.
+
+include::cmdtools/_fbadmgd-isql.adoc[leveloffset=2]

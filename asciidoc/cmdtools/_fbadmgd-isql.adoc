@@ -58,6 +58,7 @@ database ::= [<server spec>]{_db_filename_ | _db_alias_}
 
 Когда вы запускаете интерактивный сеанс `isql`, появляется следующее приглашение:
 
+[listing]
 ----
 SQL>
 ----
@@ -66,6 +67,7 @@ SQL>
 
 Ниже приведен самый простой способ запуска `isql`. После перехода в интерактивный режим вы должны начать с создания новой базы данных или подключения к ней. Сообщение, выданное `isql`, является подсказкой относительно того, что вы должны делать дальше.
 
+[listing]
 ----
 c:\Firebird\3.0>isql
 
@@ -78,6 +80,7 @@ SQL>
 
 В следующем примере показано, как передать имя базы данных и учетные данные пользователя в командной строке.
 
+[listing]
 ----
 c:\Firebird\3.0>isql -user sysdba -password masterkey "inet://localhost:3053/employee"
 
@@ -92,6 +95,7 @@ SQL>
 
 Переключатели командной строки -- это аргументы, которые начинаются с символа минус/дефис (`-`). Ниже приведен пример того, что происходит, когда вы пытаетесь запустить `isql` с недопустимым переключателем -- он отображает список допустимых ключей с кратким описанием каждого из них.
 
+[listing]
 ----
 c:\Firebird\3.0>isql -help
 Unknown switch: -help
@@ -131,7 +135,7 @@ usage:    isql [options] [<database>]
 
 .Переключатели командной строки
 [[fbadmgd-isql-switches-tbl]]
-[cols="<1,<4", options="header",stripes="none"]
+[cols="<1,<3", options="header",stripes="none"]
 |===
 ^|Опция
 ^|Описание
@@ -308,11 +312,10 @@ isql -trusted inet4://localhost/mydatabase
 (((ISQL, HELP)))
 Утилита `isql` поддерживает команду `HELP`. Она дает краткую информацию о большинстве доступных команд. Команда `HELP` также позволяет перейти к более подробной информации. Чтобы активировать справочную систему, просто введите `HELP` в командной строке, как показано ниже:
 
+[listing]
 ----
 SQL> HELP;
-----
 
-----
 Frontend commands:
 BLOBDUMP <blobid> <file>   -- dump BLOB to a file
 BLOBVIEW <blobid>          -- view BLOB in text editor
@@ -337,11 +340,10 @@ All commands may be abbreviated to letters in CAPitals
 (((ISQL, HELP, SET)))
 Большинство из этих команд не имеют дальнейших уровней детализации, в то время как команда `SET` имеет. Чтобы углубиться в эти дополнительные уровни, выполните следующие действия:
 
+[listing]
 ----
 HELP SET;
-----
 
-----
 Set commands:
     SET                    -- display current SET options
     SET AUTOddl            -- toggle autocommit of DDL statements
@@ -1006,8 +1008,7 @@ SET TRANSACTION WAIT READ COMMITTED LOCK TIMEOUT 10;
 Режим сохранения параметров транзакции появился в Firebird 3.0.6. Ранее невозможно было включить режим сохранения параметров транзакции. После команд `COMMIT` и `ROLLBACK` необходимо было каждый раз выполнять команду `SET TRANSACTION` с необходимыми параметрами.
 ====
 
-// TODO: ссылка
-См. также: SET KEEP_TRAN
+См. также: <<fbadmgd-isql-commands_set-set_keep_tran>>.
 
 [[fbadmgd-isql-script_handling]]
 == Обработка скрипта
@@ -1026,7 +1027,7 @@ INPUT _file_name_
 
 Параметр `AUTODDL` влияет только на операторы DDL. Он не фиксирует транзакцию для операторов DML. Если вы смешиваете инструкции DDL и DML в одном и том же интерактивном сеансе, то фиксации транзакций для DDL с помощью `AUTODDL` не фиксируют ваши транзакции для операторов DML. Например:
 
-[source,sql]
+[listing]
 ----
 SQL> set autoddl on;
 
@@ -1127,7 +1128,7 @@ BLOBDUMP _blob_id_ _filename_
 .Сохранение BLOB во внешний файл
 [example]
 ====
-[source,sql]
+[listing]
 ----
 SQL> set blobdisplay off;
 
@@ -1176,7 +1177,7 @@ BLOBVIEW _blob_id_
 .Открытие BLOB во внешнем текстовом редакторе
 [example]
 ====
-[source,sql]
+[listing]
 ----
 SQL> set blobdisplay off;
 
@@ -1827,7 +1828,7 @@ SQL>
 
 .Назначение
 Установка или отключение автоматического подтверждения для DDL операторов.
-(((SQL, SET AUTODDL)))
+(((ISQL, SET AUTODDL)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -1842,7 +1843,7 @@ SET AUTOddl [ON | OFF]
 
 .Назначение
 Передача обработки ошибок операционной системе.
-(((SQL, SET BAIL)))
+(((ISQL, SET BAIL)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -1859,7 +1860,7 @@ SET BAIL [ON | OFF]
 
 .Назначение
 Передача обработки ошибок операционной системе.
-(((SQL, SET BLOB)))(((SQL, SET BLOBdisplay)))
+(((ISQL, SET BLOB)))(((ISQL, SET BLOBdisplay)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -1965,7 +1966,7 @@ BLOB display set to subtype 7. This BLOB: subtype = 1
 
 .Назначение
 Пакетная вставка записей в таблицу.
-(((SQL, SET BULK_INSERT)))
+(((ISQL, SET BULK_INSERT)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -2034,7 +2035,7 @@ SQL> select * from t1;
 
 .Назначение
 Включение или выключение отображения количества строк затронутых запросом.
-(((SQL, SET COUNT)))
+(((ISQL, SET COUNT)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -2084,7 +2085,7 @@ SQL> commit;
 
 .Назначение
 Включение или выключение отображения команд до их выполнения.
-(((SQL, SET ECHO)))
+(((ISQL, SET ECHO)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -2129,7 +2130,7 @@ Records affected: 1
 
 .Назначение
 Включение или выключение отображения расширенного плана запроса.
-(((SQL, SET EXPLAIN)))
+(((ISQL, SET EXPLAIN)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -2168,7 +2169,7 @@ SQL>
 
 .Назначение
 Включение или выключение отображения заголовков столбцов.
-(((SQL, SET HEADING)))
+(((ISQL, SET HEADING)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -2203,7 +2204,7 @@ SQL> select count(*) from employee;
 
 .Назначение
 Включение или выключение сохранения параметров транзакции.
-(((SQL, SET KEEP_TRAN_PARAMS)))
+(((ISQL, SET KEEP_TRAN_PARAMS)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -2286,7 +2287,7 @@ READ COMMITTED
 
 .Назначение
 Включение или выключение отображения вывода результатов `SELECT` запроса в виде списка.
-(((SQL, SET LIST)))
+(((ISQL, SET LIST)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -2338,7 +2339,7 @@ SALARY                          97500.00
 
 .Назначение
 Установка набора символов для последующий подключений.
-(((SQL, SET NAMES)))
+(((ISQL, SET NAMES)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -2404,7 +2405,7 @@ WIN1252
 
 .Назначение
 Включение или отключение отображение плана запроса.
-(((SQL, SET PLAN)))
+(((ISQL, SET PLAN)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -2461,7 +2462,7 @@ PLAN (EMPLOYEE NATURAL)
 
 .Назначение
 Включение или отключение режима отображение только плана запроса без его выполнения.
-(((SQL, SET PLANONLY)))
+(((ISQL, SET PLANONLY)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -2511,7 +2512,7 @@ Select Expression
 
 .Назначение
 Включение или отключение отображения информации о внутренних структурах для входных и выходных сообщений.
-(((SQL, SET SQLDA_DISPLAY)))
+(((ISQL, SET SQLDA_DISPLAY)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -2594,7 +2595,7 @@ Dynamic SQL Error
 
 .Назначение
 Установка SQL диалекта.
-(((SQL, SET SQL DIALECT)))
+(((ISQL, SET SQL DIALECT)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -2629,7 +2630,7 @@ SQL> set sql dialect 3;
 
 .Назначение
 Включение или отключение отображения статистки.
-(((SQL, SET STATs)))
+(((ISQL, SET STATs)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -2667,7 +2668,7 @@ Fetches = 360
 
 .Назначение
 Включение или отключение отображение времени для типа `DATE` в 1-диалекте.
-(((SQL, SET TIME)))
+(((ISQL, SET TIME)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -2704,7 +2705,7 @@ SQL>
 
 .Назначение
 Установка символа (символов) терминатора команды или оператора.
-(((SQL, SET TERM)))
+(((ISQL, SET TERM)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -2764,7 +2765,7 @@ SQL> select * from test_proc;
 
 .Назначение
 Включение или выключение вывода предупреждающих сообщений.
-(((SQL, SET WARNINGS)))(((ISQL, SET WNG)))
+(((ISQL, SET WARNINGS)))(((ISQL, SET WNG)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -2779,7 +2780,7 @@ SET {WARNINGS | WNG} [ON | OFF]
 
 .Назначение
 Установка ширины вывода для символьных столбцов.
-(((SQL, SET WIDTH)))
+(((ISQL, SET WIDTH)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]

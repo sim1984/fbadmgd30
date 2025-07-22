@@ -1,7 +1,7 @@
 [[fbadmgd]]
 = Руководство администратора Firebird 3.0
 Денис Симонов; Дмитрий Еманов; Mark Rotteveel
-0.0.1, от 21.07.2025
+0.0.1, от 22.07.2025
 :doctype: book
 :sectnums:
 :sectanchors:
@@ -42,3 +42,8 @@ include::_fbadmgd-server-files.adoc[leveloffset=1]
 include::_fbadmgd-config.adoc[leveloffset=1]
 
 include::_fbadmgd-command-line-tools.adoc[leveloffset=1]
+
+ifndef::backend-html5[]
+[index]
+== Алфавитный указатель
+endif::[]

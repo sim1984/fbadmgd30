@@ -817,14 +817,14 @@ SQL> SET SQL DIALECT 3;
 
 Для изменения символа терминатора на тильду "`~`" введите следующую команду:
 
-[source,sql]
+[listing]
 ----
 SET TERM ~;
 ----
 
 Для возврата терминатора, вы должны использовать текущий терминатор! Изменение терминатора полезно, если вы хотите ввести функцию PSQL, как показано в следующем примере. Поскольку PSQL будет принимать только точку с запятой в качестве терминатора, `isql` должен знать, какая точка с запятой используется для кода PSQL, а какая используется для завершения вводимых команд SQL.
 
-[source,sql]
+[listing]
 ----
 SQL> set term ~ ;
 
@@ -857,14 +857,14 @@ suspend;
 
 Они имеют точку с запятой, как того требует PSQL. Конец команды `CREATE PROCEDURE` обозначается использованием тильды в качестве терминатора:
 
-[source,sql]
+[listing]
 ----
 end~
 ----
 
 При желании вы можете просто изменить терминатор, потому что вы предпочитаете что-то другое, а не точку с запятой.
 
-[source,sql]
+[listing]
 ----
 SQL> -- Change terminator from ; to +
 SQL> set term + ;
@@ -890,9 +890,9 @@ SQL> set term ; fred
 
 Однако вы должны быть осторожны, чтобы не выбрать символ-терминатор, который приведет к сбою операторов SQL из-за того, что терминатор используется в какой-то момент в операторе SQL.
 
-[source,sql]
+[listing]
 ----
-select 600+60+6 as The_Beast from rdb$database;
+SQL> select 600+60+6 as The_Beast from rdb$database;
 
 THE_BEAST
 =====================
@@ -911,7 +911,7 @@ SQL> set term ; +
 
 Присутствие терминатора в выражении вызвало ошибку "`Unexpected end of command`". Анализатор SQL в ядре базы данных Firebird определил, что `select 600` не является допустимым оператором. По этой причине лучше всегда выбирать символ или символы, которые не будут путать синтаксический анализатор.
 
-[source,sql]
+[listing]
 ----
 SQL> set term !! ;
 
@@ -935,7 +935,7 @@ THE_BEAST
 
 Подсказка `CON>` отображается, если пользователь нажимает клавишу btn:[ENTER] без завершения оператора SQL с помощью терминатора. Например:
 
-[source,sql]
+[listing]
 ----
 SQL> HELP
 CON>
@@ -1145,8 +1145,7 @@ SQL> blobdump 85:10 c:\project.jpg;
 
 Идентификатор BLOB-объекта, необходимый в приведенном выше примере, равен `85:10`.
 
-// TODO: ссылки
-Смотри также: SET BLOBDISPLAY, <<fbadmgd-isql-commands-blobview>>.
+Смотри также: <<fbadmgd-isql-commands_set-set_blob>>, <<fbadmgd-isql-commands-blobview>>.
 
 [[fbadmgd-isql-commands-blobview]]
 === BLOBVIEW
@@ -1200,7 +1199,7 @@ SQL> blobview 85:10;
 `BLOBVIEW` может вернуть ошибку "`Invalid transaction handle`" после закрытия редактора. Для исправления ситуации запустите транзакцию вручную с помощью команды `SET TRANSACTION`.
 ====
 
-Смотри также: <<fbadmgd-isql-commands-blobdump>>
+Смотри также: <<fbadmgd-isql-commands_set-set_blob>>, <<fbadmgd-isql-commands-blobdump>>.
 
 [[fbadmgd-isql-commands-edit]]
 === EDIT
@@ -1838,3 +1837,1023 @@ SET AUTOddl [ON | OFF]
 
 Команда `SET AUTODDL` устанавливает будет ли автоматически подтверждаться транзакция для DDL операторов. Команда без каких-либо параметров действует как переключатель, она отключает функцию `AUTODLL`, если она включена или наоборот. Вы можете указать конкретный параметр, чтобы прояснить свои намерения. Параметр должен быть одним из двух `ON` или `OFF`. Команда `SET` без параметров отобразит текущую настройку. По умолчанию функция `AUTODDL` включена.
 
+[[fbadmgd-isql-commands_set-set_bail]]
+=== SET BAIL
+
+.Назначение
+Передача обработки ошибок операционной системе.
+(((SQL, SET BAIL)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET BAIL [ON | OFF]
+----
+
+Команда `SET BAIL` устанавливает, будет ли `isql` останавливать выполнение скрипта в пакетном режиме при возникновении ошибки и передавать управление операционной системе, возвращая при этом код ошибки. В интерактивном режиме при возникновении ошибок `isql` не будет прекращать свою работу.
+
+Выполнение этой команды без передачи параметра приводит к переключению текущего состояния. Если `SET BAIL` включен, то он отключится и наоборот.
+
+[[fbadmgd-isql-commands_set-set_blob]]
+=== SET BLOB
+
+.Назначение
+Передача обработки ошибок операционной системе.
+(((SQL, SET BLOB)))(((SQL, SET BLOBdisplay)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET BLOB [_n_ | ALL | OFF]
+
+SET BLOBdisplay [_n_ | ALL | OFF]
+----
+
+.Параметры команды `SET BLOB`
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|n
+|Номер подтипа BLOB. Значение по умолчанию n=1 (текст).
+Положительные числа определены в системе; отрицательные числа определяются пользователем.
+
+|===
+
+Команда `SET BLOB` определяет, должны ли данные столбца типа `BLOB` отображаться в выводе. Если параметры не переданы в команду `SET BLOB` или передан параметр `OFF`, то поля типа `BLOB` отображаться не будут, вместо них будут отображаться идентификаторы BLOB.
+
+Идентификатор BLOB представляет собой два шестнадцатеричных числа, разделенных двоеточием. Первое число -- это идентификатор таблицы, а второе -- последовательный номер в базе данных.
+
+Если в команду `SET BLOB` передан параметр `ALL`, то будут отображаться BLOB поля всех подтипов.
+
+Если передано число, представляющее подтип BLOB, то будут отображаться только BLOB с указанным подтипом. По умолчанию отображаются поля с подтипом 1 (текстовые данные).
+
+.Использование SET BLOB
+[example]
+====
+[listing]
+----
+SQL> -- Don't display any blob data.
+SQL> set blob off;
+
+SQL> select proj_desc
+CON> from project
+CON> where proj_id = 'HWRII';
+
+        PROJ_DESC
+=================
+           85:1e4
+
+SQL> -- Display all blob data.
+SQL>  set blobdisplay all;
+
+SQL> select proj_desc
+CON> from project
+CON> where proj_id = 'HWRII';
+
+        PROJ_DESC
+=================
+           85:1e4
+==============================================================================
+PROJ_DESC:
+Integrate the hand-writing recognition module into the
+universal language translator.
+
+==============================================================================
+
+SQL> -- Only display type 1 blob data = text.
+SQL> set blob 1;
+
+SQL> select proj_desc
+CON> from project
+CON> where proj_id = 'HWRII';
+
+        PROJ_DESC
+=================
+           85:1e4
+==============================================================================
+PROJ_DESC:
+Integrate the hand-writing recognition module into the
+universal language translator.
+
+==============================================================================
+
+SQL> -- Only display blob type 7 = not text!
+SQL> set blob 7;
+
+SQL> select proj_desc
+CON> from project
+CON> where proj_id = 'HWRII';
+
+        PROJ_DESC
+=================
+           85:1e4
+==============================================================================
+PROJ_DESC:
+BLOB display set to subtype 7. This BLOB: subtype = 1
+==============================================================================
+----
+====
+
+В последнем примере вы заметите, что было отображено сообщение о том, что мы отображаем данные BLOB только для подтипа 7, а данные BLOB в этой таблице являются подтипом 1, поэтому данные не отображаются.
+
+Смотри также: <<fbadmgd-isql-commands-blobdump>>, <<fbadmgd-isql-commands-blobview>>.
+
+[[fbadmgd-isql-commands_set-set_bulk_insert]]
+=== SET BULK_INSERT
+
+.Назначение
+Пакетная вставка записей в таблицу.
+(((SQL, SET BULK_INSERT)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET BULK_INSERT <prepared insert statement>
+----
+
+.Параметры команды `SET BULK_INSERT`
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|prepared insert statement
+|Подготовленный оператор `INSERT`.
+
+|===
+
+Команда `SET BULK_INSERT` осуществляет примитивную обработку подготовленных запросов на вставку. После ввода этой команды пользователь входит в интерактивный режим (`BULK>`), где требуется ввести параметры в виде кортежа
+`(_val1_ ... _valN_)`. Для выхода из интерактивного режима введите пустую строку или любой символ, отличный от "`(`" и "`--`" (можно явно выйти, введя слово STOP). Кортежи должны располагаться на одной строке, за исключением параметров в кавычках. Однако, если добавить "`+++`" после запятой, параметры кортежа можно переносить на следующую строку. Одиночные комментарии ("`--`") можно добавлять только между кортежами. Команды `COMMIT` или `COMMIT WORK `вводятся с первого символа строки и располагаются на одной строке. Любые символы, идущие за кортежем, кроме "`)`" и "`+++`", будут игнорироваться.
+
+.Использование SET BULK_INSERT для пакетной вставки
+[example]
+====
+[listing]
+----
+SQL> create table t1(id int not null primary key, name varchar(50));
+
+SQL> set bulk_insert insert into t1(id, name) values(?, ?);
+BULK> (1, 'a')
+BULK> (2, 'b')
+BULK> (3, 'c')
+BULK> commit;
+BULK>
+SQL> select * from t1;
+
+          ID NAME
+============ ==================================================
+           1 a
+           2 b
+           3 c
+
+SQL> set bulk_insert insert into t1(id, name) values(?, ?);
+BULK> -- insert 4 record
+BULK> (4, 'abcd')
+BULK> (5, +++
+CON> 'efg')
+BULK> stop
+
+SQL> commit;
+
+SQL> select * from t1;
+
+          ID NAME
+============ ==================================================
+           1 a
+           2 b
+           3 c
+           4 abcd
+           5 efg
+----
+====
+
+[[fbadmgd-isql-commands_set-set_count]]
+=== SET COUNT
+
+.Назначение
+Включение или выключение отображения количества строк затронутых запросом.
+(((SQL, SET COUNT)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET COUNT [ON | OFF]
+----
+
+Команда `SET COUNT` включает или выключает отображение количества строк затронутых DML запросом. Выполнение этой команды без передачи параметра приводит к переключению текущего состояния.
+
+[listing]
+----
+SQL> set count on;
+
+SQL> select count(*) from employee;
+
+                COUNT
+=====================
+                   42
+
+Records affected: 1
+----
+
+Количество затронутых записей отображается для всех DDL операторов, а не только для `SELECT`.
+
+[listing]
+----
+SQL> create table fred( a integer);
+SQL> commit;
+
+SQL> insert into fred values (666);
+Records affected: 1
+
+SQL> update fred set a = 123 where a = 666;
+Records affected: 1
+
+SQL> delete from fred;
+Records affected: 1
+
+SQL> commit;
+----
+
+// TODO: link.
+Смотри также: SET ROWCOUNT.
+
+[[fbadmgd-isql-commands_set-set_echo]]
+=== SET ECHO
+
+.Назначение
+Включение или выключение отображения команд до их выполнения.
+(((SQL, SET ECHO)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET ECHO [ON | OFF]
+----
+
+Команда `SET ECHO` включает или выключает отображение команд до их выполнения. Вы может отключить эхо-вывод для части файла сценария, хотя по умолчанию эхо вывод выключен в ISQL. Выполнение этой команды без передачи параметра приводит к переключению текущего состояния.
+
+.Использование команды SET ECHO
+[example]
+====
+[listing]
+----
+SQL> set echo on;
+
+SQL> select count(*) from rdb$database;
+select count(*) from rdb$database;
+
+                COUNT
+=====================
+                    1
+
+Records affected: 1
+SQL> set echo off;
+set echo off;
+
+SQL> select count(*) from rdb$database;
+
+                COUNT
+=====================
+                    1
+
+Records affected: 1
+----
+====
+
+Эта команда может быть полезна в файле сценария. Если вы получаете сообщение об ошибке, иногда бывает трудно определить точный оператор SQL, вызвавший ее. Если вы установите `ECHO ON` в своем скрипте, вы по крайней мере сможете точно определить, какой оператор потерпел неудачу.
+
+[[fbadmgd-isql-commands_set-set_explain]]
+=== SET EXPLAIN
+
+.Назначение
+Включение или выключение отображения расширенного плана запроса.
+(((SQL, SET EXPLAIN)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET EXPLAIN [ON | OFF]
+----
+
+Команда `SET EXPLAIN` включает или выключает отображение расширенного плана запроса. Расширенный план выводит более подробную информацию о методах доступа используемых оптимизатором, однако его нельзя включить в запрос. По умолчанию вывод расширенного плана запроса отключен. Выполнение этой команды без передачи параметра приводит к переключению текущего состояния.
+
+.Использование команды SET EXPLAIN
+[example]
+====
+[listing]
+----
+SQL> set explain on;
+SQL> set planonly on;
+SQL> select * from employee cross join rdb$database;
+
+Select Expression
+    -> Nested Loop Join (inner)
+        -> Table "RDB$DATABASE" Full Scan
+        -> Table "EMPLOYEE" Full Scan
+SQL>
+----
+====
+
+[TIP]
+====
+Если вам необходимо вывести только план запроса без его выполнения, то вы можете выполнить команду `SET PLANONLY ON`.
+====
+
+Смотри также: <<fbadmgd-isql-commands_set-set_plan>>, <<fbadmgd-isql-commands_set-set_planonly>>.
+
+[[fbadmgd-isql-commands_set-set_heading]]
+=== SET HEADING
+
+.Назначение
+Включение или выключение отображения заголовков столбцов.
+(((SQL, SET HEADING)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET HEADING [ON | OFF]
+----
+
+Команда `SET HEADING` включает или выключает отображение заголовков столбцов. По умолчанию отображение заголовков столбцов включено. Выполнение этой команды без передачи параметра приводит к переключению текущего состояния.
+
+.Использование команды SET HEADING
+[example]
+====
+[listing]
+----
+SQL> set plan off;
+SQL> set heading off;
+SQL> select count(*) from employee;
+
+                   42
+
+SQL> set heading on;
+SQL> select count(*) from employee;
+
+                COUNT
+=====================
+                   42
+----
+====
+
+[[fbadmgd-isql-commands_set-set_keep_tran]]
+=== SET KEEP_TRAN_PARAMS
+
+.Назначение
+Включение или выключение сохранения параметров транзакции.
+(((SQL, SET KEEP_TRAN_PARAMS)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET KEEP_TRAN[_PARAMS] [ON | OFF]
+----
+
+Операторы DML для выборки или изменения данных стартуют новую транзакцию с уровнем изоляции `SNAPSHOT` с разрешением блокировки в режиме `WAIT`, если она не была начата ранее. Такая транзакция будет активной до тех пор, пока не будет вручную подтверждена оператором `COMMIT` или отменена оператором `ROLLBACK`.
+
+Пользователи могут указать уровень изоляции и другие параметры для следующей транзакции с помощью оператора `SET TRANSACTION`. Он может быть выполнен только тогда, когда не активна другая транзакция. В противном случае будет задан вопрос: подтвердить или откатить активную транзакцию.
+
+После выполнения `COMMIT` или `ROLLBACK`, новая DML команда стартует транзакцию с параметрами по умолчанию. Если необходимо, чтобы новая транзакция стартовала с параметрами, которые были указаны для предыдущей транзакции, то необходимо включить режим сохранения параметров транзакции с помощью команды `SET KEEP_TRAN_PARAMS` (может быть сокращена до `SET KEEP_TRAN`).
+
+Если режим `KEEP_TRAN_PARAMS` установлен в:
+
+* `ON`, то `isql` сохраняет текст следующего успешного оператора `SET TRANSACTION,` и новые транзакции DML запускаются с использованием того же SQL (вместо режима по умолчанию `CONCURRENCY WAIT`);
+* `OFF`, то `isql` начинает новую транзакцию DML как обычно.
+
+.Использование SET KEEP_TRAN_PARAMS
+[example]
+====
+[listing]
+----
+SQL> SET;
+...
+Keep transaction params: OFF
+
+SQL> SET TRANSACTION READ COMMITTED WAIT;
+Commit current transaction (y/n)?y
+Committing.
+
+SQL> SELECT RDB$GET_CONTEXT('SYSTEM', 'ISOLATION_LEVEL') FROM RDB$DATABASE;
+
+RDB$GET_CONTEXT
+===============================================================================
+READ COMMITTED
+
+SQL> commit;
+SQL> SELECT RDB$GET_CONTEXT('SYSTEM', 'ISOLATION_LEVEL') FROM RDB$DATABASE;
+
+RDB$GET_CONTEXT
+===============================================================================
+SNAPSHOT
+----
+
+Как видите после `COMMIT` новая транзакция стартует с параметрами по умолчанию. Теперь установим режим сохранения параметров транзакции.
+
+[listing]
+----
+SQL> SET KEEP_TRAN_PARAMS ON;
+SQL> SET;
+...
+Keep transaction params: ON
+
+SQL> SET TRANSACTION READ COMMITTED WAIT;
+Commit current transaction (y/n)?y
+Committing.
+SQL> SELECT RDB$GET_CONTEXT('SYSTEM', 'ISOLATION_LEVEL') FROM RDB$DATABASE;
+
+RDB$GET_CONTEXT
+===============================================================================
+READ COMMITTED
+
+SQL> commit;
+SQL> SELECT RDB$GET_CONTEXT('SYSTEM', 'ISOLATION_LEVEL') FROM RDB$DATABASE;
+
+RDB$GET_CONTEXT
+===============================================================================
+READ COMMITTED
+----
+====
+
+[NOTE]
+====
+Данная функциональность была введена в Firebird 3.0.6. Ранее невозможно было включить режим сохранения параметров транзакции. После команд `COMMIT` и `ROLLBACK` необходимо было каждый раз выполнять команду `SET TRANSACTION` с необходимыми параметрами.
+====
+
+[[fbadmgd-isql-commands_set-set_list]]
+=== SET LIST
+
+.Назначение
+Включение или выключение отображения вывода результатов `SELECT` запроса в виде списка.
+(((SQL, SET LIST)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET LIST [ON | OFF]
+----
+
+Команда `SET LIST` управляет отображением данных, возвращаемых оператором `SELECT`. По молчанию данные на экране выводятся в табличном варианте, где сверху названия столбцов, а под ними все строки, удовлетворяющие запросу `SELECT`. Включение режима списка приводит к другому формату, в котором заголовок каждого столбца отображается слева, а данные столбца -- справа. Это повторяется для каждой строки, возвращаемой запросом.
+
+Выполнение этой команды без передачи параметра приводит к переключению текущего состояния.
+
+.Использование команды SET LIST
+[example]
+====
+[listing]
+----
+SQL> set list off;
+SQL> select emp_no, first_name, last_name, salary
+CON> from employee;
+
+ EMP_NO FIRST_NAME      LAST_NAME                           SALARY
+======= =============== ==================== =====================
+      2 Robert          Nelson                           105900.00
+      4 Bruce           Young                             97500.00
+      5 Kim             Lambert                          102750.00
+      8 Leslie          Johnson                           64635.00
+.............
+
+SQL> set list on;
+SQL> select emp_no, first_name, last_name, salary
+CON> from employee;
+
+EMP_NO                          2
+FIRST_NAME                      Robert
+LAST_NAME                       Nelson
+SALARY                          105900.00
+
+EMP_NO                          4
+FIRST_NAME                      Bruce
+LAST_NAME                       Young
+SALARY                          97500.00
+
+..........
+----
+====
+
+[[fbadmgd-isql-commands_set-set_names]]
+=== SET NAMES
+
+.Назначение
+Установка набора символов для последующий подключений.
+(((SQL, SET NAMES)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET NAMES _character_set_
+----
+
+.Параметры команды `SET NAMES`
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|character_set
+|Набор символов для последующих подключений.
+
+|===
+
+Оператор `SET NAMES` устанавливает набор символов для последующих подключений к базе данных с помощью isql. Это позволяет вам переопределить набор символов по умолчанию для базы данных. Чтобы вернуться к использованию набора символов по умолчанию, используйте `SET NAMES` без аргументов.
+
+Используйте команду `SET NAMES` перед подключением к базе данных для того, чтобы указать требуемый набор символов. Список поддерживаемых наборов символов можно посмотреть выполнив запрос:
+
+[source,sql]
+----
+select RDB$CHARACTER_SET_NAME
+from RDB$CHARACTER_SETS
+order by 1;
+----
+
+[listing]
+----
+RDB$CHARACTER_SET_NAME
+==============================
+ASCII
+BIG_5
+CP943C
+CYRL
+...
+DOS864
+DOS865
+DOS866
+DOS869
+...
+NONE
+OCTETS
+...
+UTF8
+...
+WIN1250
+WIN1251
+WIN1252
+...
+----
+
+Выбор набора символов ограничивает возможные порядки сопоставления (сортировки) подмножеством всех доступных порядков сопоставления для заданного набора символов.
+
+Если набор символов по умолчанию для базы данных не равен `NONE`, то в ситуациях, когда клиент использует другой набор символов для базы данных, возможно пострадать от повреждения данных, поскольку некоторые наборы символов не могут преобразовать некоторые символы в подходящий символ в другом наборе символов.
+
+Если вы не передадите набор символов, то по умолчанию будет использоваться набор символов `NONE`.
+
+[[fbadmgd-isql-commands_set-set_plan]]
+=== SET PLAN
+
+.Назначение
+Включение или отключение отображение плана запроса.
+(((SQL, SET PLAN)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET PLAN [ON | OFF]
+----
+
+Команда `SET PLAN` определяет, будет ли `isql` отображать план, который он использовал для доступа к данным для каждого выполненного оператора. По умолчанию `isql` никогда не отображает план. Как и во многих других командах, отсутствие параметра переключает текущее состояние.
+
+.Использование команды SET PLAN
+[example]
+====
+[listing]
+----
+SQL> set plan on;
+
+SQL> select emp_no, first_name, last_name
+CON> from employee
+CON> where emp_no = 107;
+
+PLAN (EMPLOYEE INDEX (RDB$PRIMARY7))
+
+ EMP_NO FIRST_NAME      LAST_NAME
+======= =============== ====================
+    107 Kevin           Cook
+
+SQL> update employee
+CON> set first_name = 'Norman'
+CON> where last_name = 'Cook';
+
+PLAN (EMPLOYEE INDEX (NAMEX))
+
+SQL> select count(*) from employee;
+
+PLAN (EMPLOYEE NATURAL)
+
+                COUNT
+=====================
+                   42
+----
+====
+
+План выполнения отображается перед выводом из оператора `SELECT`.
+
+[TIP]
+====
+Для вывода расширенного плана используйте команду `SET EXPLAIN`.
+====
+
+Смотри также: <<fbadmgd-isql-commands_set-set_explain>>, <<fbadmgd-isql-commands_set-set_planonly>>.
+
+[[fbadmgd-isql-commands_set-set_planonly]]
+=== SET PLANONLY
+
+.Назначение
+Включение или отключение режима отображение только плана запроса без его выполнения.
+(((SQL, SET PLANONLY)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET PLANONLY [ON | OFF]
+----
+
+Команда `SET PLANONLY ON`не позволяет Firebird фактически выполнить оператор SQL, а просто показывает план, который будет использоваться для доступа к данным. Эта команда опирается на команду `SET PLAN`. Если `SET PLAN OFF` был выполнен, то эта команда не имеет никакого эффекта, поэтому включение `PLANONLY ON` имеет дополнительный эффект неявного выполнения `SET PLAN ON`.  Выполнение `SET PLANONLY OFF` не вызывает неявного выполнения `SET PLAN OFF`.
+
+.Использование команды SET PLANONLY
+[example]
+====
+[listing]
+----
+SQL> set planonly on;
+
+SQL> select count(*) from employee;
+
+PLAN (EMPLOYEE NATURAL)
+----
+====
+
+Как и во многих других командах, отсутствие параметра переключает текущее состояние.
+
+Действие команды `SET PLANONLY ON` также распространяется и на вывод расширенного плана без фактического выполнения запроса.
+
+.Использование команды SET PLANONLY совместно с SET EXPLAIN
+[example]
+====
+[listing]
+----
+SQL> set explain on;
+SQL> set planonly on;
+
+SQL> select count(*) from employee;
+
+Select Expression
+    -> Aggregate
+        -> Table "EMPLOYEE" Full Scan
+----
+====
+
+Смотри также: <<fbadmgd-isql-commands_set-set_plan>>, <<fbadmgd-isql-commands_set-set_explain>>.
+
+[[fbadmgd-isql-commands_set-set_sqlda]]
+=== SET SQLDA_DISPLAY
+
+.Назначение
+Включение или отключение отображения информации о внутренних структурах для входных и выходных сообщений.
+(((SQL, SET SQLDA_DISPLAY)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET SQLDA_DISPLAY [ON | OFF]
+----
+
+Это скрытая команда, которая не упоминается в выводе команды `HELP SET`. Она отображает внутренние подробности о структурах для входных и выходных сообщений операторов SQL, выполняемых `isql`. Раньше она была доступна только в специальной отладочной сборке, но начиная с версии 2.0 она доступна в `isql`.
+
+.Использование команды SET SQLDA_DISPLAY
+[example]
+====
+[listing]
+----
+SQL> set sqlda_display on;
+
+SQL> select count(*) from employee;
+
+INPUT message field count: 0
+
+OUTPUT message field count: 1
+01: sqltype: 580 INT64 scale: 0 subtype: 0 len: 8
+  :  name: COUNT  alias: COUNT
+  : table:   owner:
+
+                COUNT
+=====================
+                   42
+
+SQL> select emp_no as id, first_name from employee fetch first row only;
+
+INPUT message field count: 0
+
+OUTPUT message field count: 2
+01: sqltype: 500 SHORT scale: 0 subtype: 0 len: 2
+  :  name: EMP_NO  alias: ID
+  : table: EMPLOYEE  owner: SYSDBA
+02: sqltype: 448 VARYING scale: 0 subtype: 0 len: 15 charset: 0 NONE
+  :  name: FIRST_NAME  alias: FIRST_NAME
+  : table: EMPLOYEE  owner: SYSDBA
+
+     ID FIRST_NAME
+======= ===============
+      2 Robert
+
+SQL> select emp_no as id, first_name from employee
+CON> where emp_no = ? fetch first row only;
+
+INPUT message field count: 1
+01: sqltype: 500 SHORT scale: 0 subtype: 0 len: 2
+  :  name:   alias:
+  : table:   owner:
+
+OUTPUT message field count: 2
+01: sqltype: 500 SHORT scale: 0 subtype: 0 len: 2
+  :  name: EMP_NO  alias: ID
+  : table: EMPLOYEE  owner: SYSDBA
+02: sqltype: 448 VARYING scale: 0 subtype: 0 len: 15 charset: 0 NONE
+  :  name: FIRST_NAME  alias: FIRST_NAME
+  : table: EMPLOYEE  owner: SYSDBA
+Statement failed, SQLSTATE = 07002
+Dynamic SQL Error
+-SQLDA error
+-No SQLDA for input values provided
+----
+====
+
+[NOTE]
+====
+Обратите внимание, что при запуске команд `HELP SET` или `SET` информация об этой команде не отображается.
+====
+
+[TIP]
+====
+Последний оператор вызвал ошибку, поскольку `isql` не позволяет запрашивать значения для входных параметров. Вы можете подавить её отключив фактическое выполнение команды с помощью `SET PLANONLY ON`.
+====
+
+[[fbadmgd-isql-commands_set-set_sqldialect]]
+=== SET SQL DIALECT
+
+.Назначение
+Установка SQL диалекта.
+(((SQL, SET SQL DIALECT)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET SQL DIALECT {1 | 2 | 3}
+----
+
+Команда `SET SQL DIALECT` задает диалект SQL Firebird, на который должен быть изменен сеанс клиента. Если сеанс в настоящее время присоединен к базе данных, отличной от диалекта, указанного в команде, отображается предупреждение.
+
+Посмотрите <<fbadmgd-isql-sql_dialect, Диалекты SQL>> для того, чтобы узнать о различиях между тремя диалектами.
+
+.Использование команды SET SQL DIALECT
+[example]
+====
+[listing]
+----
+SQL> set sql dialect 1;
+WARNING: Client SQL dialect has been set to 1 when
+connecting to Database SQL dialect 3 database.
+...
+SQL> set sql dialect 3;
+----
+====
+
+[NOTE]
+====
+Предупреждение в приведенном выше примере пришлось разделить на две строки, чтобы оно поместилось на странице. Обычно оно состоит из одной строки.
+====
+
+[[fbadmgd-isql-commands_set-set_stats]]
+=== SET STATs
+
+.Назначение
+Включение или отключение отображения статистки.
+(((SQL, SET STATs)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET STATs [ON | OFF]
+----
+
+Команда `SET STATS` определяет, должен ли `isql` отображать различную статистику о каждой выполненной команде SQL. Как и во многих других командах, отсутствие параметра переключает текущее состояние.
+
+.Использование команды SET STATS
+[example]
+====
+[listing]
+----
+SQL> set stat on;
+SQL> select count(*) from employee;
+
+                COUNT
+=====================
+                   42
+
+Current memory = 19458128
+Delta memory = 282544
+Max memory = 19531888
+Elapsed time= 0.103 sec
+Buffers = 2048
+Reads = 28
+Writes = 0
+Fetches = 360
+----
+====
+
+[[fbadmgd-isql-commands_set-set_time]]
+=== SET TIME
+
+.Назначение
+Включение или отключение отображение времени для типа `DATE` в 1-диалекте.
+(((SQL, SET TIME)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET TIME [ON | OFF]
+----
+
+Команда `SET TIME` применяется только к базам данных диалекта 1. Её выполнение приводит к тому, что часть времени отображается или нет, когда выбираются данные с типом данных `DATE`. Команда не имеет действия с базами данных в других диалектах.
+
+.Использовании команды SET TIME
+[example]
+====
+[listing]
+----
+SQL> select localtimestamp from rdb$database;
+
+LOCALTIMESTAMP
+==============
+23-FEB-2020
+
+SQL> set time on;
+SQL> select localtimestamp from rdb$database;
+
+           LOCALTIMESTAMP
+=========================
+23-FEB-2020 13:25:30.7800
+
+SQL>
+----
+====
+
+[[fbadmgd-isql-commands_set-set_term]]
+=== SET TERM
+
+.Назначение
+Установка символа (символов) терминатора команды или оператора.
+(((SQL, SET TERM)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET TERM _new_terminator_ _current_terminator_
+----
+
+.Параметры команды `SET TERM`
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|new_terminator
+|Новый символ (символы) терминатор.
+
+|current_terminator
+|Текущий символ (символы) терминатор.
+
+|===
+
+Команда `SET TERM` изменяет терминатор оператора по умолчанию с точки с запятой на что-то другое, определенное в переданной строке. Это полезно, когда вы собираетесь ввести строку SQL-операторов, составляющих, например, процедуру или триггер. Утилита `isql` попытается выполнить каждый оператор, когда встречает завершающую точку с запятой, поэтому сначала нужно изменить терминатор, а затем ввести требуемый код. После завершения ввода, вы можете изменить его обратно. При этом необходимо помнить, что вы должны завершить команду `SET TERM` текущим символом (символами) терминатором.
+
+При первом запуске `isql` использует точку с запятой в качестве терминатора по умолчанию.
+
+.Использование команды SET TERM
+[example]
+====
+[listing]
+----
+SQL> set term ~ ;
+
+SQL> create procedure test_proc (iInput integer = 666)
+CON> returns (oOutput integer)
+CON> as
+CON> begin
+CON>   oOutput = iInput;
+CON>   suspend;
+CON> end~
+
+SQL> set term ; ~
+
+SQL> commit;
+
+SQL> select * from test_proc;
+
+     OOUTPUT
+============
+         666
+----
+====
+
+Смотри также: <<fbadmgd-isql-terminator>>.
+
+[[fbadmgd-isql-commands_set-set_warnings]]
+=== SET WARNINGS
+
+.Назначение
+Включение или выключение вывода предупреждающих сообщений.
+(((SQL, SET WARNINGS)))(((ISQL, SET WNG)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET {WARNINGS | WNG} [ON | OFF]
+----
+
+Команда `SET WARNINGS` включает или выключает вывод предупреждающих сообщений.
+
+[[fbadmgd-isql-commands_set-set_width]]
+=== SET WIDTH
+
+.Назначение
+Установка ширины вывода для символьных столбцов.
+(((SQL, SET WIDTH)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET WIDTH _column_name_ _width_
+----
+
+.Параметры команды `SET WIDTH`
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|column_name
+|Наименование или псевдоним символьного столбца.
+
+|width
+|Ширина вывода в символах.
+
+|===
+
+Обычно ширина вывода символьных столбцов в таблице определяется по размеру выбираемых символьных полей. Использование команды `SET WIDTH` позволяет пользователю определять ширину выходного столбца в большую или меньшую сторону. Если параметр `width` не указан, то будет использована ширина столбца по умолчанию для этого столбца.
+
+В следующем примере показано изменение ширины столбца `last_name`. Первый `SELECT` отображается с настройками по умолчанию. В этом случае ширина столбца `last_name` составляет 20 символов (считайте количество символов "`=`" в заголовке). Она задаётся определением столбца `last_name` в таблице `employee`. Второй пример показывает таблицу с шириной, уменьшенной до 10 символов.
+
+[listing]
+----
+SQL> select emp_no, last_name
+CON> from employee
+CON> order by last_name
+CON> fetch first 5 rows only;
+
+ EMP_NO LAST_NAME
+======= ====================
+     34 Baldwin
+    105 Bender
+     28 Bennet
+     83 Bishop
+    109 Brown
+
+SQL> set width last_name 10;
+
+SQL> select emp_no, last_name
+CON> from employee
+CON> order by last_name
+CON> fetch first 5 rows only;
+
+ EMP_NO LAST_NAME
+======= ==========
+     34 Baldwin
+    105 Bender
+     28 Bennet
+     83 Bishop
+    109 Brown
+----
+
+Столбец `emp_no` имеет тип `SMALLINT`. Утилита `isql` не может изменить ширину столбцов, которые не являются символьными типами. В следующем примере команда `set width emp_no 10` не имеет никакого эффекта. В нём также показано отключение настройки ширины для столбца `last_name`.
+
+[listing]
+----
+SQL> set width last_name;
+
+SQL> set width emp_no 10;
+
+SQL> select emp_no, last_name
+CON> from employee
+CON> order by last_name
+CON> fetch first 5 rows only;
+
+ EMP_NO LAST_NAME
+======= ====================
+     34 Baldwin
+    105 Bender
+     28 Bennet
+     83 Bishop
+    109 Brown
+----

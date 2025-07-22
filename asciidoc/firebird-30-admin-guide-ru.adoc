@@ -12,9 +12,14 @@
 :experimental:
 :lang: ru
 ifdef::backend-pdf[]
+:pdf-fontsdir: theme/fonts
+:pdf-themesdir: theme/firebird-pdf
+:pdf-theme: firebird
 :source-highlighter: coderay
 endif::[]
 ifdef::backend-html5[]
+:stylesdir: theme/firebird-html
+:stylesheet: firebird.css
 :source-highlighter: highlight.js
 endif::[]
 :imagesdir: images

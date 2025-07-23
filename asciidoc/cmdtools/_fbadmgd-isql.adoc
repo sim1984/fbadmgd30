@@ -3137,3 +3137,446 @@ END
 ----
 
 Иногда вывод может показаться немного запутанным. Вы можете увидеть различные объекты в списке, которые не кажутся релевантными. Таблица `RDB$DEPENDENCIES`, также содержит сведения об объектах, от которых будет зависеть данный объект.
+
+[[fbadmgd-isql-commands_show-show_domain]]
+=== SHOW DOMAIN
+
+.Назначение
+Отображение списка имён доменов или определение указанного домена.
+(((ISQL, SHOW DOMAIN)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW {DOMAINs | DOMAIN _domain_name_}
+----
+
+.Параметры оператора SHOW DOMAIN
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|domain_name
+|Наименование домена.
+
+|===
+
+Команда `SHOW DOMAIN` отображает информацию о домене. Домен -- это определенный пользователем тип данных, глобальный для базы данных.
+
+Команда `SHOW DOMAIN` имеют две формы. Первая отображает список всех известных доменов в базе данных, а вторая отображает сведения о конкретном домене.
+
+.Использование команды SHOW DOMAIN
+[example]
+====
+[listing]
+----
+SQL> show domains;
+
+       ADDRESSLINE                            BUDGET
+       COUNTRYNAME                            CUSTNO
+       DEPTNO                                 EMPNO
+       FIRSTNAME                              JOBCODE
+       JOBGRADE                               LASTNAME
+       PHONENUMBER                            PONUMBER
+       PRODTYPE                               PROJNO
+       SALARY
+
+SQL> show domain addressline;
+
+ADDRESSLINE                     VARCHAR(30) Nullable
+----
+====
+
+[[fbadmgd-isql-commands_show-show_exception]]
+=== SHOW EXCEPTION
+
+.Назначение
+Отображение информации обо всех или указанном исключении.
+(((ISQL, SHOW EXCEPTION)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW {EXCEPTIONs | EXCEPTION _exception_name_}
+----
+
+.Параметры оператора SHOW EXCEPTION
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|exception_name
+|Наименование исключения.
+
+|===
+
+Команда `SHOW EXCEPTION` отображает все исключения, которые были определены в текущей базе данных. Отображаются также детальная информации об каждом исключениях: сообщение об ошибке, объекты, которые используют исключение. Вы можете отобразить детальную информацию об отдельном исключении, задав в качестве параметра имя исключения.
+
+.Использование команды SHOW EXCEPTION
+[example]
+====
+[listing]
+----
+SQL> show exceptions;
+
+Exception Name                  Used by, Type
+=============================== =============================================
+CUSTOMER_CHECK                  SHIP_ORDER, Stored procedure
+Msg: Overdue balance -- can not ship.
+
+CUSTOMER_ON_HOLD                SHIP_ORDER, Stored procedure
+Msg: This customer is on hold.
+
+ORDER_ALREADY_SHIPPED           SHIP_ORDER, Stored procedure
+Msg: Order status is "shipped."
+
+REASSIGN_SALES                  DELETE_EMPLOYEE, Stored procedure
+Msg: Reassign the sales records before deleting this employee.
+
+UNKNOWN_EMP_ID                  ADD_EMP_PROJ, Stored procedure
+Msg: Invalid employee number or project id.
+----
+
+[listing]
+----
+SQL> show exception customer_on_hold;
+
+Exception Name                  Used by, Type
+=============================== =============================================
+CUSTOMER_ON_HOLD                SHIP_ORDER, Stored procedure
+Msg: This customer is on hold.
+----
+====
+
+[[fbadmgd-isql-commands_show-show_filter]]
+=== SHOW FILTER
+
+.Назначение
+Отображение списка BLOB-фильтров или информации об указанном фильтре.
+(((ISQL, SHOW FILTER)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW {FILTERs | FILTER _filter_name_}
+----
+
+.Параметры оператора SHOW FILTER
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|filter_name
+|Наименование BLOB-фильтра.
+
+|===
+
+Команда `SHOW FILTER` отображает список BLOB-фильтров определённых оператором `DECLARE FILTER` или информацию об указанном фильтре.
+
+.Использование команды SHOW FILTER
+[example]
+====
+[listing]
+----
+SQL> show filter;
+
+    FUNNEL
+...
+
+SQL> show filter funnel;
+
+BLOB Filter: FUNNEL
+Input subtype: 2 Output subtype: 1
+Filter library is myfilterlib
+Entry point is blr2asc
+----
+====
+
+[[fbadmgd-isql-commands_show-show_function]]
+=== SHOW FUNCTION
+
+.Назначение
+Отображение информации обо всех определённых пользователем функциях или определение указанной функции.
+(((ISQL, SHOW FUNCTION)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW {FUNCTIONs | FUNCTION _function_name_}
+----
+
+.Параметры оператора SHOW FUNCTION
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|function_name
+|Наименование функции.
+
+|===
+
+Команда `SHOW FUNCTION` отображает все определённые пользователем функции, а так же их зависимости, т.е. объекты которые используются функцией. Если указано имя функции в качестве параметра, то для будет отображена дополнительная информация, которая зависит от типа функции:
+
+* для внешних Legacy функций будет отображена информация о входных параметрах и возвращаемом результате, имя динамической библиотеки, имя точки входа;
+* для PSQL функций будет отображена информация о входных параметрах и возвращаемом результате и тексте функции;
+* для внешних UDR функций будет отображена информация о входных параметрах и возвращаемом результате, имени используемого плагина и точке входа.
+
+.Использование команды SHOW FUNCTION
+[example]
+====
+[listing]
+----
+SQL> show functions;
+Global functions
+
+Function Name                     Invalid Dependency, Type
+================================= ======= =====================================
+F                                         T, Table
+GETEXACTTIMESTAMPUTC
+ISLEAPYEAR
+ISLEAPYEAR_2
+SUM_ARGS
+----
+
+[listing]
+----
+SQL> show function isleapyear;
+
+External function ISLEAPYEAR:
+Function library is fbudf
+Entry point is isLeapYear
+Returns  BY VALUE INTEGER
+Argument 1: TIMESTAMP
+----
+
+[listing]
+----
+SQL> show function isleapyear_2;
+Function text:
+=============================================================================
+begin
+  return mod(extract(year from adate), 4) = 0;
+end
+=============================================================================
+Parameters:
+                                  OUTPUT BOOLEAN
+ADATE                             INPUT TIMESTAMP
+
+
+SQL> show function f;
+Function text:
+=============================================================================
+begin
+  return (select count(*) from t);
+end
+=============================================================================
+Parameters:
+                                  OUTPUT INTEGER
+----
+
+[listing]
+----
+SQL> show function sum_args;
+External name: myudr!sum_args
+Engine: UDR
+Parameters:
+                                  OUTPUT INTEGER
+N1                                INPUT INTEGER
+N2                                INPUT INTEGER
+N3                                INPUT INTEGER
+----
+====
+
+// todo: link
+Смотри также: SHOW PROCEDURE, SHOW TRIGGER, SHOW PACKAGE.
+
+[[fbadmgd-isql-commands_show-show_generator]]
+=== SHOW GENERATOR
+
+.Назначение
+Отображение информации обо всех не системных генераторах (последовательностям) или об одном указанном генераторе (последовательности).
+(((ISQL, SHOW GENERATOR)))(((ISQL, SHOW SEQUENCE)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW {GENERATORs | GENERATOR _generator_name_}
+
+SHOW {SEQUENCEs | SEQUENCE _sequence_name_}
+----
+
+.Параметры оператора SHOW GENERATOR
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|generator_name, sequence_name
+|Наименование генератора (последовательности).
+
+|===
+
+Эти две команды идентичны. Генераторы -- это старый термин Firebird для того, что обычно называют последовательностями в других базах данных, а также в SQL стандарте. Вам рекомендуется использовать последовательности, а не генераторы, но Firebird считает их одинаковыми.
+
+Если имя генератора (последовательности) не указано, то будут выведены сведения обо всех генераторах (имя, текущее значение, начальное значение, значение шага приращения). Если указано имя генератора (последовательности), то будет выведены сведения о конкретном генераторе.
+
+.Использование команды SHOW GENERATOR
+[example]
+====
+[listing]
+----
+SQL> show generators;
+Generator CUST_NO_GEN, current value: 1015, initial value: 0, increment: 1
+Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
+
+SQL> show generator emp_no_gen;
+Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
+----
+====
+
+// TODO: link
+Смотри также: SHOW SEQUENCE.
+
+[[fbadmgd-isql-commands_show-show_grant]]
+=== SHOW GRANT
+
+.Назначение
+Отображение список всех разрешений в текущей базе данных или разрешений на указанный объект или разрешений для указанной роли.
+(((ISQL, SHOW GRANT)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW {GRANTs | GRANT {_object_name_ | _role_name_}}
+----
+
+.Параметры оператора SHOW GRANT
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|object_name
+|Наименование объекта метаданных, для которого отображаются разрешения.
+
+|role_name
+|Наименование роли, для которой отображается список пользователей которым эта роль назначена.
+
+|===
+
+Команда `SHOW GRANT` отображает список всех разрешений в текущей базе данных, если команда используется без параметров. Если в качестве аргумента команды указано имя объекта (таблица, процедура, функция, триггер, и т.д.), то будут отображены разрешения для указанного объекта. Если в качестве аргумента указано имя роли, то будет отображён список пользователей (вместе с оператором разрешения на роль) для которых выдана эта роль.
+
+.Использование команды SHOW GRANT
+[example]
+====
+[listing]
+----
+SQL> show grants;
+
+/* Grant permissions for this database */
+GRANT DELETE, INSERT, SELECT, UPDATE, REFERENCES ON COUNTRY
+TO PUBLIC WITH GRANT OPTION
+GRANT DELETE, INSERT, SELECT, UPDATE, REFERENCES
+ON CUSTOMER TO PUBLIC WITH GRANT OPTION
+...
+GRANT EXECUTE ON PROCEDURE SHIP_ORDER TO PUBLIC WITH GRANT OPTION
+GRANT EXECUTE ON PROCEDURE SHOW_LANGS TO PUBLIC WITH GRANT OPTION
+GRANT EXECUTE ON PROCEDURE SUB_TOT_BUDGET TO PUBLIC WITH GRANT OPTION
+----
+
+[listing]
+----
+SQL> show grants employee;
+GRANT DELETE, INSERT, SELECT, UPDATE, REFERENCES
+ON EMPLOYEE TO PUBLIC WITH GRANT OPTION
+----
+
+[listing]
+----
+SQL> show grants ship_order;
+GRANT EXECUTE ON PROCEDURE SHIP_ORDER TO PUBLIC WITH GRANT OPTION
+----
+
+[listing]
+----
+SQL> show grants default_user;
+GRANT DEFAULT_USER TO SYSDBA
+----
+====
+
+[NOTE]
+====
+Обратите внимание, что некоторые строки в приведенном выше разделены, чтобы они могли поместиться на странице.
+====
+
+[[fbadmgd-isql-commands_show-show_indexes]]
+=== SHOW INDEXES
+
+.Назначение
+Отображение информации обо всех индексах или об указанном индексе.
+(((ISQL, SHOW INDEXES)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW {INDICES | INDexes}
+
+SHOW {INDICES | INDexes} _table_name_
+
+SHOW INDex _index_name_
+----
+
+.Параметры оператора SHOW INDEXES
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|table_name
+|Наименование таблицы для которой будет отображён список индексов.
+
+|index_name
+|Наименование индекса по которому будет отображена информации.
+
+|===
+
+Первая форма этой команды перечислит все индексы в текущей базе данных. В этой форме вы можете использовать либо `INDEXES`, либо `INDECES`, они рассматриваются в Firebird как идентичные.
+
+Вторая форма команды будет отображать список индексов для указанной таблицы `table_name`. Опять же, вы можете использовать `INDEXES`, либо `INDECES`.
+
+В последней форме команды отображаются сведения о указанном индексе `index_name`, и в этой форме команды необходимо использовать ключевое слово `INDEX`.
+
+.Использование команды SHOW INDEX
+[example]
+====
+[listing]
+----
+SQL> show indices;
+RDB$PRIMARY1 UNIQUE INDEX ON COUNTRY(COUNTRY)
+CUSTNAMEX INDEX ON CUSTOMER(CUSTOMER)
+CUSTREGION INDEX ON CUSTOMER(COUNTRY, CITY)
+...
+RDB$PRIMARY24 UNIQUE INDEX ON SALES(PO_NUMBER)
+SALESTATX INDEX ON SALES(ORDER_STATUS, PAID)
+----
+
+[listing]
+----
+SQL> show indices employee;
+NAMEX INDEX ON EMPLOYEE(LAST_NAME, FIRST_NAME)
+RDB$FOREIGN8 INDEX ON EMPLOYEE(DEPT_NO)
+RDB$FOREIGN9 INDEX ON EMPLOYEE(JOB_CODE, JOB_GRADE, JOB_COUNTRY)
+RDB$PRIMARY7 UNIQUE INDEX ON EMPLOYEE(EMP_NO)
+----
+
+[listing]
+----
+SQL> show index namex;
+NAMEX INDEX ON EMPLOYEE(LAST_NAME, FIRST_NAME)
+----
+====
+

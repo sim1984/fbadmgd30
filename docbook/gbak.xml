@@ -15,10 +15,10 @@
 
     <para>Запуск <application>gbak</application> без аргументов (или с неверным переключателем) или
         с переключателем <code>-?</code> приводит к отображению следующего экрана справочной
-        информации: 
+        информации:
     </para>
     <para>
-        <screen><![CDATA[        
+        <screen><![CDATA[
 gbak:Usage:
      gbak -b <db set> <backup set> [backup options] [general options]
      gbak -c <backup set> <db set> [restore options] [general options]
@@ -71,7 +71,7 @@ gbak:general options are:
     -VERBI(NT) <n>        verbose information with explicit interval
     -Y  <path>            redirect/suppress status message output
     -Z                    print version number
-gbak:switches can be abbreviated to the unparenthesized characters        
+gbak:switches can be abbreviated to the unparenthesized characters
 ]]></screen>
     </para>
 
@@ -155,9 +155,9 @@ gbak:switches can be abbreviated to the unparenthesized characters
                             <para>Кроме того вы можете использовать обобщённый URL-подобный
                                 синтаксис
                                 <programlisting>
-<replaceable>&lt;protocol&gt;</replaceable>://[<replaceable>hostname</replaceable>[:<replaceable>port</replaceable>]/]service_mgr   
-                                
-<replaceable>&lt;protocol&gt;</replaceable> ::= inet|inet4|inet6|wnet|xnet                                
+<replaceable>&lt;protocol&gt;</replaceable>://[<replaceable>hostname</replaceable>[:<replaceable>port</replaceable>]/]service_mgr
+
+<replaceable>&lt;protocol&gt;</replaceable> ::= inet|inet4|inet6|wnet|xnet
                             </programlisting>
                             </para>
                             <para>При использовании локального протокола (XNET) имя хоста указывать
@@ -296,9 +296,9 @@ gbak:switches can be abbreviated to the unparenthesized characters
                 </itemizedlist></para>
             <para>Кроме того вы можете использовать обобщённый URL-подобный синтаксис
                 <programlisting>
-<replaceable>&lt;protocol&gt;</replaceable>://[<replaceable>hostname</replaceable>[:<replaceable>port</replaceable>]/]service_mgr   
-                                
-<replaceable>&lt;protocol&gt;</replaceable> ::= inet|inet4|inet6|wnet|xnet                                
+<replaceable>&lt;protocol&gt;</replaceable>://[<replaceable>hostname</replaceable>[:<replaceable>port</replaceable>]/]service_mgr
+
+<replaceable>&lt;protocol&gt;</replaceable> ::= inet|inet4|inet6|wnet|xnet
                             </programlisting>
             </para>
             <para>При использовании локального протокола (XNET) имя хоста указывать не нужно.</para>
@@ -330,15 +330,15 @@ gbak:switches can be abbreviated to the unparenthesized characters
 
         <para>Формат командной строки для создания резервной копии выглядит следующим образом:
             <programlisting>
-gbak -b <replaceable>&lt;database&gt;</replaceable> <replaceable>&lt;backup set&gt;</replaceable> [<replaceable>backup options</replaceable>] [<replaceable>general options</replaceable>]   
-                
-<replaceable>&lt;backup set&gt;</replaceable> ::= <replaceable>backup_file</replaceable> | {<replaceable>bk1</replaceable> <replaceable>size1</replaceable>}...<replaceable>bkN</replaceable>                
+gbak -b <replaceable>&lt;database&gt;</replaceable> <replaceable>&lt;backup set&gt;</replaceable> [<replaceable>backup options</replaceable>] [<replaceable>general options</replaceable>]
 
-<replaceable>&lt;database&gt;</replaceable> ::= [<replaceable>&lt;server_spec&gt;</replaceable>]{<replaceable>filepath</replaceable> | <replaceable>db_alias</replaceable>}     
+<replaceable>&lt;backup set&gt;</replaceable> ::= <replaceable>backup_file</replaceable> | {<replaceable>bk1</replaceable> <replaceable>size1</replaceable>}...<replaceable>bkN</replaceable>
 
-<replaceable>&lt;server_spec&gt;</replaceable> ::= 
-    <replaceable>hostname</replaceable>[\<replaceable>port</replaceable> | <replaceable>service</replaceable>]: 
-  | \\<replaceable>hostname</replaceable>[@<replaceable>port</replaceable> | <replaceable>service</replaceable>]\ 
+<replaceable>&lt;database&gt;</replaceable> ::= [<replaceable>&lt;server_spec&gt;</replaceable>]{<replaceable>filepath</replaceable> | <replaceable>db_alias</replaceable>}
+
+<replaceable>&lt;server_spec&gt;</replaceable> ::=
+    <replaceable>hostname</replaceable>[\<replaceable>port</replaceable> | <replaceable>service</replaceable>]:
+  | \\<replaceable>hostname</replaceable>[@<replaceable>port</replaceable> | <replaceable>service</replaceable>]\
   | <replaceable>&lt;protocol&gt;</replaceable>://[<replaceable>hostname</replaceable>[:<replaceable>port</replaceable> | <replaceable>service</replaceable>]/]
 
 <replaceable>&lt;protocol&gt;</replaceable> = inet | inet4 | inet6 | wnet | xnet
@@ -468,29 +468,29 @@ gbak -b <replaceable>&lt;database&gt;</replaceable> <replaceable>&lt;backup set&
             <para>Если база данных распложено локально, то достаточно просто указать путь к
                 первичному файлу базы данных или её псевдоним. Пример:
                 <programlisting>
-gbak -b C:\data\my.fdb D:\backup\my.fbk ...   
+gbak -b C:\data\my.fdb D:\backup\my.fbk ...
 </programlisting>
                 или с использованием алиаса
                 <programlisting>
-gbak -b mydb D:\backup\my.fbk ...   
+gbak -b mydb D:\backup\my.fbk ...
 </programlisting>
             </para>
 
             <para>Если же база данных расположено на удалённом хосте, то необходимо дополнить её имя
                 спецификацией удалённого сервера. Например:
                 <programlisting>
-gbak -b server:C:\data\my.fdb D:\backup\my.fbk ...   
+gbak -b server:C:\data\my.fdb D:\backup\my.fbk ...
 </programlisting>
                 или <programlisting>
-gbak -b server:mydb D:\backup\my.fbk ...   
+gbak -b server:mydb D:\backup\my.fbk ...
 </programlisting>
             </para>
             <para>Спецификацию удалённого хоста удобно указывать с помощью URL-подобного синтаксиса,
                 в котором можно явно задать используемый протокол:
                 <programlisting>
-gbak -b inet://localhost:3053/mydb D:\backup\my.fbk ...   
+gbak -b inet://localhost:3053/mydb D:\backup\my.fbk ...
 
-gbak -b wnet:///mydb D:\backup\my.fbk ...   
+gbak -b wnet:///mydb D:\backup\my.fbk ...
 </programlisting>
             </para>
 
@@ -532,8 +532,8 @@ gbak -b wnet:///mydb D:\backup\my.fbk ...
                     копии.</para>
                 <para>
                     <programlisting>
-gbak -b C:\data\my.fdb D:\backup\copy_1.fbk 100M D:\backup\copy_2.fbk 100M 
-  D:\backup\copy_3.fbk -user SYSDBA -password masterkey  
+gbak -b C:\data\my.fdb D:\backup\copy_1.fbk 100M D:\backup\copy_2.fbk 100M
+  D:\backup\copy_3.fbk -user SYSDBA -password masterkey
 </programlisting>
                 </para>
             </example>
@@ -551,7 +551,7 @@ gbak -b C:\data\my.fdb D:\backup\copy_1.fbk 100M D:\backup\copy_2.fbk 100M
                 что может замедлить резервное копирование. Чтобы предотвратить сборку мусора во
                 время резервного копирования, используйте параметр <code>-g[arbage_collect]</code>.
                 <synopsis>
-gbak -backup -g employee /backups/employee.fbk                
+gbak -backup -g employee /backups/employee.fbk
             </synopsis>
             </para>
 
@@ -571,9 +571,9 @@ gbak -backup -g employee /backups/employee.fbk
                 быстрее, даже на локальном компьютере.</para>
             <para>Примеры резервного копирования с использованием диспетчера служб:
                 <synopsis>
-gbak -backup -service tux:service_mgr employee /backups/employee.fbk   
+gbak -backup -service tux:service_mgr employee /backups/employee.fbk
 
-gbak -backup -service inet4://tux:3051/service_mgr employee /backups/employee.fbk   
+gbak -backup -service inet4://tux:3051/service_mgr employee /backups/employee.fbk
             </synopsis>
             </para>
 
@@ -606,7 +606,7 @@ gbak -b -g xnet://employee d:\backups\employee.fbk -user sysdba -pas masterkey
                 <para>Для более быстрого создания резервной копии на локальном компьютере
                     рекомендуем использовать диспетчер служб.
                     <synopsis>
-gbak -b -g -se service_mgr employee d:\backups\employee.fbk 
+gbak -b -g -se service_mgr employee d:\backups\employee.fbk
 -user sysdba -pas masterkey
             </synopsis>
                 </para>
@@ -632,13 +632,13 @@ gbak -b -g remotehost/3051:d:\data\employee.fdb d:\backups\employee.fbk -user sy
                 <para>Вы можете явно указать протокол TCP при помощи префиксов: inet, inet4, inet6.
                     Вместо пути к первичному файлу базы данных используется алиас.
                     <synopsis>
-gbak -b -g inet://remotehost/employee d:\backups\employee.fbk 
+gbak -b -g inet://remotehost/employee d:\backups\employee.fbk
 -user sysdba -pas masterkey
             </synopsis>
                     Если Firebird работает на нестандартном порту, например 3051, то команда
                     измениться так:
                     <synopsis>
-gbak -b -g inet://remotehost:3051/employee d:\backups\employee.fbk 
+gbak -b -g inet://remotehost:3051/employee d:\backups\employee.fbk
 -user sysdba -pas masterkey
             </synopsis>
                 </para>
@@ -647,14 +647,14 @@ gbak -b -g inet://remotehost:3051/employee d:\backups\employee.fbk
                     служб. Однако учтите, что в этом случае резервная копия будет создана на том же
                     компьютере, на котором расположена база данных.
                     <synopsis>
-gbak -b -g -se remotehost:service_mgr employee d:\backups\employee.fbk 
+gbak -b -g -se remotehost:service_mgr employee d:\backups\employee.fbk
 -user sysdba -pas masterkey
             </synopsis>
                 </para>
 
                 <para>Вариант с использованием явного указания префикса протокола представлен ниже:
                     <synopsis>
-gbak -b -g -se inet4://remotehost/service_mgr employee d:\backups\employee.fbk 
+gbak -b -g -se inet4://remotehost/service_mgr employee d:\backups\employee.fbk
 -user sysdba -pas masterkey
             </synopsis>
                 </para>
@@ -673,14 +673,14 @@ gbak -b -g -se inet4://remotehost/service_mgr employee d:\backups\employee.fbk
                     использование диспетчера служб. Журнал операций выполняем gbak будет выведен на
                     консоль.
                     <synopsis>
-gbak -b -g -se inet://localhost/service_mgr -user sysdba -password masterkey 
+gbak -b -g -se inet://localhost/service_mgr -user sysdba -password masterkey
 employee /copy/employee.dmp -v
             </synopsis>
                 </para>
 
                 <para>Каждую операцию можно снабдить статистикой с помощью опции <code>-ST</code>.
                     <synopsis>
-gbak -b -g -se inet://localhost/service_mgr -user sysdba -password masterkey 
+gbak -b -g -se inet://localhost/service_mgr -user sysdba -password masterkey
 employee /copy/employee.dmp -v -st trwd
             </synopsis>
                 </para>
@@ -688,7 +688,7 @@ employee /copy/employee.dmp -v -st trwd
                 <para>Для того чтобы журнал операций gbak был записан в файл добавим опцию
                         <code>-Y</code>.
                     <synopsis>
-gbak -b -g -se inet://localhost/service_mgr -user sysdba -password masterkey 
+gbak -b -g -se inet://localhost/service_mgr -user sysdba -password masterkey
 employee /copy/employee.dmp -v -st trwd -y /copy/employee_dump.log
             </synopsis>
                 </para>
@@ -701,7 +701,7 @@ employee /copy/employee.dmp -v -st trwd -y /copy/employee_dump.log
                     описания таблиц, представлений, хранимых, процедур и функций, триггеров, но без
                     данных в таблицах).
                     <synopsis>
-gbak -b -g -metadata -se inet://localhost/service_mgr -user sysdba -password masterkey 
+gbak -b -g -metadata -se inet://localhost/service_mgr -user sysdba -password masterkey
 employee /copy/employee.dmp
             </synopsis>
                 </para>
@@ -727,7 +727,7 @@ employee /copy/employee.dmp
                     конкретный список таблиц, вы можете перечислить их имена, разделив их символом
                         <quote>|</quote>.
                     <synopsis>
-gbak -b -g -se inet://localhost/service_mgr -user sysdba -password masterkey 
+gbak -b -g -se inet://localhost/service_mgr -user sysdba -password masterkey
 -skip_data table1|table2 employee /copy/employee.dmp
             </synopsis>
                 </para>
@@ -809,17 +809,17 @@ C:\data\my.fdb D:\backup\copy_1.fbk 100M D:\backup\copy_2.fbk 100M D:\backup\cop
         <para>Формат командной строки для восстановления базы данных из резервной копии выглядит
             следующим образом:
             <programlisting>
-gbak {-c | -r o | -rep} <replaceable>&lt;backup set&gt;</replaceable> <replaceable>&lt;db set&gt;</replaceable> [<replaceable>restore options</replaceable>] [<replaceable>general options</replaceable>]                
-                 
-<replaceable>&lt;backup set&gt;</replaceable> ::= <replaceable>backup_file</replaceable> [<replaceable>backup_file_2</replaceable> ... [<replaceable>backup_file_N</replaceable>]]  
+gbak {-c | -r o | -rep} <replaceable>&lt;backup set&gt;</replaceable> <replaceable>&lt;db set&gt;</replaceable> [<replaceable>restore options</replaceable>] [<replaceable>general options</replaceable>]
 
-<replaceable>&lt;db set&gt;</replaceable> ::= <replaceable>&lt;database&gt;</replaceable> [<replaceable>size1</replaceable> <replaceable>db2</replaceable> ... [<replaceable>sizeN-1</replaceable> <replaceable>dbN</replaceable>]]             
+<replaceable>&lt;backup set&gt;</replaceable> ::= <replaceable>backup_file</replaceable> [<replaceable>backup_file_2</replaceable> ... [<replaceable>backup_file_N</replaceable>]]
 
-<replaceable>&lt;database&gt;</replaceable> ::= [<replaceable>&lt;server_spec&gt;</replaceable>]{<replaceable>filepath</replaceable> | <replaceable>db_alias</replaceable>}     
+<replaceable>&lt;db set&gt;</replaceable> ::= <replaceable>&lt;database&gt;</replaceable> [<replaceable>size1</replaceable> <replaceable>db2</replaceable> ... [<replaceable>sizeN-1</replaceable> <replaceable>dbN</replaceable>]]
 
-<replaceable>&lt;server_spec&gt;</replaceable> ::= 
-    <replaceable>hostname</replaceable>[\<replaceable>port</replaceable> | <replaceable>service</replaceable>]: 
-  | \\<replaceable>hostname</replaceable>[@<replaceable>port</replaceable> | <replaceable>service</replaceable>]\ 
+<replaceable>&lt;database&gt;</replaceable> ::= [<replaceable>&lt;server_spec&gt;</replaceable>]{<replaceable>filepath</replaceable> | <replaceable>db_alias</replaceable>}
+
+<replaceable>&lt;server_spec&gt;</replaceable> ::=
+    <replaceable>hostname</replaceable>[\<replaceable>port</replaceable> | <replaceable>service</replaceable>]:
+  | \\<replaceable>hostname</replaceable>[@<replaceable>port</replaceable> | <replaceable>service</replaceable>]\
   | <replaceable>&lt;protocol&gt;</replaceable>://[<replaceable>hostname</replaceable>[:<replaceable>port</replaceable> | <replaceable>service</replaceable>]/]
 
 <replaceable>&lt;protocol&gt;</replaceable> = inet | inet4 | inet6 | wnet | xnet
@@ -1036,7 +1036,7 @@ gbak {-c | -r o | -rep} <replaceable>&lt;backup set&gt;</replaceable> <replaceab
                 <para>В примере восстановлена база данных из многофайловой реервной копии</para>
                 <para>
                     <programlisting>
-gbak -c -se inet://localhost/service_mgr -user sysdba -password masterkey 
+gbak -c -se inet://localhost/service_mgr -user sysdba -password masterkey
   d:\copy\db1.fbk d:\copy\db.fbk d:\copy\db3.fbk d:\data\db.fdb
 </programlisting>
                 </para>
@@ -1085,7 +1085,7 @@ gbak -c d:\copy\db.fbk xnet://d:\data\db.fdb
                 базы данных, кроме самого последнего, необходимо указать его максимальный размер в
                 страницах. Например:
                 <programlisting>
-gbak -c -se inet://localhost/service_mgr -user sysdba -password masterkey 
+gbak -c -se inet://localhost/service_mgr -user sysdba -password masterkey
   d:\copy\db.fbk  d:\data\db.fdb 50000 d:\data\db.fdb
 </programlisting>
             </para>
@@ -1096,7 +1096,7 @@ gbak -c -se inet://localhost/service_mgr -user sysdba -password masterkey
                 баз данных. Либо файл базы данных указан последним, либо после файла базы данных
                 указан размер в страницах. Пример:
                 <programlisting>
-gbak -c -se inet://localhost/service_mgr -user sysdba -password masterkey 
+gbak -c -se inet://localhost/service_mgr -user sysdba -password masterkey
   d:\copy\db_1.fbk d:\copy\db_2.fbk d:\copy\db_3.fbk d:\data\db.fdb 50000 d:\data\db.fdb
 </programlisting>
             </para>
@@ -1156,7 +1156,7 @@ gbak -c -se inet://localhost/service_mgr -user sysdba -password masterkey
                 позволяет избежать копирования данных по сети TCP, что замедляет действия по
                 восстановлению.
                 <programlisting>
-tux> gbak -replace -service tux:service_mgr /backups/employee.fbk employee                
+tux> gbak -replace -service tux:service_mgr /backups/employee.fbk employee
             </programlisting>
             </para>
         </section>
@@ -1264,7 +1264,7 @@ gbak -с -se inet://remotehost/service_mgr d:\backups\employee.fbk d:\data\emplo
                     компьютере с использование диспетчера служб. База данных будет восстановлена с
                     новым размером страницы.
                     <synopsis>
-gbak -с -se inet://localhost/service_mgr -user sysdba -password masterkey 
+gbak -с -se inet://localhost/service_mgr -user sysdba -password masterkey
 -p 16384 d:\backups\employee.fbk d:\data\employee.fdb
             </synopsis>
                 </para>
@@ -1281,14 +1281,14 @@ gbak -с -se inet://localhost/service_mgr -user sysdba -password masterkey
                     компьютере с использование диспетчера служб. Журнал операций выполняем gbak
                     будет выведен на консоль.
                     <synopsis>
-gbak -с -se inet://localhost/service_mgr -user sysdba -password masterkey 
+gbak -с -se inet://localhost/service_mgr -user sysdba -password masterkey
 d:\backups\employee.fbk d:\data\employee.fdb -v
             </synopsis>
                 </para>
 
                 <para>Каждую операцию можно снабдить статистикой с помощью опции <code>-ST</code>.
                     <synopsis>
-gbak -с -se inet://localhost/service_mgr -user sysdba -password masterkey 
+gbak -с -se inet://localhost/service_mgr -user sysdba -password masterkey
 d:\backups\employee.fbk d:\data\employee.fdb -v -st trwd
             </synopsis>
                 </para>
@@ -1296,7 +1296,7 @@ d:\backups\employee.fbk d:\data\employee.fdb -v -st trwd
                 <para>Для того чтобы журнал операций gbak был записан в файл добавим опцию
                         <code>-Y</code>.
                     <synopsis>
-gbak -с -se inet://localhost/service_mgr -user sysdba -password masterkey 
+gbak -с -se inet://localhost/service_mgr -user sysdba -password masterkey
 d:\backups\employee.fbk d:\data\employee.fdb -v -st trwd -y /copy/employee_dump.log
             </synopsis>
                 </para>
@@ -1309,8 +1309,8 @@ d:\backups\employee.fbk d:\data\employee.fdb -v -st trwd -y /copy/employee_dump.
                     метаданные (описания таблиц, представлений, хранимых, процедур и функций,
                     триггеров, но без данных в таблицах).
                     <synopsis>
-gbak -с -metadata -se inet://localhost/service_mgr -user sysdba -password masterkey 
-d:\backups\employee.fbk d:\data\employee.fdb 
+gbak -с -metadata -se inet://localhost/service_mgr -user sysdba -password masterkey
+d:\backups\employee.fbk d:\data\employee.fdb
             </synopsis>
                 </para>
             </example>
@@ -1336,7 +1336,7 @@ d:\backups\employee.fbk d:\data\employee.fdb
                     конкретный список таблиц, вы можете перечислить их имена, разделив их символом
                         <quote>|</quote>.
                     <synopsis>
-gbak -с -se inet://localhost/service_mgr -user sysdba -password masterkey 
+gbak -с -se inet://localhost/service_mgr -user sysdba -password masterkey
 -skip_data table1|table2 /copy/employee.dmp /data/employee.fdb
             </synopsis>
                 </para>
@@ -1495,7 +1495,7 @@ tux> gbak -replace /backups/employee.2_5.fbk employee
 
 tux> # Check new ODS version (as root user!)
 tux> gstat -h employee|grep ODS
-        ODS version             12.0                
+        ODS version             12.0
             </synopsis>
 
             <para>После вышесказанного старая база данных Firebird 2.5 будет воссоздана — с
@@ -1524,7 +1524,7 @@ tux> gbak -replace -buffer 200 /backups/employee.fbk employee
 
 tux> # Check the new cache size (as root user!)
 tux> gstat -h employee | grep -i buffer
-        Page buffers            200                
+        Page buffers            200
             </synopsis>
 
             <para>Размер кэша по умолчанию используется, когда количество буферов равно нулю, как в
@@ -1549,7 +1549,7 @@ tux> gbak -replace -page_size 8192 /backups/employee.fbk employee
 
 tux> # Check the new page size (as root user!)
 tux> gstat -h employee | grep -i "page size"
-        Page size               8192                
+        Page size               8192
             </synopsis>
         </section>
 
@@ -1570,7 +1570,7 @@ tux> gstat -h employee | grep -i "page size"
 
             <synopsis>
 tux> # Backup the production database.
-tux> gbak -backup employee /backups/employee.fbk                
+tux> gbak -backup employee /backups/employee.fbk
             </synopsis>
 
             <para>Затем на сервере <emphasis>tuxrep</emphasis> группы отчетов:</para>
@@ -1589,7 +1589,7 @@ tuxrep> gbak -replace -mode read_only employee.fbk employee
 
 tuxrep> # Check database mode (as root user)
 tuxrep> gstat -h employee|grep -i attributes
-        Attributes              no reserve, read only              
+        Attributes              no reserve, read only
             </synopsis>
         </section>
         <section>
@@ -1602,7 +1602,7 @@ tuxrep> gstat -h employee|grep -i attributes
 
             <synopsis>
 tux> # Clone a test database to the same server, without requiring a dump file.
-tux> gbak -backup emptest stdout | gbak -replace stdin emptest_2              
+tux> gbak -backup emptest stdout | gbak -replace stdin emptest_2
             </synopsis>
 
             <para>Обратите внимание, что имя выходного файла для резервной копии —
@@ -1647,7 +1647,7 @@ Database: employee
  Shadow 2: "/opt/firebird/shadows/employee.shd2" manual
 ...
 
-SQL> quit;                
+SQL> quit;
             </screen>
             <screen>
 tux> # Restore the database preserving shadow files.
@@ -1665,7 +1665,7 @@ Database: employee
  Shadow 2: "/opt/firebird/shadows/employee.shd2" manual
 ...
 
-SQL> quit;                
+SQL> quit;
                 </screen>
             <screen>
 tux> # Restore the database killing shadow files.
@@ -1681,7 +1681,7 @@ Database: employee
         Owner: SYSDBA
 ...
 
-SQL> quit;                
+SQL> quit;
                 </screen>
             <note>
                 <para> Я использую isql в приведенных выше примерах, так как <code>gstat -h</code>,
@@ -1704,7 +1704,7 @@ SQL> quit;
 
             <synopsis>
 tux> # Backup the reporting database on remote server tuxrep.
-tux> gbak -backup -service tuxrep:service_mgr employee /backups/remote_backup.fbk                
+tux> gbak -backup -service tuxrep:service_mgr employee /backups/remote_backup.fbk
             </synopsis>
 
             <para>Файл резервной копии будет иметь того же владельца и группу, что и сервер базы
@@ -1716,7 +1716,7 @@ tux> gbak -backup -service tuxrep:service_mgr employee /backups/remote_backup.fb
             <synopsis>
 tux> # Restore the read-only reporting database on remote server tuxrep.
 tux> gbak -replace -mode read_only -service tuxrep:service_mgr \
-            /backups/remote_backup.fbk employee                
+            /backups/remote_backup.fbk employee
             </synopsis>
 
             <note>
@@ -1739,14 +1739,14 @@ tux> gbak -replace -mode read_only -service tuxrep:service_mgr \
 
             <synopsis>
 tux> # Backup the employee database on this server, but pseudo-remotely!
-tux> gbak -backup -service tux:service_mgr employee /backups/remote_backup.fbk                
+tux> gbak -backup -service tux:service_mgr employee /backups/remote_backup.fbk
             </synopsis>
 
             <para>Соответствующее восстановление также можно запускать удаленно:</para>
 
             <synopsis>
 tux> # Restore the employee database on this server, but pseudo-remotely!
-tux> gbak -replace -service tux:service_mgr /backups/remote_backup.fbk employee               
+tux> gbak -replace -service tux:service_mgr /backups/remote_backup.fbk employee
             </synopsis>
 
             <para>Формат параметра, используемого для переключателя -service, различается в
@@ -1814,7 +1814,7 @@ tux> # Clone a test database to a different server, without requiring a dump fil
 tux> gbak -backup employee stdout | \
 ssh firebird@tuxrep "gbak {...} -replace stdin emptest"
 
-firebird@tuxrep's password:                
+firebird@tuxrep's password:
             </screen>
 
             <para>Как видите, вывода не так много, но вы можете подключиться удаленно и
@@ -1830,7 +1830,7 @@ SQL> show database;
 Database: tuxrep:emptest
         Owner: SYSDBA
 PAGE_SIZE 4096
-...                
+...
             </screen>
 
             <para>В следующем примере показано резервное копирование удаленной базы данных в
@@ -1844,7 +1844,7 @@ firebird@tuxrep's password:
 
 tux> ls data
 
-employee.fdb  tuxrep_emptest.fdb                
+employee.fdb  tuxrep_emptest.fdb
             </screen>
 
             <para>Вы видите, что создана новая база данных <filename>tuxrep_emptest.fdb</filename>.
@@ -1855,7 +1855,7 @@ tux> isql data/tuxrep_emptest.fdb
 
 Database:  data/tuxrep_emptest.fdb
 
-SQL> quit;                
+SQL> quit;
             </screen>
 
             <para>В последнем примере показано, как сделать резервную копию удаленной базы данных на
@@ -1870,7 +1870,7 @@ firebird@tuxqa's password
 
 tux> ssh firebird@tuxqa "ls data"
 
-employee.fdb  tuxrep_empqa.fdb                
+employee.fdb  tuxrep_empqa.fdb
             </screen>
         </section>
 
@@ -1921,7 +1921,7 @@ tux> cat /opt/firebird/aliases.conf
 #          There is a single space after the equals sign.
 #          The path has no double quotes (they don't work!)
 # ----------------------------------------------------------
-employee = /opt/firebird/examples/empbuild/employee.fdb                
+employee = /opt/firebird/examples/empbuild/employee.fdb
             </screen>
 
             <para>Ниже показано использование утилиты <application>gzip</application> на сервере
@@ -1933,7 +1933,7 @@ employee = /opt/firebird/examples/empbuild/employee.fdb
 tux> # Backup the production employee database using gzip.
 tux> gfix -shut -tran 60 employee
 tux> DBFILE=`grep -i "^employee =" /opt/firebird/aliases.conf | cut -d" " -f3`
-tux> gzip -9 --stdout $DBFILE > /backups/employee.fdb.gz                
+tux> gzip -9 --stdout $DBFILE > /backups/employee.fdb.gz
             </synopsis>
 
             <para>Процесс восстановления для этой базы данных будет обратным описанному выше. Опять
@@ -1946,7 +1946,7 @@ tux> DBFILE=`grep -i "^employee =" /opt/firebird/aliases.conf | cut -d" " -f3`
 tux> gunzip --stdout /backups/employee.fdb.gz > $DBFILE
 
 tux> # Make sure firebird can see the file.
-tux> chown firebird:firebird $DBFILE               
+tux> chown firebird:firebird $DBFILE
             </synopsis>
         </section>
     </section>
@@ -2028,7 +2028,7 @@ tux> FILENAME=employee_`date "+%Y%m%d_%H%M%S"`
 
 tux> # Shut down and Backup the database
 tux> gfix -shut -tran 60 employee
-tux> gbak -backup employee /backups/${FILENAME}.fbk -y /logs/${FILENAME}.log -v                
+tux> gbak -backup employee /backups/${FILENAME}.fbk -y /logs/${FILENAME}.log -v
             </screen>
 
             <para>Вышеуказанное весьма полезно, поскольку предотвращает перезапись предыдущих

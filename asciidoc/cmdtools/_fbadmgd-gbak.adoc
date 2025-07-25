@@ -1,0 +1,196 @@
+[[fbadmgd-gbak]]
+= Утилита GBAK
+
+(((GBAK))) Утилита `gbak` позволяет выполнять резервное копирование или восстановление базы данных с возможностью изменения указанных характеристик базы данных.
+
+Запуск `gbak`без аргументов (или с неверным переключателем) или с переключателем `-?` приводит к отображению следующего экрана справочной информации:
+
+[listing]
+----
+gbak:Usage:
+     gbak -b <db set> <backup set> [backup options] [general options]
+     gbak -c <backup set> <db set> [restore options] [general options]
+     <db set> = <database> | <db1 size1>...<dbN> (size in db pages)
+     <backup set> = <backup> | <bk1 size1>...<bkN> (size in bytes = n[K|M|G])
+     -recreate overwrite and -replace can be used instead of -c
+gbak:legal switches are:
+    -B(ACKUP_DATABASE)    backup database to file
+    -C(REATE_DATABASE)    create database from backup file (restore)
+    -R(ECREATE_DATABASE) [O(VERWRITE)] create (or replace if OVERWRITE used)
+                                database from backup file (restore)
+    -REP(LACE_DATABASE)   replace database from backup file (restore)
+gbak:backup options are:
+    -CO(NVERT)            backup external files as tables
+    -E(XPAND)             no data compression
+    -FA(CTOR)             blocking factor
+    -G(ARBAGE_COLLECT)    inhibit garbage collection
+    -IG(NORE)             ignore bad checksums
+    -L(IMBO)              ignore transactions in limbo
+    -NOD(BTRIGGERS)       do not run database triggers
+    -NT                   Non-Transportable backup file format
+    -OL(D_DESCRIPTIONS)   save old style metadata descriptions
+    -T(RANSPORTABLE)      transportable backup -- data in XDR format
+gbak:restore options are:
+    -BU(FFERS)            override page buffers default
+    -FIX_FSS_D(ATA)       fix malformed UNICODE_FSS data
+    -FIX_FSS_M(ETADATA)   fix malformed UNICODE_FSS metadata
+    -I(NACTIVE)           deactivate indexes during restore
+    -K(ILL)               restore without creating shadows
+    -MO(DE) <access>      "read_only" or "read_write" access
+    -N(O_VALIDITY)        do not restore database validity conditions
+    -O(NE_AT_A_TIME)      restore one table at a time
+    -P(AGE_SIZE)          override default page size
+    -USE_(ALL_SPACE)      do not reserve space for record versions
+gbak:general options are:
+    -FE(TCH_PASSWORD)     fetch password from file
+    -M(ETA_DATA)          backup or restore metadata only
+    -PAS(SWORD)           Firebird password
+    -RO(LE)               Firebird SQL role
+    -SE(RVICE)            use services manager
+    -SKIP_D(ATA)          skip data for table
+    -ST(ATISTICS) TDRW    show statistics:
+        T                 time from start
+        D                 delta time
+        R                 page reads
+        W                 page writes
+    -TRU(STED)            use trusted authentication
+    -USER                 Firebird user name
+    -V(ERIFY)             report each action taken
+    -VERBI(NT) <n>        verbose information with explicit interval
+    -Y  <path>            redirect/suppress status message output
+    -Z                    print version number
+gbak:switches can be abbreviated to the unparenthesized characters
+----
+
+Формат команд и список доступных переключателей отличается при создании резервной копи и восстановлении. Эти режимы работы и их переключатели будут описаны отдельно, а сейчас приведём список переключателей, которые являются общими для обоих режимов работы.
+
+== Общие опции
+
+Следующие параметры применимы как в режиме резервного копирования, так и в режиме восстановления базы данных.
+
+.Команды и опции утилиты GBAK
+[cols="<1,<1", options="header",stripes="none"]
+|===
+^|Опция
+^|Описание
+
+|`-FE[TCH_PASSWORD] _filename_`
+|Извлекает пароль из файла. Если имя файла указано как `stdin`, то пользователю будет предложено ввести пароль. В системах POSIX имя файла `/dev/tty` также приведет к запросу пароля.
+
+|`-M[ETADATA]`
+|Этот переключатель приводит к тому, что ваши данные игнорируются, а не копируются и не восстанавливаются. При резервном копировании копируются только метаданные базы данных. При восстановлении любые данные в файле дампа не будут восстановлены.
+
+|`-PAS[SWORD] _password_`
+|Пароль пользователя, подключающегося к базе данных для резервного копирования, или используемый при создании БД в режиме восстановления.
+
+Этот ключ не нужно указывать, если установлена переменная среды `ISC_PASSWORD`, а так же при использовании переключателя `-FE[TCH_PASSWORD]`, или доверительной аутентификации.
+
+|`-RO[LE] _rolename_`
+|Позволяет указать роль, которая будет использоваться подключающимся пользователем.
+
+|`-SE[RVICE] <service>`
+a|Указывает диспетчер служб.
+
+Для локального соединения используйте просто имя диспетчера служб, которое всегда должно быть `service_mgr`.
+
+Чтобы присоединить к удаленной машине необходимо дописать имя хоста в одном из следующих форматов с зависимости от используемого протокола:
+
+TCP/IP:: `_hostname_[/_port_]:service_mgr`
+WNET:: `{backslash}{backslash}__hostname__[@_port_]:service_mgr`
+XNET:: `service_mgr`
+
+Кроме того вы можете использовать обобщённый URL-подобный синтаксис
+
+[listing,subs="+quotes,attributes"]
+----
+<protocol>://[_host_[:{_port_ {vbar} _service_}]/]service_mgr
+
+<protocol> ::= inet {vbar} inet4 {vbar} inet6 {vbar} xnet {vbar} wnet
+----
+
+При использовании локального протокола (XNET) имя хоста указывать не нужно.
+
+|`-SKIP_D[ATA] _pattern_`
+|Пропускает данные таблиц, имена которых соответствуют указанному здесь регулярному выражению в SQL-синтаксисе (см. оператор `SIMILAR TO`).
+
+|`-ST[ATISTICS] TRWD`
+|Выводит статистику в процессе работы (работает вместе с `-V[ERIFY]`).
+
+*T* -- время от начала работы `gbak`; +
+*R* -- число страниц прочитанных с последнего вывода на экран; +
+*W* -- число страниц записанных с последнего вывода на экран; +
+*D* -- время прошедшее с последнего вывода на экран.
+
+|`-TRU[STED]`
+|Использовать доверительную аутентификацию.
+
+|`-U[SER] _username_`
+|Позволяет указать имя пользователя `SYSDBA` или пользователя владельца базы данных, если необходимо выполнить резервное копирование базы данных.
+
+При восстановлении базы данных позволяет указать любого пользователя у которого есть привилегия `CREATE DATABASE`. Этот пользователь будет владельцем восстановленной базы данных.
+
+Этот ключ не нужно указывать, если установлена переменная среды `ISC_ISC_USER`, или при использовании доверительной аутентификации.
+
+|`-V[ERIFY]`
+|Отчет о каждом выполненном действии.
+
+Обычно `gbak` работает молчаливо, и информация не выводится на дисплей. Этот переключатель изменяет ситуацию и вызывает отображение большого количества информации.
+
+При использовании этого переключателя по умолчанию информация выводится на экран, но вы можете перенаправить её в файл, используя ключ `-y`.
+
+|`-VERBI[NT] _n_`
+|Подробный вывод лога действии с заданным интервалом времени.
+
+|`-Y {_log_filename_ {vbar} suppress}`
+|Вывод лога действий в указанный файл.
+
+Используется вместе с ключом `-v[erify]` для перенаправления сообщений о состоянии в файл или устройство, а не на экран, или для их полного подавления.
+
+Если используется `-y suppress`, то никакая информация не будет записываться на экран независимо от того, указан ли `-v[erify]`.
+
+Если задано имя файла и указан ключ `-v[erify]`, то сообщения о прогрессе и предупреждениях будут записаны в указанный файл.
+
+|`-Z`
+|Вывод версии `gbak` и версии сервера Firebird.
+
+|===
+
+[NOTE]
+====
+Параметр `-v` в справке, выдаваемой `gbak`, описан как `-v[erify]`. Это неверно, потому что опция `gbak -v` не имеет ничего общего с проверкой БД. Скорее, этот параметр должен расшифровываться как "`verbose`".
+====
+
+== Использование диспетчера служб
+
+В обычном режиме при создании резервной копии `gbak` самостоятельно читает с сервера метаданные и данные из записывает их в файл резервной копии. При восстановлении `gbak` читает файл резервной копии и отправляет серверу инструкции для восстановления.
+
+При использовании диспетчера служб `gbak` только даёт команду начать резервную копию или восстановление серверу, и он сам делает это. Однако `gbak` может принимать лог действий от сервера, который будет вестись при указании ключа `-v[erify]`. В этом случае при создании резервной копии файлы копии будут создаваться на сервере. Для возможности восстановления базы данных файлы резервной копии так же должны находится на сервере.
+
+Для использования диспетчера служб необходимо указать параметр `-SE[RVICE] <service>`.
+
+Для локального соединения используйте просто имя диспетчера служб, которое всегда должно быть `service_mgr`.
+
+Чтобы присоединить к удаленной машине необходимо дописать имя хоста в одном из следующих форматов с зависимости от используемого протокола:
+
+TCP/IP:: `_hostname_[/_port_]:service_mgr`
+WNET:: `{backslash}{backslash}__hostname__[@_port_]:service_mgr`
+XNET:: `service_mgr`
+
+Кроме того вы можете использовать обобщённый URL-подобный синтаксис
+
+[listing,subs="+quotes,attributes"]
+----
+<protocol>://[_host_[:{_port_ | _service_}]/]service_mgr
+
+<protocol> ::= inet | inet4 | inet6 | xnet | wnet
+----
+
+При использовании локального протокола (XNET) имя хоста указывать не нужно.
+
+[IMPORTANT]
+====
+Если используете диспетчер служб, то не надо указывать спецификацию удалённого хоста в имени базы данных как при резервном копировании, так и при восстановлении.
+====
+
+== Создание резервных копий
+

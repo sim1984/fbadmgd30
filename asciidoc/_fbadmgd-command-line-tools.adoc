@@ -4,3 +4,5 @@
 В данном разделе рассматриваются утилиты поставляемые в составе сервера Firebird 3.0.
 
 include::cmdtools/_fbadmgd-isql.adoc[leveloffset=2]
+
+include::cmdtools/_fbadmgd-gbak.adoc[leveloffset=2]

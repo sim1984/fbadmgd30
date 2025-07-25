@@ -2077,8 +2077,7 @@ Records affected: 1
 SQL> commit;
 ----
 
-// TODO: link.
-Смотри также: SET ROWCOUNT.
+Смотри также: <<fbadmgd-isql-commands_set-set_rowcount>>.
 
 [[fbadmgd-isql-commands_set-set_echo]]
 === SET ECHO
@@ -2200,7 +2199,7 @@ SQL> select count(*) from employee;
 ====
 
 [[fbadmgd-isql-commands_set-set_keep_tran]]
-=== SET KEEP_TRAN_PARAMS
+=== SET KEEP_TRAN_params
 
 .Назначение
 Включение или выключение сохранения параметров транзакции.
@@ -2507,6 +2506,71 @@ Select Expression
 
 Смотри также: <<fbadmgd-isql-commands_set-set_plan>>, <<fbadmgd-isql-commands_set-set_explain>>.
 
+[[fbadmgd-isql-commands_set-set_rowcount]]
+=== SET MAXROWS или SET ROWCOUNT
+
+.Назначение
+Установка максимального количества выводимых записей.
+(((ISQL, SET ROWCOUNT)))(((ISQL, SET MAXROWS)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SET {MAXROWS | ROWCOUNT} [_n_]
+----
+
+.Параметры команды `SET MAXROWS`
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|n
+|Максимальное количество выводимых записей
+
+|===
+
+Установка `MAXROWS` в ноль (что является значением по умолчанию при запуске `isql`) приводит к тому, что оператор `SELECT` возвращает все строки, соответствующие условиям в предложении `WHERE`. В некоторых случаях вам не нужно, чтобы большой объём данных прокручивался вверх по экрану, поэтому вы можете задать для `MAXROWS` меньшее значение, и все последующие операторы `SELECT` будут отображать только первые _n_ строк, а не все.
+
+.Использование команды SET MAXROWS
+[example]
+====
+[listing]
+----
+SQL> set count on;
+SQL> set maxrows 0;
+
+SQL> select emp_no from employee;
+
+ EMP_NO
+=======
+      2
+      4
+...
+    144
+    145
+
+Records affected: 42
+
+SQL> set maxrows 10;
+SQL> select emp_no from employee;
+
+ EMP_NO
+=======
+      2
+      4
+...
+     15
+     20
+
+Records affected: 10
+----
+====
+
+Нет никаких признаков, что `MAXROWS` ограничивает количество возвращаемых строк. Пользователь должен помнить или проверять, включено ли `MAXROWS`. Использование `MAXROWS` может привести к путанице в точном количестве строк в таблице!
+
+См. также: <<fbadmgd-isql-commands_set-set_count>>.
+
 [[fbadmgd-isql-commands_set-set_sqlda]]
 === SET SQLDA_DISPLAY
 
@@ -2761,7 +2825,7 @@ SQL> select * from test_proc;
 Смотри также: <<fbadmgd-isql-terminator>>.
 
 [[fbadmgd-isql-commands_set-set_warnings]]
-=== SET WARNINGS
+=== SET WARNINGS или ЫУЕ ЦТП
 
 .Назначение
 Включение или выключение вывода предупреждающих сообщений.
@@ -3391,15 +3455,14 @@ N3                                INPUT INTEGER
 ----
 ====
 
-// todo: link
-Смотри также: SHOW PROCEDURE, SHOW TRIGGER, SHOW PACKAGE.
+Смотри также: <<fbadmgd-isql-commands_show-show_procedure>>, <<fbadmgd-isql-commands_show-show_trigger>>, <<fbadmgd-isql-commands_show-show_package>>.
 
 [[fbadmgd-isql-commands_show-show_generator]]
 === SHOW GENERATOR
 
 .Назначение
 Отображение информации обо всех не системных генераторах (последовательностям) или об одном указанном генераторе (последовательности).
-(((ISQL, SHOW GENERATOR)))(((ISQL, SHOW SEQUENCE)))
+(((ISQL, SHOW GENERATOR)))
 
 .Синтаксис
 [listing,subs="+quotes,attributes"]
@@ -3438,8 +3501,7 @@ Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
 ----
 ====
 
-// TODO: link
-Смотри также: SHOW SEQUENCE.
+Смотри также: <<fbadmgd-isql-commands_show-show_sequence>>.
 
 [[fbadmgd-isql-commands_show-show_grant]]
 === SHOW GRANT
@@ -3580,3 +3642,736 @@ NAMEX INDEX ON EMPLOYEE(LAST_NAME, FIRST_NAME)
 ----
 ====
 
+[[fbadmgd-isql-commands_show-show_mapping]]
+=== SHOW MAPPING
+
+.Назначение
+Информация локальных и глобальных отображений для объектов безопасности.
+(((ISQL, SHOW MAPPING)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW {MAPpings | MAPping _mapping_name_ }
+----
+
+.Параметры оператора SHOW MAPPING
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|mapping_name
+|Имя отображения.
+
+|===
+
+Команда `SHOW MAPPING` выводит информацию обо всех отображениях (локальных и глобальных) для объектов безопасности. Если указано имя отображения, то будет выведена информация только он нём.
+
+.Использование команды SHOW MAPPING
+[example]
+====
+[listing]
+----
+SQL> show mapping;
+WIN_ADMINS USING PLUGIN WIN_SSPI FROM PREDEFINED_GROUP DOMAIN_ANY_RID_ADMINS TO ROLE RDB$ADMIN
+
+*** Global mapping ***
+TRUSTED_AUTH USING PLUGIN WIN_SSPI FROM ANY USER TO USER
+
+SQL> show mapping win_admins;
+WIN_ADMINS USING PLUGIN WIN_SSPI FROM PREDEFINED_GROUP DOMAIN_ANY_RID_ADMINS TO ROLE RDB$ADMIN
+----
+====
+
+[[fbadmgd-isql-commands_show-show_package]]
+=== SHOW PACKAGE
+
+.Назначение
+Отображение списка пакетов или информации об указанном пакете.
+(((ISQL, SHOW PACKAGE)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW {PACKages | PACKage _package_name_ }
+----
+
+.Параметры оператора SHOW PACKAGE
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|package_name
+|Имя пакета.
+
+|===
+
+Команда `SHOW PACKAGE` отображает список всех пакетов определенных в текущей базе данных. Если в качестве параметра указано имя пакета, то будет отображён исходный код заголовка и тела пакета.
+
+.Использование команды SHOW PACKAGE
+[example]
+====
+[listing]
+----
+SQL> show packages;
+
+       CHECK_NAME_UTILS                       DATE_UTILS
+       REPL_APPLY_UTILS                       REPL_LOG_UTILS
+       REPL_TRIGGERS_UTILS                    REPL_WRITE_LOG
+
+SQL> show package date_utils;
+
+DATE_UTILS
+Header source:
+BEGIN
+  ...
+  -- Возвращает строковое представление даты в формате dd MMM yyyy
+  FUNCTION DateToChar_Rus(ADate DATE) RETURNS VARCHAR(35);
+  -- Возвращает строковое представление даты в формате dd MMM yyyy
+  FUNCTION DateToChar_En(ADate DATE) RETURNS VARCHAR(35);
+  ...
+END
+
+Body source:
+BEGIN
+  ...
+  /**
+   * Возвращает строковое представление даты в формате dd MMM yyyy
+   */
+  FUNCTION DateToChar_Rus(ADate DATE) RETURNS VARCHAR(35)
+  AS
+  BEGIN
+    RETURN EXTRACT(DAY FROM ADate) || ' ' ||
+           TRIM (CASE EXTRACT(MONTH FROM ADate)
+                  WHEN 1 THEN 'января'
+                  WHEN 2 THEN 'февраля'
+                  WHEN 3 THEN 'марта'
+                  WHEN 4 THEN 'апреля'
+                  WHEN 5 THEN 'мая'
+                  WHEN 6 THEN 'июня'
+                  WHEN 7 THEN 'июля'
+                  WHEN 8 THEN 'августа'
+                  WHEN 9 THEN 'сентября'
+                  WHEN 10 THEN 'октября'
+                  WHEN 11 THEN 'ноября'
+                  WHEN 12 THEN 'декабря'
+               END) || ' ' ||
+               EXTRACT(YEAR FROM ADate);
+  END
+
+  /**
+   * Возвращает строковое представление даты в формате dd MMM yyyy
+   */
+  FUNCTION DateToChar_En(ADate DATE) RETURNS VARCHAR(35)
+  AS
+  BEGIN
+    RETURN EXTRACT(DAY FROM ADate) || ' ' ||
+           TRIM (CASE EXTRACT(MONTH FROM ADate)
+                   WHEN 1 THEN 'January'
+                   WHEN 2 THEN 'February'
+                   WHEN 3 THEN 'March'
+                   WHEN 4 THEN 'April'
+                   WHEN 5 THEN 'May'
+                   WHEN 6 THEN 'June'
+                   WHEN 7 THEN 'July'
+                   WHEN 8 THEN 'August'
+                   WHEN 9 THEN 'September'
+                   WHEN 10 THEN 'October'
+                   WHEN 11 THEN 'November'
+                   WHEN 12 THEN 'December'
+               END) || ' ' ||
+               EXTRACT(YEAR FROM ADate);
+  END
+  ...
+END
+----
+====
+
+Смотри также: <<fbadmgd-isql-commands_show-show_function>>, <<fbadmgd-isql-commands_show-show_trigger>>, <<fbadmgd-isql-commands_show-show_procedure>>.
+
+[[fbadmgd-isql-commands_show-show_procedure]]
+=== SHOW PROCEDURE
+
+.Назначение
+Отображение информации обо всех процедурах в текущей базе данных или об указанной процедуре.
+(((ISQL, SHOW PROCEDURE)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW {PROCedures | PROCedure _procedure_name_ }
+----
+
+.Параметры оператора SHOW PROCEDURE
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|procedure_name
+|Имя хранимой процедуры.
+
+|===
+
+Команда `SHOW PROCEDURE` позволяет отобразить список всех хранимых процедур определённых в текущей базе данных и их зависимостей, т.е. объекты которые используются процедурой. Если указано имя хранимой процедуры, то будет отображён её исходный код, а также сведения о входных и выходных параметрах.
+
+.Использование команды SHOW PROCEDURE
+[example]
+====
+[listing]
+----
+SQL> show procedures;
+Global procedures
+
+Procedure Name                    Invalid Dependency, Type
+================================= ======= =====================================
+ADD_EMP_PROJ                              EMPLOYEE_PROJECT, Table
+                                          UNKNOWN_EMP_ID, Exception
+ALL_LANGS                                 JOB, Table
+                                          SHOW_LANGS, Procedure
+...
+
+
+SQL> show procedure all_langs;
+Procedure text:
+=============================================================================
+BEGIN
+        FOR SELECT job_code, job_grade, job_country FROM job
+                INTO :code, :grade, :country
+
+        DO
+        BEGIN
+            FOR SELECT languages FROM show_langs
+                    (:code, :grade, :country) INTO :lang DO
+                SUSPEND;
+            /* Put nice separators between rows */
+            code = '=====';
+            grade = '=====';
+            country = '===============';
+            lang = '==============';
+            SUSPEND;
+        END
+    END
+=============================================================================
+Parameters:
+CODE                              OUTPUT VARCHAR(5)
+GRADE                             OUTPUT VARCHAR(5)
+COUNTRY                           OUTPUT VARCHAR(15)
+LANG                              OUTPUT VARCHAR(15)
+----
+====
+
+Смотри также: <<fbadmgd-isql-commands_show-show_function>>, <<fbadmgd-isql-commands_show-show_trigger>>, <<fbadmgd-isql-commands_show-show_package>>.
+
+[[fbadmgd-isql-commands_show-show_role]]
+=== SHOW ROLE
+
+.Назначение
+Отображение списка ролей в текущей базе данных, или списка пользователей назначенных указанной роли.
+(((ISQL, SHOW ROLE)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW {ROLEs | ROLE _role_name_ }
+----
+
+.Параметры оператора SHOW ROLE
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|role_name
+|Имя роли.
+
+|===
+
+Команда `SHOW ROLE` выводит список ролей в текущей базе данных. Если в качестве аргумента передано имя роли, то будет выведен список пользователей которым назначена указанная роль.
+
+.Использование команды SHOW ROLE
+[example]
+====
+[listing]
+----
+SQL> show roles;
+       R1                                     R2
+       R3
+
+SQL> show role r1;
+Role R1 is granted to:
+U1
+U2
+----
+====
+
+[[fbadmgd-isql-commands_show-show_secclasses]]
+=== SHOW SECCLASSES
+
+.Назначение
+Отображение информации о классах безопасности для заданного объекта.
+(((ISQL, SHOW SECCLASSES)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW {SECCLASSES _object_name_ }
+----
+
+.Параметры оператора SHOW SECCLASSES
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|object_name
+|Имя объекта метаданных.
+
+|===
+
+Команда `SHOW SECCLASSES` отображает информацию о классах безопасности для заданного объекта. В качестве `object_name` может быть передано не только имя таблицы, это может быть имя хранимой процедуры, представления и т.д.
+
+.Использование команды SHOW SECCLASSES
+[example]
+====
+[listing]
+----
+SQL> show secclasses employee;
+
+Table's main sec class SQL$440
+Table's default sec class SQL$DEFAULT54
+----
+====
+
+[[fbadmgd-isql-commands_show-show_sequence]]
+=== SHOW SEQUENCE
+
+.Назначение
+Отображение информации обо всех не системных последовательностях или об одной указанной последовательности.
+(((ISQL, SHOW SEQUENCE)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW {SEQUENCEs | SEQUENCE _sequence_name_}
+
+SHOW {GENERATORs | GENERATOR _generator_name_}
+----
+
+.Параметры оператора SHOW SEQUENCE
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|sequence_name
+|Наименование последовательности (генератора).
+
+|===
+
+Эти две команды идентичны. Генераторы -- это старый термин Firebird для того, что обычно называют последовательностями в других базах данных, а также в SQL стандарте. Вам рекомендуется использовать последовательности, а не генераторы, но Firebird считает их одинаковыми.
+
+Если имя последовательности ( генератора) не указано, то будут выведены сведения обо всех последовательностях (имя, текущее значение, начальное значение, значение шага приращения). Если указано имя последовательности (генератора), то будет выведены сведения о конкретном последовательности.
+
+.Использование команды SHOW SEQUENCE
+[example]
+====
+[listing]
+----
+SQL> show sequences;
+Generator CUST_NO_GEN, current value: 1015, initial value: 0, increment: 1
+Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
+
+SQL> show sequence emp_no_gen;
+Generator EMP_NO_GEN, current value: 145, initial value: 0, increment: 1
+----
+====
+
+Смотри также: <<fbadmgd-isql-commands_show-show_generator>>.
+
+[[fbadmgd-isql-commands_show-show_sql_dialect]]
+=== SHOW SQL DIALECT
+
+.Назначение
+Отображение SQL диалекта клиента и текущей базы данных.
+(((ISQL, SHOW SQL DIALECT)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW SQL DIALECT
+----
+
+Команда `SHOW SQL DIALECT` отображает SQL диалект установленный в ISQL и диалект подключенной базы данных.
+
+.Использование команды SHOW SQL DIALECT
+[example]
+====
+[listing]
+----
+SQL> show sql dialect;
+        Client SQL dialect is set to: 3 and database SQL dialect is: 3
+----
+====
+
+[[fbadmgd-isql-commands_show-show_system]]
+=== SHOW SYSTEM
+
+.Назначение
+Отображение списка системных объектов.
+(((ISQL, SHOW SYSTEM)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW SYStem [{TABLEs | FUNCTIONs | COLLATIONs | COLLATEs}]
+----
+
+Команда `SHOW SYSTEM` выводит список внутренних, то есть системных объектов, созданных и используемых в текущей базе данных. По умолчанию отображаются системные таблицы, функции и сортировки. Необязательный параметр позволяет уточнить какой именно вид системных объектов необходимо отобразить.
+
+.Использование команды SHOW SYSTEM
+[example]
+====
+[listing]
+----
+SQL> show system;
+
+Tables:
+       MON$ATTACHMENTS                        MON$CALL_STACK
+       MON$CONTEXT_VARIABLES                  MON$DATABASE
+...
+       SEC$DB_CREATORS                        SEC$GLOBAL_AUTH_MAPPING
+       SEC$USERS                              SEC$USER_ATTRIBUTES
+
+Collations:
+       ASCII                                  BIG_5
+       BS_BA                                  CP943C
+       CP943C_UNICODE                         CS_CZ
+       CYRL                                   DA_DA
+....
+       WIN1257_EE                             WIN1257_LT
+       WIN1257_LV                             WIN1258
+       WIN_CZ                                 WIN_CZ_CI_AI
+       WIN_PTBR
+
+SQL> show system tables;
+
+       MON$ATTACHMENTS                        MON$CALL_STACK
+       MON$CONTEXT_VARIABLES                  MON$DATABASE
+...
+       SEC$DB_CREATORS                        SEC$GLOBAL_AUTH_MAPPING
+       SEC$USERS                              SEC$USER_ATTRIBUTES
+----
+====
+
+В Firebird 2.0-2.5 существовали системные функции `RDB$GET_CONTEXT` и `RDB$SET_CONTEXT`, которые позже стали встроенными. В Firebird 2.5 команда `SHOW SYSTEM` отобразит следующее:
+
+[listing]
+----
+SQL> show system;
+
+Tables:
+       MON$ATTACHMENTS                        MON$CALL_STACK
+       MON$CONTEXT_VARIABLES                  MON$DATABASE
+...
+
+Functions:
+       RDB$GET_CONTEXT                        RDB$SET_CONTEXT
+
+Collations:
+       ASCII                                  BIG_5
+       BS_BA                                  CP943C
+....
+       WIN_CZ                                 WIN_CZ_CI_AI
+       WIN_PTBR
+----
+
+Если вы хотите отобразить детали определенного объекта, просто используйте соответствующую команду `SHOW`.
+
+[listing]
+----
+SQL> show table mon$io_stats;
+
+MON$STAT_ID                     (RDB$STAT_ID) INTEGER Nullable
+MON$STAT_GROUP                  (RDB$STAT_GROUP) SMALLINT Nullable
+MON$PAGE_READS                  (RDB$COUNTER) BIGINT Nullable
+MON$PAGE_WRITES                 (RDB$COUNTER) BIGINT Nullable
+MON$PAGE_FETCHES                (RDB$COUNTER) BIGINT Nullable
+MON$PAGE_MARKS                  (RDB$COUNTER) BIGINT Nullable
+
+SQL> show collation ascii;
+
+ASCII, CHARACTER SET ASCII, PAD SPACE, SYSTEM
+----
+
+[[fbadmgd-isql-commands_show-show_table]]
+=== SHOW TABLE
+
+.Назначение
+Отображение списка таблиц или информации о заданной таблице.
+(((ISQL, SHOW TABLE)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW {TABLEs | TABLE _table_name_}
+----
+
+.Параметры оператора SHOW TABLE
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|table_name
+|Имя таблицы.
+
+|===
+
+В первом варианте команда `SHOW TABLES` отображает список таблиц, определённых в базе данных, в алфавитном порядке. Во втором варианте отображается список столбцов и их типы или домены для указанной в качестве параметра таблицы.
+
+.Использование команды SHOW TABLE
+[example]
+====
+[listing]
+----
+SQL> show tables;
+
+       COUNTRY                                CUSTOMER
+       DEPARTMENT                             EMPLOYEE
+       EMPLOYEE_PROJECT                       JOB
+       PROJECT                                PROJ_DEPT_BUDGET
+       SALARY_HISTORY                         SALES
+
+SQL> show table country;
+
+COUNTRY                         (COUNTRYNAME) VARCHAR(15) Not Null
+CURRENCY                        VARCHAR(10) Not Null
+CONSTRAINT INTEG_2:
+  Primary key (COUNTRY)
+----
+====
+
+Если для таблицы определены комментарии, эта команда не будет их отображать. Вы можете использовать команду `SHOW COMMENTS`, но помните, что тогда вам будут отображены все комментарии в базе данных. По-видимому, не существует метода извлечения комментариев для одного объекта, если только вы не запросите системные таблицы напрямую.
+
+[listing]
+----
+SQL> comment on table country is 'This table holds details about countries.';
+SQL> commit;
+
+SQL> show comments;
+...
+COMMENT ON TABLE        COUNTRY IS This table holds details about countries.;
+...
+
+SQL> show table country;
+
+COUNTRY                         (COUNTRYNAME) VARCHAR(15) Not Null
+CURRENCY                        VARCHAR(10) Not Null
+CONSTRAINT INTEG_2:
+  Primary key (COUNTRY)
+
+SQL> select rdb$description
+CON> from rdb$relations
+CON> where rdb$relation_name = 'COUNTRY';
+
+  RDB$DESCRIPTION
+=================
+            6:1ec
+==============================================================================
+RDB$DESCRIPTION:
+This table holds details about countries.
+==============================================================================
+----
+
+Вывод последнего запроса выше не идеален, но, по крайней мере, он отображает гораздо меньше информации, когда в вашей базе данных много комментариев.
+
+[[fbadmgd-isql-commands_show-show_trigger]]
+=== SHOW TRIGGER
+
+.Назначение
+Отображение списка триггеров или подробной информации об указанном триггере.
+(((ISQL, SHOW TRIGGER)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW {TRIGgers | TRIGger _trigger_name_}
+----
+
+.Параметры оператора SHOW TRIGGER
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|trigger_name
+|Имя триггера.
+
+|===
+
+Команда `SHOW TRIGGER` отображает список всех триггеров определённых в текущей базе данных. Для табличных триггеров будет выведено имя таблицы для которого был создан триггер.
+
+.Использование команды SHOW TRIGGERS
+[example]
+====
+[listing]
+----
+SQL> show triggers;
+Trigger name                     Invalid
+================================ =======
+TR_BEFORE_DISCONNECT
+
+Table name                       Trigger name                     Invalid
+================================ ================================ =======
+AGE                              AGE_BD
+AGE                              AGE_BI
+AGE                              AGE_BU
+AIMTYPE                          TR_AIMTYPE_BI
+ALGORITHM                        TR_ALGORITHM_BI
+......
+----
+====
+
+Если указано имя триггера, то будет отображена подробная информация о триггере (имя триггера, порядок срабатывания, событие, активен ли триггер), а также его исходный код.
+
+.Использование команды SHOW TRIGGER
+[example]
+====
+[listing]
+----
+SQL> show trigger set_cust_no;
+
+Triggers on Table CUSTOMER:
+SET_CUST_NO, Sequence: 0, Type: BEFORE INSERT, Active
+Trigger text:
+=============================================================================
+AS
+BEGIN
+    if (new.cust_no is null) then
+    new.cust_no = gen_id(cust_no_gen, 1);
+END
+=============================================================================
+----
+====
+
+Смотри также: <<fbadmgd-isql-commands_show-show_function>>, <<fbadmgd-isql-commands_show-show_procedure>>, <<fbadmgd-isql-commands_show-show_package>>.
+
+[[fbadmgd-isql-commands_show-show_users]]
+=== SHOW USERS
+
+.Назначение
+Отображение списка пользователей в текущей БД безопасности.
+(((ISQL, SHOW USERS)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW USERs
+----
+
+Команда `SHOW USERS` отображает список пользователей определённых в текущей базе данных безопасности. Если пользователь не является администратором в базе данных безопасности, то будет отображены только сведения о нём самом. Перед каждым именем пользователя указано число, которое отображает количество соединений выполненное этим пользователем. Если перед именем пользователя напечатана решётка "`#`", то это текущий пользователь.
+
+.Использование команды SHOW USERS
+[example]
+====
+[listing]
+----
+SQL> show users;
+Users in the database
+  1 #SYSDBA                              2  U1
+  0  U3
+----
+====
+
+В данном случае есть одно соединение пользователем `SYSDBA` -- это текущий пользователь, и два соединения пользователем `U1`.
+
+[[fbadmgd-isql-commands_show-show_version]]
+=== SHOW VERSION
+
+.Назначение
+Отображение информации о версии ISQL, сервера и ODS базы данных.
+(((ISQL, SHOW VERSION)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW VERsion
+----
+
+Команда `SHOW VERSION` отображает информацию о версии ISQL, версии сервера Firebird, сетевом протоколе, ODS текущей базы данных.
+
+.Использование команды SHOW VERSION
+[example]
+====
+[listing]
+----
+SQL> show version;
+
+ISQL Version: WI-V3.0.5.33168 Firebird 3.0
+Server version:
+Firebird/Windows/AMD/Intel/x64 (access method),
+version "WI-V3.0.5.33168 Firebird 3.0"
+Firebird/Windows/AMD/Intel/x64 (remote server),
+version "WI-V3.0.5.33168 Firebird 3.0/tcp (DESKTOP-E3INAFT)/P15:C"
+Firebird/Windows/AMD/Intel/x64 (remote interface),
+version "WI-V3.0.5.33168 Firebird 3.0/tcp (DESKTOP-E3INAFT)/P15:C"
+on disk structure version 12.0
+----
+====
+
+Обратите внимание, что некоторые строки в приведенном выше разделены, чтобы они могли поместиться на странице.
+
+[[fbadmgd-isql-commands_show-show_view]]
+=== SHOW VIEW
+
+.Назначение
+Отображение списка представлений или информации об указанном представлении.
+(((ISQL, SHOW VIEW)))
+
+.Синтаксис
+[listing,subs="+quotes,attributes"]
+----
+SHOW {VIEWs | VIEW _view_name_}
+----
+
+.Параметры оператора SHOW VIEW
+[cols="<1,<3", options="header",stripes="none"]
+|===
+^|Параметр
+^|Описание
+
+|view_name
+|Имя представления.
+
+|===
+
+Команда `SHOW VIEW` отображает список представлений определённых в текущей базе данных. Если в качестве аргумента указано имя представления, то будет отображён список его столбцов с типами или доменами, и исходный код представления.
+
+.Использование команды SHOW VIEW
+[example]
+====
+[listing]
+----
+SQL> show views;
+
+       PHONE_LIST
+
+SQL> show view phone_list;
+
+EMP_NO                          (EMPNO) SMALLINT Not Null
+FIRST_NAME                      (FIRSTNAME) VARCHAR(15) Not Null
+LAST_NAME                       (LASTNAME) VARCHAR(20) Not Null
+PHONE_EXT                       VARCHAR(4) Nullable
+LOCATION                        VARCHAR(15) Nullable
+PHONE_NO                        (PHONENUMBER) VARCHAR(20) Nullable
+View Source:
+==== ======
+SELECT
+    emp_no, first_name, last_name, phone_ext, location, phone_no
+    FROM employee, department
+    WHERE employee.dept_no = department.dept_no
+----
+====

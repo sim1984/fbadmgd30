@@ -372,7 +372,7 @@ gbak -b <replaceable>&lt;database&gt;</replaceable> <replaceable>&lt;backup set&
                         </row>
                         <row>
                             <entry><code>-E[XPAND]</code></entry>
-                            <entry><para>Отключение сжатия данных при резервном копировани. По
+                            <entry><para>Отключение сжатия данных при резервном копировании. По
                                     умолчанию резервная копия записывается в <quote>сжатом</quote>
                                     виде.</para></entry>
                         </row>

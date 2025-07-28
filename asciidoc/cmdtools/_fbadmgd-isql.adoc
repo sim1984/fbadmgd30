@@ -48,7 +48,7 @@ database ::= [<server spec>]{_db_filename_ | _db_alias_}
   | {backslash}{backslash}__host__\
   | <protocol>://[_host_[:{_port_ | _service_}]/]
 
-<protocol> ::= inet | inet4 | inet6 | xnet
+<protocol> ::= inet | inet4 | inet6 | wnet | xnet
 ----
 
 Если параметры `&lt;options&gt;` не указаны, `isql` запускает интерактивный сеанс. Если база данных не указана, то необходимо подключиться к существующей базе данных или создать новую. Если база данных была указана, `isql` запускает интерактивный сеанс, подключаясь к указанной базе данных.

@@ -529,6 +529,8 @@ gbak {-c | -r o | -rep} <backup set> <db set> [<backup options>] [<general optio
 
 <backup set> ::= _backup_file_ [_backup_file_2_ ... [_backup_file_N_]]
 
+<db set> ::= <database> [_size1_ _db2_ ... [_sizeN-1_ _dbN_]]
+
 <database> ::= [<server_spec>]{_filepath_ | _db_alias_}
 
 <server_spec> ::=

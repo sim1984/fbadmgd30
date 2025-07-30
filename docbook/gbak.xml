@@ -1033,7 +1033,7 @@ gbak {-c | -r o | -rep} <replaceable>&lt;backup set&gt;</replaceable> <replaceab
 
             <example>
                 <title>Восстановление из многофайловой копии</title>
-                <para>В примере восстановлена база данных из многофайловой реервной копии</para>
+                <para>В примере восстановлена база данных из многофайловой резервной копии</para>
                 <para>
                     <programlisting>
 gbak -c -se inet://localhost/service_mgr -user sysdba -password masterkey

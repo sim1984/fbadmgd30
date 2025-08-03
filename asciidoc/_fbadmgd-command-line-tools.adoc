@@ -6,3 +6,5 @@
 include::cmdtools/_fbadmgd-isql.adoc[leveloffset=2]
 
 include::cmdtools/_fbadmgd-gbak.adoc[leveloffset=2]
+
+include::cmdtools/_fbadmgd-nbackup.adoc[leveloffset=2]
